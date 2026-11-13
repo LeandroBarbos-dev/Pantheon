@@ -718,7 +718,7 @@ const ESTRUTURA_RECURSOS = [
 ];
 
 const BONUS_ORFAO = [2, -2, 2, 2];
-const QTD_SLOTS_RAIZ = { singular: 2, heranca: 1, dupla: 2, auto: 0 };
+const QTD_SLOTS_RAIZ = { singular: 2, heranca: 1, dupla: 1, auto: 0 };
 
 // Agora são mutáveis e iniciam vazias
 let RAIZES = {};
@@ -1056,7 +1056,7 @@ carregarDadosExternos();
           ${linhasConexao}
         </svg>
         <div class="ctr"><b id="wsum"></b>total</div>
-        ${nosHtml}
+        ${nosHtml}      
       `;
 
       document.querySelectorAll('.node').forEach(no => {
