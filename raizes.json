@@ -1,0 +1,12 @@
+{
+  "Lenhador": [6, 0, 2, 0],
+  "Ferreiro": [4, 0, 2, 2],
+  "Guarda / Vigia": [4, 2, 2, 0],
+  "Caçador": [2, 0, 4, 2],
+  "Carpinteiro": [2, 0, 4, 2],
+  "Cozinheiro / Padeiro": [2, 2, 2, 2],
+  "Pastor / Criador": [2, 4, 2, 0],
+  "Mercador": [0, 2, 2, 4],
+  "Curandeiro": [0, 4, 0, 4],
+  "Escriba / Devoto": [0, 6, 0, 2]
+}

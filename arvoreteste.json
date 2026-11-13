@@ -1,0 +1,576 @@
+{
+  "id": "arvore_mercador_mestre",
+  "nome": "Caminho do Mercador & Rotas de Troca",
+  "raizAssociada": "Mercador",
+  "descricao": "Árvore completa da Vocação de Mercador em Candeia, dominando o escambo rústico, o controle de recursos e as redes de trocas equivalentes.",
+  "nos": [
+    {
+      "id": "no_1",
+      "titulo": "Lábia de Feira",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 1,
+      "dominado": true,
+      "requisitos": [],
+      "conteudo": {
+        "descricao": "Prática nas praças de Candeia. Permite obter pequenos descontos e favorecimento em trocas básicas.",
+        "bonusPericia": {
+          "Persuasão": 1
+        }
+      },
+      "_depth": 0
+    },
+    {
+      "id": "no_2",
+      "titulo": "Olho de Balança",
+      "tipoRecompensa": "pericia",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 1,
+      "dominado": false,
+      "requisitos": [
+        "no_1"
+      ],
+      "conteudo": {
+        "descricao": "Percepção apurada para notar fraudes, moedas gastas ou víveres adulterados.",
+        "bonusPericia": {
+          "Erudição": 1
+        }
+      },
+      "_depth": 1
+    },
+    {
+      "id": "no_3",
+      "titulo": "Sussurro de Balcão",
+      "tipoRecompensa": "pericia",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 1,
+      "dominado": false,
+      "requisitos": [
+        "no_1"
+      ],
+      "conteudo": {
+        "descricao": "Capacidade de extrair rumores e segredos da vila enquanto simula uma negociação casual.",
+        "bonusPericia": {
+          "Intuição": 1
+        }
+      },
+      "_depth": 1
+    },
+    {
+      "id": "no_4",
+      "titulo": "Língua Afiada",
+      "tipoRecompensa": "pericia",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 1,
+      "dominado": false,
+      "requisitos": [
+        "no_1"
+      ],
+      "conteudo": {
+        "descricao": "Lábia rápida para contornar suspeitas de guardas ou clientes descontentes.",
+        "bonusPericia": {
+          "Enganação": 1
+        }
+      },
+      "_depth": 1
+    },
+    {
+      "id": "no_5",
+      "titulo": "Dilema do Negociante",
+      "tipoRecompensa": "atributo",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 2,
+      "dominado": false,
+      "requisitos": [
+        "no_2"
+      ],
+      "opcoesAmbiguas": [
+        {
+          "idOpcao": "a",
+          "efeito": "+1 Atributo A"
+        },
+        {
+          "idOpcao": "b",
+          "efeito": "+1 Atributo B"
+        }
+      ],
+      "conteudo": {
+        "descricao": "Escolha entre focar na malícia de oportunidade ou na imposição social."
+      },
+      "_depth": 2
+    },
+    {
+      "id": "no_6",
+      "titulo": "Avaliação Imparcial",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 2,
+      "dominado": false,
+      "requisitos": [
+        "no_2"
+      ],
+      "conteudo": {
+        "descricao": "Determina o exato custo de equivalência de qualquer objeto antigo ou relíquia."
+      },
+      "_depth": 2
+    },
+    {
+      "id": "no_7",
+      "titulo": "Rede de Contatos",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "restritiva",
+      "limiteNosSecundarios": 2,
+      "custoPontos": 2,
+      "dominado": false,
+      "requisitos": [
+        "no_3"
+      ],
+      "conteudo": {
+        "descricao": "Consegue localizar vendedores clandestinos ou compradores discretos em poucas horas."
+      },
+      "_depth": 2
+    },
+    {
+      "id": "no_8",
+      "titulo": "Venda de Fumaça",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 2,
+      "dominado": false,
+      "requisitos": [
+        "no_4"
+      ],
+      "conteudo": {
+        "descricao": "Convence um indivíduo a aceitar um item de baixo valor em troca de algo valioso."
+      },
+      "_depth": 2
+    },
+    {
+      "id": "no_9",
+      "titulo": "Dilema do Cobrador",
+      "tipoRecompensa": "atributo",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 2,
+      "dominado": false,
+      "requisitos": [
+        "no_22"
+      ],
+      "opcoesAmbiguas": [
+        {
+          "idOpcao": "a",
+          "efeito": "+1 Autoridade"
+        },
+        {
+          "idOpcao": "b",
+          "efeito": "+1 Conhecimento"
+        }
+      ],
+      "conteudo": {
+        "descricao": "Escolha entre fortalecer sua intimidação moral ou seu rigor nos livros de dívida."
+      },
+      "_depth": 4
+    },
+    {
+      "id": "no_10",
+      "titulo": "Escolha de Especialização",
+      "tipoRecompensa": "ambiguo",
+      "tipoRamificacao": "exclusiva",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 2,
+      "dominado": false,
+      "requisitos": [
+        "no_5"
+      ],
+      "opcoesAmbiguas": [
+        {
+          "idOpcao": "a",
+          "efeito": "Ramo: Contrabandista das Sombras (Mercado Negro)"
+        },
+        {
+          "idOpcao": "b",
+          "efeito": "Ramo: Usurário da Confraria (Crédito & Teocracia)"
+        }
+      ],
+      "conteudo": {
+        "descricao": "Bifurcação Exclusiva: Decida se atuará à margem da lei ou se aliará à igreja."
+      },
+      "_depth": 3
+    },
+    {
+      "id": "no_11",
+      "titulo": "Rota Clandestina",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_10"
+      ],
+      "conteudo": {
+        "descricao": "[Especialização Contrabandista] Conhece caminhos que burla a vigilância dos guardas de Candeia."
+      },
+      "_depth": 4
+    },
+    {
+      "id": "no_12",
+      "titulo": "Fundo Falso",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_14"
+      ],
+      "conteudo": {
+        "descricao": "[Especialização Contrabandista] Permite ocultar itens proibidos ou catalisadores no próprio corpo ou carroça."
+      },
+      "_depth": 6
+    },
+    {
+      "id": "no_13",
+      "titulo": "Suborno Discreto",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 3,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_23"
+      ],
+      "conteudo": {
+        "descricao": "[Especialização Contrabandista] Sabe exatamente o preço de cada autoridade para fazer vista grossa."
+      },
+      "_depth": 4
+    },
+    {
+      "id": "no_14",
+      "titulo": "Dilema do Forasteiro",
+      "tipoRecompensa": "atributo",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_11"
+      ],
+      "opcoesAmbiguas": [
+        {
+          "idOpcao": "a",
+          "efeito": "+1 Destreza"
+        },
+        {
+          "idOpcao": "b",
+          "efeito": "+1 Astúcia"
+        }
+      ],
+      "conteudo": {
+        "descricao": "Escolha entre a agilidade de fuga ou a malícia de disfarce."
+      },
+      "_depth": 5
+    },
+    {
+      "id": "no_15",
+      "titulo": "Contrato Doutrinário",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_10"
+      ],
+      "conteudo": {
+        "descricao": "[Especialização Usurário] Redige pactos financeiros reconhecidos pelos juízes da Santa Equivalência."
+      },
+      "_depth": 4
+    },
+    {
+      "id": "no_16",
+      "titulo": "Cobrança de Dízimo",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_15"
+      ],
+      "conteudo": {
+        "descricao": "[Especialização Usurário] Exige pagamento imediato de favores em combate. Concede 1 PE ao usuário."
+      },
+      "_depth": 5
+    },
+    {
+      "id": "no_17",
+      "titulo": "Penhor Ritualístico",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_7"
+      ],
+      "conteudo": {
+        "descricao": "[Especialização Usurário] Aceita pertences pessoais como garantia espiritual, enfraquecendo a vontade do devedor."
+      },
+      "_depth": 3
+    },
+    {
+      "id": "no_18",
+      "titulo": "Dilema da Teocracia",
+      "tipoRecompensa": "atributo",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_16"
+      ],
+      "opcoesAmbiguas": [
+        {
+          "idOpcao": "a",
+          "efeito": "+1 Autoridade"
+        },
+        {
+          "idOpcao": "b",
+          "efeito": "+1 Ímpeto"
+        }
+      ],
+      "conteudo": {
+        "descricao": "Escolha entre a dominância social ou a firmeza mental."
+      },
+      "_depth": 6
+    },
+    {
+      "id": "no_19",
+      "titulo": "Rotas Secundárias",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 2,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_6"
+      ],
+      "conteudo": {
+        "descricao": "Acesso a atalhos entre distritos. Permite movimentação rápida na vila."
+      },
+      "_depth": 3
+    },
+    {
+      "id": "no_20",
+      "titulo": "Monopólio de Mantimentos",
+      "tipoRecompensa": "pericia",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_21"
+      ],
+      "conteudo": {
+        "descricao": "Controle de víveres escassos, aumentando sua capacidade de barganha.",
+        "bonusPericia": {
+          "Persuasão": 1,
+          "Culinária": 1
+        }
+      },
+      "_depth": 5
+    },
+    {
+      "id": "no_21",
+      "titulo": "Estoque de Emergência",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_19"
+      ],
+      "conteudo": {
+        "descricao": "Mantém uma reserva oculta de suprimentos para o grupo em situações críticas."
+      },
+      "_depth": 4
+    },
+    {
+      "id": "no_22",
+      "titulo": "Dilema do Minerador",
+      "tipoRecompensa": "atributo",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_7"
+      ],
+      "opcoesAmbiguas": [
+        {
+          "idOpcao": "a",
+          "efeito": "+1 Vigor"
+        },
+        {
+          "idOpcao": "b",
+          "efeito": "+1 Conhecimento"
+        }
+      ],
+      "conteudo": {
+        "descricao": "Escolha entre resistência física para viagens ou conhecimento de materiais."
+      },
+      "_depth": 3
+    },
+    {
+      "id": "no_23",
+      "titulo": "Logística de Carga",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 3,
+      "dominado": false,
+      "requisitos": [
+        "no_8"
+      ],
+      "conteudo": {
+        "descricao": "Otimização de espaço no inventário. Aumenta a capacidade de carga do grupo."
+      },
+      "_depth": 3
+    },
+    {
+      "id": "no_24",
+      "titulo": "Moeda do Véu",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 4,
+      "dominado": false,
+      "requisitos": [
+        "no_13"
+      ],
+      "conteudo": {
+        "descricao": "[Transgressão Mística] Permite negociar diretamente com entidades ou cultistas usando a corrupção do Véu como barganha."
+      },
+      "_depth": 5
+    },
+    {
+      "id": "no_25",
+      "titulo": "Troca de Almas",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 4,
+      "dominado": false,
+      "requisitos": [
+        "no_24"
+      ],
+      "conteudo": {
+        "descricao": "Ao custo de 2 SAN, transfere uma penalidade ou estado negativo de um aliado para um inimigo."
+      },
+      "_depth": 6
+    },
+    {
+      "id": "no_26",
+      "titulo": "Dívida de Sangue",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 4,
+      "dominado": false,
+      "requisitos": [
+        "no_17"
+      ],
+      "conteudo": {
+        "descricao": "[Transgressão Mística] Cobra uma dívida ritual: quando o devedor sofre dano, parte do dano é absorvida pelo cobrador como cura."
+      },
+      "_depth": 4
+    },
+    {
+      "id": "no_27",
+      "titulo": "Contrato Inviolável",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 4,
+      "dominado": false,
+      "requisitos": [
+        "no_30"
+      ],
+      "conteudo": {
+        "descricao": "Ergue um selo mágico em um acordo. Se qualquer das partes quebrar a promessa, sofre dano direto de Ímpeto."
+      },
+      "_depth": 6
+    },
+    {
+      "id": "no_28",
+      "titulo": "Quebra de Limite: Malícia Absoluta",
+      "tipoRecompensa": "atributo",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 4,
+      "dominado": false,
+      "requisitos": [
+        "no_26"
+      ],
+      "opcoesAmbiguas": [
+        {
+          "idOpcao": "a",
+          "efeito": "+1 Atributo A"
+        },
+        {
+          "idOpcao": "b",
+          "efeito": "+1 Atributo B"
+        }
+      ],
+      "conteudo": {
+        "descricao": "[Quebra Mística] A visão de negócio transcende a moral humana (permite atingir atributo 5)."
+      },
+      "_depth": 5
+    },
+    {
+      "id": "no_29",
+      "titulo": "Conhecimento das Leis de Veritas",
+      "tipoRecompensa": "pericia",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 4,
+      "dominado": false,
+      "requisitos": [
+        "no_28"
+      ],
+      "conteudo": {
+        "descricao": "Entendimento profundo sobre a lei original do custo absoluto de Veritas.",
+        "bonusPericia": {
+          "Doutrina": 2,
+          "Erudição": 1
+        }
+      },
+      "_depth": 6
+    },
+    {
+      "id": "no_30",
+      "titulo": "Patrono da Equivalência",
+      "tipoRecompensa": "habilidade",
+      "tipoRamificacao": "livre",
+      "limiteNosSecundarios": 1,
+      "custoPontos": 5,
+      "dominado": false,
+      "requisitos": [
+        "no_9"
+      ],
+      "conteudo": {
+        "descricao": "Ápice do Mercador. Capaz de financiar e manter a economia inteira de um assentamento contra a escassez trazida pelo Véu."
+      },
+      "_depth": 5
+    }
+  ]
+}

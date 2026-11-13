@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PANTHEON - Editor & Visualizador de Árvores de Evolução</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700&family=Faustina:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              300: '#f6e05e',
+              400: '#ecc94b',
+              500: '#d69e2e',
+              600: '#b7791f',
+              700: '#975a16',
+              800: '#744210',
+            },
+            parchment: {
+              light: '#2a2620',
+              DEFAULT: '#1c1917',
+              dark: '#12100e',
+              border: '#3d3326'
+            }
+          },
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            decorative: ['Cinzel Decorative', 'serif'],
+            body: ['Faustina', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #090807; }
+    ::-webkit-scrollbar-thumb { background: #3d3326; border-radius: 4px; border: 1px solid #b7791f; }
+    ::-webkit-scrollbar-thumb:hover { background: #b7791f; }
+
+    body {
+      background-color: #090807;
+      color: #e2d8c3;
+      font-family: 'Faustina', serif;
+      background-image: radial-gradient(circle at 50% 30%, #1a1510 0%, #090807 80%);
+    }
+
+    .font-cinzel { font-family: 'Cinzel', serif; }
+    .font-decorative { font-family: 'Cinzel Decorative', serif; }
+
+    .gold-border {
+      border: 1px solid #b7791f;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 0 10px rgba(183, 121, 31, 0.2);
+    }
+    .gold-border-heavy {
+      border: 2px solid #d69e2e;
+      outline: 1px solid #3d3326;
+      outline-offset: -4px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.9), 0 0 15px rgba(214, 158, 46, 0.25);
+    }
+    .glow-gold { text-shadow: 0 0 8px rgba(214, 158, 46, 0.6); }
+
+    /* Clean Minimalist Node Cards */
+    .node-card {
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      width: 170px;
+      min-height: 54px;
+    }
+    .node-card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.9);
+    }
+
+    /* Node Types Minimalist Aesthetic */
+    .type-habilidade {
+      background: linear-gradient(180deg, #1f1a14 0%, #14110d 100%);
+      border-color: #b7791f;
+    }
+    .type-pericia {
+      background: linear-gradient(180deg, #0e1a24 0%, #091017 100%);
+      border-color: #38bdf8;
+    }
+    .type-atributo {
+      background: linear-gradient(180deg, #221226 0%, #120917 100%);
+      border-color: #c084fc;
+    }
+    .type-ambiguo {
+      background: linear-gradient(180deg, #261f12 0%, #171209 100%);
+      border-color: #f59e0b;
+    }
+
+    /* Node Statuses */
+    .node-dominated {
+      border-color: #f6e05e !important;
+      box-shadow: 0 0 15px rgba(214, 158, 46, 0.45) !important;
+    }
+    .node-locked {
+      opacity: 0.6;
+    }
+
+    /* Navegação livre pelo canvas */
+    #tree-canvas-wrapper {
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      overflow: hidden;
+      padding: 0;
+      overscroll-behavior: none;
+    }
+    #tree-canvas-wrapper.is-panning { cursor: grabbing; }
+    
+    #tree-stage {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+    #tree-grid {
+      position: absolute;
+      left: 500px;
+      top: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 96px;
+      padding: 48px 0;
+      flex: none;
+    }
+    
+    #canvas-zoom-controls {
+      position: absolute;
+      z-index: 20;
+      right: 18px;
+      bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px;
+      border: 1px solid rgba(202, 138, 4, .45);
+      border-radius: 8px;
+      background: rgba(12, 10, 9, .92);
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+    }
+    #canvas-zoom-controls button {
+      width: 32px;
+      height: 30px;
+      border-radius: 5px;
+      color: #fcd34d;
+      background: #292524;
+      font-weight: bold;
+      transition: background 0.15s ease;
+    }
+    #canvas-zoom-controls button:hover { background: #44403c; }
+    #canvas-zoom-value {
+      min-width: 48px;
+      text-align: center;
+      color: #d6d3d1;
+      font: 11px monospace;
+    }
+
+    .tree-level {
+      position: relative;
+      height: 76px;
+      width: 100%;
+      flex: none;
+    }
+    .tree-level .node-card {
+      position: absolute;
+      top: 0;
+      transform: translateX(-50%);
+    }
+
+    /* SVG Canvas for Lines */
+    #svg-connections {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Dragging Visual Effects */
+    .node-card.dragging {
+      opacity: 0.4;
+      transform: translateX(-50%) scale(0.95);
+    }
+    .node-card.drag-over {
+      border-color: #f6e05e !important;
+      box-shadow: 0 0 20px rgba(246, 224, 94, 0.8) !important;
+      transform: translateX(-50%) scale(1.05) !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-gold-700 selection:text-white overflow-hidden">
+
+  <!-- HEADER -->
+  <header class="border-b-2 border-gold-600/60 bg-parchment-dark/95 px-6 py-3 flex justify-between items-center z-40 backdrop-blur-md">
+    <div class="flex items-center space-x-3">
+      <i class="fa-solid fa-sitemap text-gold-500 text-2xl glow-gold"></i>
+      <div>
+        <h1 class="font-decorative text-xl text-gold-400 tracking-wider glow-gold">PANTHEON</h1>
+        <p class="text-[10px] text-stone-400 font-cinzel tracking-widest uppercase">Visualizador de Grafos Dinâmico (Alinhamento Reto 1:1)</p>
+      </div>
+    </div>
+
+    <!-- Controles de Ação do Topo -->
+    <div class="flex items-center gap-2">
+      <button onclick="createNewTree()" class="px-3 py-1.5 rounded border border-stone-700 bg-stone-900 hover:border-gold-500 hover:text-gold-300 text-xs font-cinzel transition-all flex items-center gap-1.5">
+        <i class="fa-solid fa-file-circle-plus text-gold-500"></i> Nova Árvore
+      </button>
+      <button onclick="openJsonModal('import')" class="px-3 py-1.5 rounded border border-stone-700 bg-stone-900 hover:border-gold-500 hover:text-gold-300 text-xs font-cinzel transition-all flex items-center gap-1.5">
+        <i class="fa-solid fa-file-import text-sky-400"></i> Importar JSON
+      </button>
+      <button onclick="openJsonModal('export')" class="px-3 py-1.5 rounded border border-gold-600/60 bg-gold-900/40 hover:bg-gold-700/50 text-gold-300 text-xs font-cinzel font-bold transition-all flex items-center gap-1.5 shadow-md">
+        <i class="fa-solid fa-code text-gold-400"></i> Exportar Código JSON
+      </button>
+    </div>
+  </header>
+
+  <!-- CORPO PRINCIPAL DO EDITOR -->
+  <div class="flex-1 flex relative overflow-hidden">
+
+    <!-- BARRA LATERAL ESQUERDA -->
+    <aside class="w-72 bg-parchment-dark/90 border-r border-gold-600/40 p-4 flex flex-col gap-4 z-30">
+      <div class="space-y-2">
+        <label class="block font-cinzel text-xs text-gold-400 font-bold uppercase tracking-wider">Nome da Árvore</label>
+        <input type="text" id="tree-name-input" oninput="updateTreeMeta()" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-gold-500 font-cinzel">
+      </div>
+
+      <div class="space-y-2">
+        <label class="block font-cinzel text-xs text-gold-400 font-bold uppercase tracking-wider">Raiz / Vocação Vinculada</label>
+        <input type="text" id="tree-root-input" oninput="updateTreeMeta()" placeholder="Ex: Guarda / Vigia" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-gold-500">
+      </div>
+
+      <div class="space-y-2 flex-1">
+        <label class="block font-cinzel text-xs text-gold-400 font-bold uppercase tracking-wider">Descrição Breve</label>
+        <textarea id="tree-desc-input" oninput="updateTreeMeta()" rows="3" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-xs text-stone-300 focus:outline-none focus:border-gold-500 resize-none"></textarea>
+      </div>
+
+      <div class="border-t border-stone-800 pt-3 space-y-2">
+        <button onclick="addNewNode()" class="w-full py-2 bg-gradient-to-r from-gold-700 to-gold-800 text-stone-950 font-cinzel font-bold text-xs rounded hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg">
+          <i class="fa-solid fa-plus-circle text-sm"></i> ADICIONAR NOVO NÓ
+        </button>
+      </div>
+
+      <div class="bg-stone-950/80 p-3 rounded border border-stone-800 space-y-2 text-[11px] text-stone-400 font-mono">
+        <span class="font-cinzel text-xs text-gold-400 block font-bold">Estrutura Vertical Inversa</span>
+        <p class="text-[10px] text-stone-300 leading-tight">Nível 1 (Raiz) fica na base e a evolução sobe verticalmente. Arraste um nó sobre outro para reconectar o nó pai.</p>
+      </div>
+    </aside>
+
+    <!-- ÁREA DE CANVAS DE RENDERIZAÇÃO DA ÁRVORE -->
+    <main id="tree-canvas-wrapper" class="flex-1 relative bg-stone-950/60">
+      <div id="tree-stage">
+        <svg id="svg-connections"></svg>
+        <div id="tree-grid">
+          <!-- Níveis renderizados ordenadamente -->
+        </div>
+      </div>
+
+      <div id="canvas-zoom-controls" aria-label="Controles de zoom">
+        <button type="button" id="zoom-out" title="Diminuir zoom">−</button>
+        <span id="canvas-zoom-value">100%</span>
+        <button type="button" id="zoom-in" title="Aumentar zoom">+</button>
+        <button type="button" id="zoom-reset" title="Restaurar zoom">↺</button>
+      </div>
+    </main>
+
+    <!-- PAINEL LATERAL DIREITO: INSPEÇÃO -->
+    <aside id="node-inspector" class="w-80 bg-parchment-dark/95 border-l border-gold-600/40 p-4 space-y-4 z-30 transform translate-x-full transition-transform duration-300 ease-in-out absolute right-0 top-0 bottom-0 shadow-2xl flex flex-col">
+      <div class="flex justify-between items-center border-b border-gold-600/40 pb-2">
+        <h3 class="font-cinzel text-gold-400 font-bold text-sm flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-gold-500"></i> Detalhes do Nó
+        </h3>
+        <button onclick="closeInspector()" class="text-stone-400 hover:text-gold-400 p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto space-y-3.5 pr-1 text-xs">
+        <!-- Toggle Status Dominado -->
+        <div class="bg-stone-950 p-3 rounded border border-gold-600/40 flex justify-between items-center">
+          <div>
+            <span class="font-cinzel text-gold-300 font-bold block">Status no Personagem</span>
+            <span class="text-[10px] text-stone-400">Marcar como adquirido</span>
+          </div>
+          <button id="toggle-dominated-btn" onclick="toggleCurrentNodeDominated()" class="px-3 py-1.5 rounded font-cinzel text-xs font-bold transition-all border">
+            --
+          </button>
+        </div>
+
+        <!-- Título do Nó -->
+        <div>
+          <label class="block font-cinzel text-stone-300 mb-1">Título do Nó</label>
+          <input type="text" id="inspector-title" oninput="saveInspectorChanges()" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-stone-200 focus:outline-none focus:border-gold-500 font-cinzel">
+        </div>
+
+        <!-- Custo e Tipo de Recompensa -->
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-cinzel text-stone-300 mb-1">Custo em Pontos</label>
+            <input type="number" id="inspector-cost" min="1" max="10" oninput="saveInspectorChanges()" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-gold-400 font-bold">
+          </div>
+          <div>
+            <label class="block font-cinzel text-stone-300 mb-1">Tipo de Nó</label>
+            <select id="inspector-type" onchange="onTypeChange()" class="w-full bg-stone-950 border border-stone-800 rounded px-2 py-1.5 text-gold-300">
+              <option value="habilidade">Habilidade</option>
+              <option value="pericia">Perícia</option>
+              <option value="atributo">Atributo (Ambíguo)</option>
+              <option value="ambiguo">Dilema Ambíguo</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Seção de Configuração de Ramificação -->
+        <div class="space-y-2 border-t border-stone-800 pt-2">
+          <label class="block font-cinzel text-gold-400 font-bold">Tipo de Ramificação de Saída</label>
+          <select id="inspector-branch-type" onchange="onBranchTypeChange()" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-gold-300 text-xs">
+            <option value="livre">Livre (Avanço simultâneo em todos)</option>
+            <option value="exclusiva">Exclusiva (Bloqueia outros caminhos)</option>
+            <option value="restritiva">Restritiva (Limite de caminhos não-principais)</option>
+          </select>
+
+          <!-- Configuração específica para Ramificação Restritiva -->
+          <div id="inspector-branch-limit-box" class="bg-stone-950 p-2.5 rounded border border-amber-900/40 space-y-1.5 hidden">
+            <label class="block font-cinzel text-amber-300 text-[11px]">Máx. de Nós em Caminhos Secundários</label>
+            <input type="number" id="inspector-branch-limit" min="1" max="10" value="1" oninput="saveInspectorChanges()" class="w-full bg-stone-900 border border-stone-800 rounded px-2 py-1 text-gold-400 font-mono font-bold text-xs">
+            <p class="text-[10px] text-stone-400 leading-tight">Define quantos nós o jogador pode avançar nos ramos não-principais antes de travar.</p>
+          </div>
+        </div>
+
+        <!-- Nível / Camada Vertical -->
+        <div>
+          <label class="block font-cinzel text-stone-300 mb-1">Profundidade Automática</label>
+          <div id="inspector-calculated-depth" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 font-mono text-gold-400 font-bold">
+            Profundidade: Auto
+          </div>
+        </div>
+
+        <div class="bg-stone-950 p-3 rounded border border-gold-600/30 text-stone-300 text-[11px] space-y-1">
+          <span class="font-cinzel text-gold-400 font-bold block">Como alterar o Nó Pai:</span>
+          <p class="text-stone-400 leading-tight">Arraste o nó na tela e solte-o diretamente em cima do nó pai desejado.</p>
+        </div>
+
+        <!-- Seção Dinâmica: Conteúdo -->
+        <div id="inspector-content-section" class="space-y-2 border-t border-stone-800 pt-2">
+          <label class="block font-cinzel text-stone-300">Descrição Completa</label>
+          <textarea id="inspector-desc" oninput="saveInspectorChanges()" rows="3" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-stone-300 focus:outline-none focus:border-gold-500 resize-none"></textarea>
+        </div>
+
+        <!-- Seção Dinâmica: Escolhas Ambíguas -->
+        <div id="inspector-ambiguous-section" class="space-y-2 border-t border-stone-800 pt-2 hidden">
+          <div class="flex justify-between items-center">
+            <label class="font-cinzel text-gold-400 font-bold">Opções do Nó Ambíguo</label>
+            <span class="text-[10px] text-stone-400">Escolha 1 de 2</span>
+          </div>
+
+          <div class="bg-stone-950 p-2 rounded border border-stone-800 space-y-1.5">
+            <span class="font-mono text-purple-300 block text-[11px]">Opção A:</span>
+            <input type="text" id="inspector-opta" placeholder="Ex: +1 Astúcia" oninput="saveInspectorChanges()" class="w-full bg-stone-900 border border-stone-800 rounded px-2 py-1 text-stone-200">
+          </div>
+
+          <div class="bg-stone-950 p-2 rounded border border-stone-800 space-y-1.5">
+            <span class="font-mono text-purple-300 block text-[11px]">Opção B:</span>
+            <input type="text" id="inspector-optb" placeholder="Ex: +1 Vigor" oninput="saveInspectorChanges()" class="w-full bg-stone-900 border border-stone-800 rounded px-2 py-1 text-stone-200">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="border-t border-stone-800 pt-3">
+        <button onclick="deleteCurrentNode()" class="w-full py-2 bg-red-950/80 hover:bg-red-900 border border-red-700/60 text-red-300 font-cinzel font-bold text-xs rounded transition-all flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-trash-can"></i> Excluir Nó
+        </button>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- MODAL DE IMPORTAÇÃO / EXPORTAÇÃO JSON -->
+  <div id="json-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-parchment-dark gold-border-heavy p-6 rounded-xl w-full max-w-2xl space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-gold-600/40 pb-2">
+        <h3 id="json-modal-title" class="font-cinzel text-gold-400 font-bold text-lg glow-gold flex items-center gap-2">
+          <i class="fa-solid fa-code"></i> Código JSON da Árvore
+        </h3>
+        <button onclick="closeJsonModal()" class="text-stone-400 hover:text-gold-400">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <p id="json-modal-desc" class="text-stone-300 text-xs">
+        Copie o código estruturado abaixo ou cole uma estrutura JSON para carregar no editor.
+      </p>
+
+      <textarea id="json-textarea" rows="12" class="w-full bg-stone-950 border border-stone-800 rounded p-3 font-mono text-xs text-gold-300 focus:outline-none focus:border-gold-500"></textarea>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="closeJsonModal()" class="px-4 py-2 bg-stone-900 border border-stone-700 text-stone-300 text-xs font-cinzel rounded hover:bg-stone-800">
+          Cancelar
+        </button>
+        <button id="json-action-btn" onclick="executeJsonAction()" class="px-5 py-2 bg-gold-700 hover:bg-gold-600 text-stone-950 font-cinzel font-bold text-xs rounded shadow-lg">
+          Ação
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    let treeData = {
+      id: "arvore_ferreiro",
+      nome: "Caminho do Ferreiro",
+      raizAssociada: "Ferreiro",
+      descricao: "Domínio da forja, moldagem de metais e aperfeiçoamento de armas e armaduras.",
+      nos: [
+        {
+          id: "no_1",
+          titulo: "Têmpera Inicial",
+          tipoRecompensa: "habilidade",
+          tipoRamificacao: "livre",
+          limiteNosSecundarios: 1,
+          custoPontos: 1,
+          dominado: true,
+          requisitos: [],
+          conteudo: { descricao: "Permite reparar equipamentos metálicos e reduz penalidades." }
+        },
+        {
+          id: "no_2",
+          titulo: "Marreta & Cadinho",
+          tipoRecompensa: "atributo",
+          tipoRamificacao: "exclusiva",
+          limiteNosSecundarios: 1,
+          custoPontos: 2,
+          dominado: false,
+          requisitos: ["no_1"],
+          opcoesAmbiguas: [
+            { idOpcao: "a", efeito: "+1 Vigor" },
+            { idOpcao: "b", efeito: "+1 Potência" }
+          ],
+          conteudo: { descricao: "Fortalecimento corporal obtido após anos malhando ferro." }
+        },
+        {
+          id: "no_3",
+          titulo: "Conhecimento de Metal",
+          tipoRecompensa: "pericia",
+          tipoRamificacao: "restritiva",
+          limiteNosSecundarios: 2,
+          custoPontos: 2,
+          dominado: false,
+          requisitos: ["no_1"],
+          conteudo: { descricao: "Leitura rápida de ligas e fragilidade de materiais.", bonusPericia: { "Erudição": 1 } }
+        },
+        {
+          id: "no_4",
+          titulo: "Armaria de Guerra",
+          tipoRecompensa: "habilidade",
+          tipoRamificacao: "livre",
+          limiteNosSecundarios: 1,
+          custoPontos: 3,
+          dominado: false,
+          requisitos: ["no_2"],
+          conteudo: { descricao: "Permite forjar lâminas com aprimoramento de dano físico." }
+        },
+        {
+          id: "no_5",
+          titulo: "Forja do Véu",
+          tipoRecompensa: "habilidade",
+          tipoRamificacao: "livre",
+          limiteNosSecundarios: 1,
+          custoPontos: 4,
+          dominado: false,
+          requisitos: ["no_4"],
+          conteudo: { descricao: "Capacidade de infundir metais com liga mística para resistir à corrosão." }
+        }
+      ]
+    };
+
+    let selectedNodeId = null;
+    let jsonModalMode = 'export';
+    let draggedNodeId = null;
+
+    // Zoom & Pan State
+    let currentZoom = 1;
+    let panX = 0;
+    let panY = 0;
+
+    window.onload = function() {
+      loadTreeIntoInputs();
+      renderTreeVisual();
+      setupZoomAndPan();
+      window.addEventListener('resize', drawConnectionLines);
+    };
+
+    function loadTreeIntoInputs() {
+      document.getElementById('tree-name-input').value = treeData.nome || '';
+      document.getElementById('tree-root-input').value = treeData.raizAssociada || '';
+      document.getElementById('tree-desc-input').value = treeData.descricao || '';
+    }
+
+    function updateTreeMeta() {
+      treeData.nome = document.getElementById('tree-name-input').value;
+      treeData.raizAssociada = document.getElementById('tree-root-input').value;
+      treeData.descricao = document.getElementById('tree-desc-input').value;
+    }
+
+    // ZOOM & PAN SYSTEM
+    function setupZoomAndPan() {
+      const wrapper = document.getElementById('tree-canvas-wrapper');
+      const stage = document.getElementById('tree-stage');
+      const zoomDisplay = document.getElementById('canvas-zoom-value');
+
+      function applyTransform() {
+        stage.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+        zoomDisplay.textContent = `${Math.round(currentZoom * 100)}%`;
+      }
+
+      function setZoom(nextZoom, anchorX, anchorY) {
+        const minZoom = 0.25;
+        const maxZoom = 2.5;
+        const newZoom = Math.min(maxZoom, Math.max(minZoom, nextZoom));
+        
+        const rect = wrapper.getBoundingClientRect();
+        const clientX = anchorX ?? (rect.left + rect.width / 2);
+        const clientY = anchorY ?? (rect.top + rect.height / 2);
+
+        const localX = clientX - rect.left;
+        const localY = clientY - rect.top;
+
+        const worldX = (localX - panX) / currentZoom;
+        const worldY = (localY - panY) / currentZoom;
+
+        currentZoom = newZoom;
+        panX = localX - worldX * currentZoom;
+        panY = localY - worldY * currentZoom;
+
+        applyTransform();
+      }
+
+      // Wheel Zoom
+      wrapper.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+        setZoom(currentZoom * factor, e.clientX, e.clientY);
+      }, { passive: false });
+
+      // Drag/Pan
+      let isPanning = false;
+      let startX = 0, startY = 0;
+
+      wrapper.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('.node-card, button, input, textarea, select, a')) return;
+        isPanning = true;
+        startX = e.clientX - panX;
+        startY = e.clientY - panY;
+        wrapper.classList.add('is-panning');
+        wrapper.setPointerCapture(e.pointerId);
+      });
+
+      wrapper.addEventListener('pointermove', (e) => {
+        if (!isPanning) return;
+        panX = e.clientX - startX;
+        panY = e.clientY - startY;
+        applyTransform();
+      });
+
+      const stopPan = () => {
+        isPanning = false;
+        wrapper.classList.remove('is-panning');
+      };
+
+      wrapper.addEventListener('pointerup', stopPan);
+      wrapper.addEventListener('pointercancel', stopPan);
+
+      // Zoom Control Buttons
+      document.getElementById('zoom-in').onclick = () => setZoom(currentZoom * 1.2);
+      document.getElementById('zoom-out').onclick = () => setZoom(currentZoom / 1.2);
+      document.getElementById('zoom-reset').onclick = () => {
+        currentZoom = 1;
+        panX = 0;
+        panY = 0;
+        applyTransform();
+      };
+
+      applyTransform();
+    }
+
+    // LAYOUT DE PROFUNDIDADE DINÂMICA
+    function calculateTreeLayout() {
+      const nodeMap = new Map(treeData.nos.map(n => [n.id, n]));
+      const children = new Map(treeData.nos.map(n => [n.id, []]));
+      const primaryParent = new Map();
+
+      treeData.nos.forEach(node => {
+        const validParents = (node.requisitos || []).filter(id => nodeMap.has(id));
+        if (validParents.length) {
+          primaryParent.set(node.id, validParents[0]);
+          children.get(validParents[0]).push(node);
+        }
+      });
+
+      const roots = treeData.nos.filter(n => !primaryParent.has(n.id));
+      const positions = new Map();
+      const visited = new Set();
+      const cardStep = 230;
+
+      function place(node, depth, cursor) {
+        if (visited.has(node.id)) return cursor;
+        visited.add(node.id);
+        const kids = children.get(node.id) || [];
+        let center;
+
+        if (!kids.length) {
+          center = cursor + cardStep / 2;
+          cursor += cardStep;
+        } else {
+          let childCenters = [];
+          kids.forEach(child => {
+            const result = place(child, depth + 1, cursor);
+            cursor = result.cursor;
+            childCenters.push(result.center);
+          });
+          center = (childCenters[0] + childCenters[childCenters.length - 1]) / 2;
+        }
+
+        positions.set(node.id, { x: center, depth });
+        node._depth = depth;
+        return { cursor, center };
+      }
+
+      let cursor = 0;
+      roots.forEach(root => {
+        const result = place(root, 0, cursor);
+        cursor = result.cursor + cardStep * 0.35;
+      });
+
+      treeData.nos.forEach(node => {
+        if (!visited.has(node.id)) {
+          const result = place(node, 0, cursor);
+          cursor = result.cursor + cardStep * 0.35;
+        }
+      });
+
+      const maxDepth = Math.max(0, ...[...positions.values()].map(p => p.depth));
+      const levels = Array.from({ length: maxDepth + 1 }, () => []);
+      treeData.nos.forEach(node => {
+        const pos = positions.get(node.id);
+        if (pos) levels[pos.depth].push(node);
+      });
+
+      return { positions, levels, width: Math.max(900, cursor), maxDepth };
+    }
+
+    // RENDERIZAÇÃO VISUAL DA ÁRVORE
+    function renderTreeVisual() {
+      const grid = document.getElementById('tree-grid');
+      grid.innerHTML = '';
+
+      const { positions, levels, width, maxDepth } = calculateTreeLayout();
+      grid.style.width = `${width}px`;
+      grid.style.minWidth = `${width}px`;
+
+      for (let depth = maxDepth; depth >= 0; depth--) {
+        const nodesInDepth = levels[depth] || [];
+        const row = document.createElement('div');
+        row.className = 'tree-level relative z-10';
+        row.dataset.depth = depth;
+
+        nodesInDepth.forEach(node => {
+          const isDominated = !!node.dominado;
+          const isAvailable = checkNodeAvailability(node);
+
+          let statusClass = "node-locked";
+          if (isDominated) statusClass = "node-dominated";
+          else if (isAvailable) statusClass = "node-available";
+
+          const card = document.createElement('div');
+          card.id = `card-${node.id}`;
+          card.draggable = true;
+          card.style.left = `${positions.get(node.id).x}px`;
+
+          let typeClass = "type-habilidade";
+          if (node.tipoRecompensa === 'pericia') typeClass = "type-pericia";
+          if (node.tipoRecompensa === 'atributo') typeClass = "type-atributo";
+          if (node.tipoRecompensa === 'ambiguo') typeClass = "type-ambiguo";
+
+          card.className = `node-card p-2.5 rounded-lg border cursor-grab active:cursor-grabbing ${typeClass} ${statusClass} flex flex-col justify-between relative shadow-md`;
+
+          card.ondragstart = (e) => {
+            draggedNodeId = node.id;
+            card.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', node.id);
+          };
+          card.ondragend = () => {
+            card.classList.remove('dragging');
+            draggedNodeId = null;
+            document.querySelectorAll('.node-card').forEach(c => c.classList.remove('drag-over'));
+          };
+          card.ondragover = (e) => {
+            e.preventDefault();
+            if (draggedNodeId && draggedNodeId !== node.id) card.classList.add('drag-over');
+          };
+          card.ondragleave = () => card.classList.remove('drag-over');
+          card.ondrop = (e) => {
+            e.preventDefault();
+            card.classList.remove('drag-over');
+            if (draggedNodeId && draggedNodeId !== node.id) setSingleParent(draggedNodeId, node.id);
+          };
+          card.onclick = () => selectNode(node.id);
+
+          const costBadge = `<span class="absolute -top-2 -right-2 bg-stone-900 text-gold-400 border border-gold-600/60 font-mono text-[10px] font-bold px-1.5 py-0.2 rounded-full shadow">${node.custoPontos || 1} PT</span>`;
+          
+          let branchIndicator = "";
+          if (node.tipoRamificacao === 'exclusiva') {
+            branchIndicator = `<span class="absolute -bottom-2 right-2 bg-red-950 text-red-300 border border-red-700 font-mono text-[9px] px-1 rounded shadow">EXCLUSIVA</span>`;
+          } else if (node.tipoRamificacao === 'restritiva') {
+            branchIndicator = `<span class="absolute -bottom-2 right-2 bg-amber-950 text-amber-300 border border-amber-700 font-mono text-[9px] px-1 rounded shadow">RESTRITA (${node.limiteNosSecundarios || 1})</span>`;
+          }
+
+          let innerContent = '';
+          if (node.tipoRecompensa === 'atributo' || node.tipoRecompensa === 'ambiguo') {
+            const optA = node.opcoesAmbiguas?.[0]?.efeito || '+1 Atributo A';
+            const optB = node.opcoesAmbiguas?.[1]?.efeito || '+1 Atributo B';
+            innerContent = `${costBadge}${branchIndicator}<div class="text-[11px] font-cinzel font-bold text-stone-200 text-center mb-1 truncate">${node.titulo}</div><div class="grid grid-cols-2 gap-1 text-[9px] font-mono font-bold text-center"><span class="bg-purple-950/80 border border-purple-600/50 text-purple-300 py-0.5 px-1 rounded truncate">${optA}</span><span class="bg-purple-950/80 border border-purple-600/50 text-purple-300 py-0.5 px-1 rounded truncate">${optB}</span></div>`;
+          } else if (node.tipoRecompensa === 'pericia') {
+            let periciaTxt = "+1 Perícia";
+            if (node.conteudo?.bonusPericia) {
+              const keys = Object.keys(node.conteudo.bonusPericia);
+              if (keys.length > 0) periciaTxt = `+${node.conteudo.bonusPericia[keys[0]]} ${keys[0]}`;
+            }
+            innerContent = `${costBadge}${branchIndicator}<div class="text-[10px] uppercase font-mono text-sky-400 font-bold">${periciaTxt}</div><div class="text-xs font-cinzel font-bold text-stone-200 truncate">${node.titulo}</div>`;
+          } else {
+            innerContent = `${costBadge}${branchIndicator}<div class="text-xs font-cinzel font-bold text-gold-300 truncate">${node.titulo}</div><div class="text-[10px] text-stone-400 line-clamp-1">${node.conteudo?.descricao || ''}</div>`;
+          }
+
+          card.innerHTML = innerContent;
+          row.appendChild(card);
+        });
+        grid.appendChild(row);
+      }
+
+      const stage = document.getElementById('tree-stage');
+      const wrapper = document.getElementById('tree-canvas-wrapper');
+      stage.style.width = `${Math.max(grid.offsetWidth + 1000, wrapper.clientWidth + 1000)}px`;
+      stage.style.height = `${Math.max(grid.offsetHeight + 1000, wrapper.clientHeight + 1000)}px`;
+
+      setTimeout(drawConnectionLines, 50);
+    }
+
+    function setSingleParent(childId, parentId) {
+      const childNode = treeData.nos.find(n => n.id === childId);
+      if (!childNode) return;
+
+      if (isAncestral(childId, parentId)) {
+        alert("Ação inválida: Um nó não pode se tornar pai do seu próprio ancestral!");
+        return;
+      }
+
+      childNode.requisitos = [parentId];
+      renderTreeVisual();
+      if (selectedNodeId === childId) {
+        selectNode(childId);
+      }
+    }
+
+    function isAncestral(possibleAncestorId, targetNodeId) {
+      const targetNode = treeData.nos.find(n => n.id === targetNodeId);
+      if (!targetNode || !targetNode.requisitos || targetNode.requisitos.length === 0) return false;
+      if (targetNode.requisitos.includes(possibleAncestorId)) return true;
+      return targetNode.requisitos.some(pId => isAncestral(possibleAncestorId, pId));
+    }
+
+    function checkNodeAvailability(node) {
+      if (!node.requisitos || node.requisitos.length === 0) return true;
+      return node.requisitos.every(reqId => {
+        const parent = treeData.nos.find(n => n.id === reqId);
+        return parent && parent.dominado;
+      });
+    }
+
+    function drawConnectionLines() {
+      const svg = document.getElementById('svg-connections');
+      const grid = document.getElementById('tree-grid');
+      if (!svg || !grid) return;
+
+      svg.setAttribute('width', grid.offsetWidth + 1000);
+      svg.setAttribute('height', grid.offsetHeight + 1000);
+      svg.innerHTML = '';
+
+      treeData.nos.forEach(node => {
+        if (!node.requisitos) return;
+        const targetCard = document.getElementById(`card-${node.id}`);
+        if (!targetCard) return;
+
+        node.requisitos.forEach(reqId => {
+          const sourceCard = document.getElementById(`card-${reqId}`);
+          if (!sourceCard) return;
+
+          const sourceRow = sourceCard.parentElement;
+          const targetRow = targetCard.parentElement;
+
+          const x1 = grid.offsetLeft + sourceCard.offsetLeft;
+          const y1 = grid.offsetTop + sourceRow.offsetTop + sourceCard.offsetTop;
+          const x2 = grid.offsetLeft + targetCard.offsetLeft;
+          const y2 = grid.offsetTop + targetRow.offsetTop + targetCard.offsetTop + targetCard.offsetHeight;
+
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          const deltaY = Math.max(24, Math.abs(y2 - y1) / 2);
+          const d = Math.abs(x1 - x2) < 5
+            ? `M ${x1} ${y1} L ${x2} ${y2}`
+            : `M ${x1} ${y1} C ${x1} ${y1 - deltaY}, ${x2} ${y2 + deltaY}, ${x2} ${y2}`;
+
+          const isConnectedActive = node.dominado && treeData.nos.find(n => n.id === reqId)?.dominado;
+          path.setAttribute('d', d);
+          path.setAttribute('stroke', isConnectedActive ? '#f6e05e' : '#3d3326');
+          path.setAttribute('stroke-width', isConnectedActive ? '2.5' : '1.5');
+          path.setAttribute('fill', 'none');
+          if (!isConnectedActive) path.setAttribute('stroke-dasharray', '4');
+          svg.appendChild(path);
+        });
+      });
+    }
+
+    function selectNode(nodeId) {
+      selectedNodeId = nodeId;
+      const node = treeData.nos.find(n => n.id === nodeId);
+      if (!node) return;
+
+      const inspector = document.getElementById('node-inspector');
+      inspector.classList.remove('translate-x-full');
+
+      document.getElementById('inspector-title').value = node.titulo || '';
+      document.getElementById('inspector-cost').value = node.custoPontos || 1;
+      document.getElementById('inspector-type').value = node.tipoRecompensa || 'habilidade';
+      document.getElementById('inspector-branch-type').value = node.tipoRamificacao || 'livre';
+      document.getElementById('inspector-branch-limit').value = node.limiteNosSecundarios || 1;
+      document.getElementById('inspector-desc').value = node.conteudo?.descricao || '';
+      document.getElementById('inspector-calculated-depth').textContent = `Profundidade: Nível ${(node._depth || 0) + 1}`;
+
+      const domBtn = document.getElementById('toggle-dominated-btn');
+      if (node.dominado) {
+        domBtn.textContent = "DOMINADO";
+        domBtn.className = "px-3 py-1.5 rounded font-cinzel text-xs font-bold bg-amber-950 text-gold-300 border-gold-500";
+      } else {
+        domBtn.textContent = "NÃO ADQUIRIDO";
+        domBtn.className = "px-3 py-1.5 rounded font-cinzel text-xs font-bold bg-stone-900 text-stone-400 border-stone-700";
+      }
+
+      onTypeChange();
+      onBranchTypeChange();
+
+      if (node.opcoesAmbiguas && node.opcoesAmbiguas.length >= 2) {
+        document.getElementById('inspector-opta').value = node.opcoesAmbiguas[0].efeito || '';
+        document.getElementById('inspector-optb').value = node.opcoesAmbiguas[1].efeito || '';
+      }
+    }
+
+    function onBranchTypeChange() {
+      const branchType = document.getElementById('inspector-branch-type').value;
+      const limitBox = document.getElementById('inspector-branch-limit-box');
+
+      if (branchType === 'restritiva') {
+        limitBox.classList.remove('hidden');
+      } else {
+        limitBox.classList.add('hidden');
+      }
+      saveInspectorChanges();
+    }
+
+    function onTypeChange() {
+      const type = document.getElementById('inspector-type').value;
+      const ambSection = document.getElementById('inspector-ambiguous-section');
+      
+      if (type === 'atributo' || type === 'ambiguo') {
+        ambSection.classList.remove('hidden');
+      } else {
+        ambSection.classList.add('hidden');
+      }
+      saveInspectorChanges();
+    }
+
+    function saveInspectorChanges() {
+      if (!selectedNodeId) return;
+      const node = treeData.nos.find(n => n.id === selectedNodeId);
+      if (!node) return;
+
+      node.titulo = document.getElementById('inspector-title').value;
+      node.custoPontos = parseInt(document.getElementById('inspector-cost').value) || 1;
+      node.tipoRecompensa = document.getElementById('inspector-type').value;
+      node.tipoRamificacao = document.getElementById('inspector-branch-type').value;
+      node.limiteNosSecundarios = parseInt(document.getElementById('inspector-branch-limit').value) || 1;
+      
+      if (!node.conteudo) node.conteudo = {};
+      node.conteudo.descricao = document.getElementById('inspector-desc').value;
+
+      if (node.tipoRecompensa === 'atributo' || node.tipoRecompensa === 'ambiguo') {
+        node.opcoesAmbiguas = [
+          { idOpcao: 'a', efeito: document.getElementById('inspector-opta').value || '+1 Atributo A' },
+          { idOpcao: 'b', efeito: document.getElementById('inspector-optb').value || '+1 Atributo B' }
+        ];
+      } else {
+        delete node.opcoesAmbiguas;
+      }
+
+      renderTreeVisual();
+    }
+
+    function toggleCurrentNodeDominated() {
+      if (!selectedNodeId) return;
+      const node = treeData.nos.find(n => n.id === selectedNodeId);
+      if (node) {
+        node.dominado = !node.dominado;
+        selectNode(node.id);
+        renderTreeVisual();
+      }
+    }
+
+    function addNewNode() {
+      const newId = `no_${Date.now()}`;
+      const parentId = selectedNodeId || (treeData.nos.length > 0 ? treeData.nos[treeData.nos.length - 1].id : null);
+      
+      const newNode = {
+        id: newId,
+        titulo: "Novo Nó",
+        tipoRecompensa: "habilidade",
+        tipoRamificacao: "livre",
+        limiteNosSecundarios: 1,
+        custoPontos: 1,
+        dominado: false,
+        requisitos: parentId ? [parentId] : [],
+        conteudo: { descricao: "Descrição da habilidade ou benefício." }
+      };
+
+      treeData.nos.push(newNode);
+      renderTreeVisual();
+      selectNode(newId);
+    }
+
+    function deleteCurrentNode() {
+      if (!selectedNodeId) return;
+      treeData.nos = treeData.nos.filter(n => n.id !== selectedNodeId);
+      
+      treeData.nos.forEach(n => {
+        if (n.requisitos) {
+          n.requisitos = n.requisitos.filter(id => id !== selectedNodeId);
+        }
+      });
+
+      closeInspector();
+      renderTreeVisual();
+    }
+
+    function closeInspector() {
+      selectedNodeId = null;
+      document.getElementById('node-inspector').classList.add('translate-x-full');
+    }
+
+    function createNewTree() {
+      treeData = {
+        id: `arvore_${Date.now()}`,
+        nome: "Nova Árvore de Evolução",
+        raizAssociada: "",
+        descricao: "",
+        nos: [
+          {
+            id: `no_inicio_${Date.now()}`,
+            titulo: "Nó Inicial",
+            tipoRecompensa: "habilidade",
+            tipoRamificacao: "livre",
+            limiteNosSecundarios: 1,
+            custoPontos: 1,
+            dominado: false,
+            requisitos: [],
+            conteudo: { descricao: "Efeito inicial da árvore." }
+          }
+        ]
+      };
+      loadTreeIntoInputs();
+      closeInspector();
+      renderTreeVisual();
+    }
+
+    function openJsonModal(mode) {
+      jsonModalMode = mode;
+      const modal = document.getElementById('json-modal');
+      const title = document.getElementById('json-modal-title');
+      const desc = document.getElementById('json-modal-desc');
+      const btn = document.getElementById('json-action-btn');
+      const area = document.getElementById('json-textarea');
+
+      modal.classList.remove('hidden');
+
+      if (mode === 'export') {
+        title.innerHTML = `<i class="fa-solid fa-code text-gold-500"></i> Exportar Código JSON`;
+        desc.textContent = "Copie a estrutura JSON abaixo para utilizar no seu livro de regras ou salvar backup.";
+        area.value = JSON.stringify(treeData, null, 2);
+        btn.textContent = "Copiar Código";
+        btn.className = "px-5 py-2 bg-gold-700 hover:bg-gold-600 text-stone-950 font-cinzel font-bold text-xs rounded shadow-lg";
+      } else {
+        title.innerHTML = `<i class="fa-solid fa-file-import text-sky-400"></i> Importar Estrutura JSON`;
+        desc.textContent = "Cole aqui o código JSON de uma árvore para carregar no visualizador/editor.";
+        area.value = "";
+        btn.textContent = "Carregar Árvore";
+        btn.className = "px-5 py-2 bg-sky-700 hover:bg-sky-600 text-stone-950 font-cinzel font-bold text-xs rounded shadow-lg";
+      }
+    }
+
+    function closeJsonModal() {
+      document.getElementById('json-modal').classList.add('hidden');
+    }
+
+    function executeJsonAction() {
+      const area = document.getElementById('json-textarea');
+      if (jsonModalMode === 'export') {
+        area.select();
+        document.execCommand('copy');
+        alert("Código JSON copiado para a área de transferência!");
+        closeJsonModal();
+      } else {
+        try {
+          const parsed = JSON.parse(area.value);
+          if (parsed && Array.isArray(parsed.nos)) {
+            treeData = parsed;
+            loadTreeIntoInputs();
+            closeInspector();
+            renderTreeVisual();
+            closeJsonModal();
+          } else {
+            alert("Formato de JSON inválido. Certifique-se de incluir a propriedade 'nos'.");
+          }
+        } catch (e) {
+          alert("Erro ao ler JSON: " + e.message);
+        }
+      }
+    }
+  </script>
+</body>
+</html>

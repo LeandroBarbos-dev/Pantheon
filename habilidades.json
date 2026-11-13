@@ -1,0 +1,8 @@
+[
+  { "id": "hab_tronco_calejado", "nome": "Tronco Calejado", "cat": "estatistico", "f": 0, "m": 0, "desc": "Anos de labuta calejaram seus músculos. Soma +6 no HP máximo.", "ef": { "k": "hp", "v": 6 } },
+  { "id": "hab_folego_inabalavel", "nome": "Fôlego Inabalável", "cat": "estatistico", "f": 0, "m": 0, "desc": "Expande a estamina física. Soma +3 no PE-F máximo.", "ef": { "k": "pef", "v": 3 } },
+  { "id": "hab_corte_profundo", "nome": "Corte Profundo", "cat": "ativo", "f": 1, "m": 0, "desc": "Um golpe rasgante. +2 no teste de Luta.", "ef": { "k": "luta", "v": 2 } },
+  { "id": "hab_mira_focada", "nome": "Mira Focada", "cat": "ativo", "f": 0, "m": 1, "desc": "Regula o fôlego antes de disparar. +3 no teste de Pontaria.", "ef": { "k": "pontaria", "v": 3 } },
+  { "id": "hab_aparo_com_cabo", "nome": "Aparo com Cabo", "cat": "reativo", "f": 1, "m": 0, "desc": "Interpõe a ferramenta para absorver o golpe. +2 na Defesa.", "ef": { "k": "defesa", "v": 2 } },
+  { "id": "hab_sutura_emergencia", "nome": "Sutura de Emergência", "cat": "tecnico", "f": 0, "m": 0, "desc": "Permite suturas cirúrgicas de emergência.", "ef": null, "teste": { "nome": "Sutura de Emergência", "attrs": ["erudicao", "destreza"], "per": "Medicina" } }
+]

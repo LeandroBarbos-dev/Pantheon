@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PANTHEON - Livro de Regras do Sistema</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700&family=Faustina:ital,wght@0,400;0,600;1,400&display=swap"
+    rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              300: '#f6e05e',
+              400: '#ecc94b',
+              500: '#d69e2e',
+              600: '#b7791f',
+              700: '#975a16',
+              800: '#744210',
+            },
+            parchment: {
+              light: '#2a2620',
+              DEFAULT: '#1c1917',
+              dark: '#12100e',
+              border: '#3d3326'
+            },
+            veil: {
+              dark: '#090807',
+              purple: '#1a1024',
+              red: '#2b0909'
+            }
+          },
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            decorative: ['Cinzel Decorative', 'serif'],
+            body: ['Faustina', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #090807;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #3d3326;
+      border-radius: 4px;
+      border: 1px solid #b7791f;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #b7791f;
+    }
+
+    body {
+      background-color: #090807;
+      color: #e2d8c3;
+      font-family: 'Faustina', serif;
+      background-image: radial-gradient(circle at 50% 30%, #1a1510 0%, #090807 80%);
+    }
+
+    .font-cinzel {
+      font-family: 'Cinzel', serif;
+    }
+
+    .font-decorative {
+      font-family: 'Cinzel Decorative', serif;
+    }
+
+    /* Ornamental Borders */
+    .gold-border {
+      border: 1px solid #b7791f;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8), 0 0 10px rgba(183, 121, 31, 0.2);
+    }
+
+    .gold-border-heavy {
+      border: 2px solid #d69e2e;
+      outline: 1px solid #3d3326;
+      outline-offset: -5px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9), 0 0 15px rgba(214, 158, 46, 0.25);
+    }
+
+    .glow-gold {
+      text-shadow: 0 0 8px rgba(214, 158, 46, 0.6);
+    }
+
+    .glow-red {
+      text-shadow: 0 0 8px rgba(225, 29, 72, 0.7);
+    }
+
+    /* Tab active styles */
+    .tab-active {
+      background: linear-gradient(180deg, #3d3326 0%, #1c1917 100%);
+      border-color: #d69e2e;
+      color: #f6e05e;
+      box-shadow: 0 -2px 10px rgba(214, 158, 46, 0.2);
+    }
+
+    /* Dice Animation */
+    @keyframes roll {
+      0% {
+        transform: rotate(0deg) scale(0.8);
+      }
+
+      50% {
+        transform: rotate(180deg) scale(1.1);
+      }
+
+      100% {
+        transform: rotate(360deg) scale(1);
+      }
+    }
+
+    .rolling {
+      animation: roll 0.4s ease-in-out infinite;
+    }
+
+    /* Mystical background particles simulation */
+    .mystic-bg {
+      background:
+        radial-gradient(1px 1px at 20px 30px, rgba(214, 158, 46, 0.3), rgba(0, 0, 0, 0)),
+        radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0)),
+        radial-gradient(2px 2px at 90px 40px, rgba(147, 51, 234, 0.2), rgba(0, 0, 0, 0)),
+        radial-gradient(1px 1px at 160px 120px, rgba(214, 158, 46, 0.2), rgba(0, 0, 0, 0));
+      background-repeat: repeat;
+      background-size: 200px 200px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col mystic-bg selection:bg-gold-700 selection:text-white">
+
+  <!-- TOP HEADER -->
+  <header class="border-b-2 border-gold-600/60 bg-parchment-dark/90 sticky top-0 z-40 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
+      <div class="flex items-center space-x-3">
+        <i class="fa-solid fa-ankh text-gold-500 text-3xl glow-gold"></i>
+        <div>
+          <h1 class="font-decorative text-2xl md:text-3xl text-gold-400 tracking-wider glow-gold">PANTHEON</h1>
+          <p class="text-xs text-stone-400 font-cinzel tracking-widest uppercase">Grimório de Regras & Compêndio
+            Mecânico</p>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons 
+      <div class="flex items-center gap-3">
+        <button id="toggle-roller-btn" onclick="toggleDiceRoller()"
+          class="font-cinzel text-xs font-bold px-4 py-2 rounded border border-gold-600/80 bg-gold-900/30 hover:bg-gold-700/50 text-gold-300 hover:text-white transition-all duration-200 flex items-center gap-2 shadow-lg">
+          <i class="fa-solid fa-dice-d20 text-gold-400 text-base"></i>
+          <span>Rolador de Dados</span>
+        </button>
+      </div>-->
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <div class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- NAVIGATION SIDEBAR / TABS (LG screens left col, mobile top) -->
+    <nav class="lg:col-span-3 space-y-2">
+      <div class="bg-parchment gold-border p-3 rounded-lg mb-4">
+        <h2 class="font-cinzel text-xs uppercase text-stone-400 font-semibold tracking-wider px-2 mb-2">
+          Navegação do Codex
+        </h2>
+        <div class="flex flex-col gap-1.5" id="tab-buttons">
+          <button onclick="switchTab('mecanica')" id="tab-btn-mecanica"
+            class="tab-btn text-left px-3 py-2.5 rounded font-cinzel text-sm border border-transparent text-stone-300 hover:text-gold-400 hover:bg-stone-800/50 transition-all flex items-center gap-2.5">
+            <i class="fa-solid fa-scale-balanced w-5 text-center text-gold-500"></i>
+            <span>1. Mecânica Central</span>
+          </button>
+          <button onclick="switchTab('atributos')" id="tab-btn-atributos"
+            class="tab-btn text-left px-3 py-2.5 rounded font-cinzel text-sm border border-transparent text-stone-300 hover:text-gold-400 hover:bg-stone-800/50 transition-all flex items-center gap-2.5">
+            <i class="fa-solid fa-brain w-5 text-center text-gold-500"></i>
+            <span>2. Atributos & Perícias</span>
+          </button>
+          <button onclick="switchTab('formacao')" id="tab-btn-formacao"
+            class="tab-btn text-left px-3 py-2.5 rounded font-cinzel text-sm border border-transparent text-stone-300 hover:text-gold-400 hover:bg-stone-800/50 transition-all flex items-center gap-2.5">
+            <i class="fa-solid fa-seedling w-5 text-center text-gold-500"></i>
+            <span>3. Raiz & Vocação</span>
+          </button>
+          <button onclick="switchTab('veu')" id="tab-btn-veu"
+            class="tab-btn text-left px-3 py-2.5 rounded font-cinzel text-sm border border-transparent text-stone-300 hover:text-gold-400 hover:bg-stone-800/50 transition-all flex items-center gap-2.5">
+            <i class="fa-solid fa-hand-fist w-5 text-center text-gold-500"></i>
+            <span>4. Ações & Combate</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Summary Card -->
+      <div class="bg-parchment-dark gold-border p-4 rounded-lg hidden lg:block text-xs text-stone-400 space-y-2">
+        <h3 class="font-cinzel text-gold-400 text-sm font-semibold flex items-center gap-2">
+          <i class="fa-solid fa-circle-info"></i> Regra de Ouro
+        </h3>
+        <p class="leading-relaxed">
+          Em geral as ações costumam utilizar <strong class="text-stone-200">2 Atributos</strong> (Atributo A + Atributo B). A soma dos
+          dois determina a quantidade de d20s.
+        </p>
+        <p class="leading-relaxed border-t border-stone-800 pt-2">
+          <span class="text-gold-500 font-bold">Soma &gt; 0:</span> Rola N d20s e escolhe o <strong
+            class="text-green-400">MAIOR</strong>.
+          <br>
+          <span class="text-red-400 font-bold">Soma = 0:</span> Rola 2d20 e escolhe o <strong
+            class="text-red-400">MENOR</strong>.
+        </p>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT DISPLAY AREA -->
+    <main class="lg:col-span-9 space-y-6">
+
+      <!-- ================= ABA 1: MECÂNICA CENTRAL ================= -->
+      <section id="sec-mecanica" class="tab-content space-y-6">
+
+        <!-- Intro Banner -->
+        <div class="bg-parchment gold-border-heavy p-6 rounded-lg relative overflow-hidden">
+          <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+            <i class="fa-solid fa-dice-d20 text-9xl text-gold-500"></i>
+          </div>
+          <h2 class="font-cinzel text-2xl font-bold text-gold-400 mb-2 glow-gold flex items-center gap-3">
+            <i class="fa-solid fa-scale-balanced"></i> O Núcleo do Sistema de Testes
+          </h2>
+          <p class="text-stone-300 leading-relaxed max-w-3xl">
+            Em <strong>Pantheon</strong>, a resolução de ações é determinada pela combinação lógica de <strong>Dois
+              Atributos</strong> (Atributo A + Atributo B). A soma das pontuações desses atributos define a quantidade
+            de dados de 20 faces (<span class="text-gold-400 font-mono">d20</span>) rolados no pool do teste.
+          </p>
+        </div>
+
+        <!-- Explicação da Pool de Dados (Soma dos Atributos) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-parchment border gold-border p-5 rounded-lg space-y-3">
+            <div class="flex items-center gap-3 text-gold-400 font-cinzel font-bold text-lg">
+              <div
+                class="w-8 h-8 rounded bg-gold-900/50 border border-gold-500 flex items-center justify-center text-gold-300 font-mono">
+                1+
+              </div>
+              <h3>Pool de Dados (Soma de Atributos > 0)</h3>
+            </div>
+            <p class="text-stone-300 text-sm leading-relaxed">
+              Você rola uma quantidade de dados <strong>d20</strong> igual à <strong>soma dos dois atributos</strong>
+              utilizados na ação. Entre todos os dados sorteados, você escolhe o <strong>MAIOR</strong> resultado.
+            </p>
+            <div class="bg-stone-900 p-3 rounded border border-stone-800 text-xs text-gold-300 font-mono">
+              Resultado Final = Maior d20 + Bônus de Perícia + Modificador Crítico
+            </div>
+          </div>
+
+          <div class="bg-parchment border gold-border p-5 rounded-lg space-y-3">
+            <div class="flex items-center gap-3 text-red-400 font-cinzel font-bold text-lg">
+              <div
+                class="w-8 h-8 rounded bg-red-950 border border-red-600 flex items-center justify-center text-red-300 font-mono">
+                0
+              </div>
+              <h3>Deficiência (Soma de Atributos = 0)</h3>
+            </div>
+            <p class="text-stone-300 text-sm leading-relaxed">
+              Caso a soma dos dois atributos envolvidos na ação seja <strong>0</strong>, a ação é executada em
+              desvantagem crítica por falta total de capacidade natural.
+            </p>
+            <div class="bg-stone-900 p-3 rounded border border-red-900/40 text-xs text-red-300 font-mono">
+              Resultado Final = Rola 2d20 e seleciona obrigatoriamente o MENOR dado.
+            </div>
+          </div>
+        </div>
+
+        <!-- Acertos Críticos e Modificador Crítico -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-4">
+          <div class="border-b border-gold-600/40 pb-2">
+            <h3 class="font-cinzel text-lg text-gold-400 font-bold flex items-center gap-2 glow-gold">
+              <i class="fa-solid fa-sparkles text-gold-500"></i> Modificador Crítico Acumulativo (±2)
+            </h3>
+            <p class="text-xs text-stone-400">
+              Resultados extremos nos dados geram flutuações de desempenho que alteram a pontuação final da rolagem.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div class="p-3 bg-stone-950 rounded border-l-4 border-emerald-500 space-y-1">
+              <h4 class="font-bold text-emerald-400 font-cinzel flex items-center justify-between">
+                <span>Resultado 20 Natural</span>
+                <span
+                  class="font-mono text-emerald-300 text-xs bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-700">+2
+                  / dado</span>
+              </h4>
+              <p class="text-stone-300 text-xs">
+                Cada valor <strong>20</strong> obtido em qualquer d20 do pool acrescenta <strong>+2</strong> ao
+                Modificador Crítico final. Ocorre em múltiplas instâncias no mesmo teste.
+              </p>
+            </div>
+
+            <div class="p-3 bg-stone-950 rounded border-l-4 border-red-500 space-y-1">
+              <h4 class="font-bold text-red-400 font-cinzel flex items-center justify-between">
+                <span>Resultado 1 Natural</span>
+                <span class="font-mono text-red-300 text-xs bg-red-950/80 px-2 py-0.5 rounded border border-red-700">-2
+                  / dado</span>
+              </h4>
+              <p class="text-stone-300 text-xs">
+                Cada valor <strong>1</strong> obtido em qualquer d20 do pool acrescenta <strong>-2</strong> ao
+                Modificador Crítico final. Reduz o desempenho geral da ação.
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="bg-stone-900/90 p-3.5 rounded border border-gold-600/30 text-xs text-stone-300 space-y-1 font-mono">
+            <div class="text-gold-400 font-bold">Fórmula de Cálculo Líquido:</div>
+            <div>Modificador Crítico = (Quantidade de 20s × 2) - (Quantidade de 1s × 2)</div>
+            <div class="text-[11px] text-stone-400 pt-1 border-t border-stone-800 font-body">
+              * <strong>Efeito de Dano Crítico em Ataques:</strong> Em testes de ataque, se o resultado final superou a
+              DT do alvo <strong>E</strong> o Modificador Crítico líquido for positivo (&gt; 0), o efeito extra de dano
+              crítico é aplicado.
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabela Progressiva de Dificuldades (DT) -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-4">
+          <div class="border-b border-gold-600/40 pb-2 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div>
+              <h3 class="font-cinzel text-lg text-gold-400 font-bold flex items-center gap-2">
+                <i class="fa-solid fa-bullseye text-gold-500"></i> Tabela Progressiva de Dificuldades (DT)
+              </h3>
+              <p class="text-xs text-stone-400">Valores de referência para o Mestre balancear desafios por etapa de
+                evolução.</p>
+            </div>
+            <span class="text-xs text-stone-400 font-mono">Resolução: Teste ≥ DT = Sucesso</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-stone-300 border-collapse">
+              <thead>
+                <tr class="border-b border-gold-600/40 font-cinzel text-gold-300 text-xs uppercase bg-stone-950/60">
+                  <th class="py-3 px-4">Dificuldade</th>
+                  <th class="py-3 px-4 text-center">Inicial (2d20 +2)</th>
+                  <th class="py-3 px-4 text-center">Inic. Avançado (3d20 +3)</th>
+                  <th class="py-3 px-4 text-center">Intermediário (4d20 +4)</th>
+                  <th class="py-3 px-4 text-center">Avançado (6d20 +6)</th>
+                  <th class="py-3 px-4 text-center">Lenda (7d20 +7)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-800/60 font-mono text-xs">
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-emerald-400 font-body">Fácil</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">9</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">13</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">16</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">20</td>
+                  <td class="py-2.5 px-4 text-center text-gold-400">21</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-sky-400 font-body">Moderada</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">13</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">16</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">19</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">22</td>
+                  <td class="py-2.5 px-4 text-center text-gold-400">23</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-amber-400 font-body">Desafiadora</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">17</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">20</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">21</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">24</td>
+                  <td class="py-2.5 px-4 text-center text-gold-400">26</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-orange-400 font-body">Difícil</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">20</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">22</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">24</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">26</td>
+                  <td class="py-2.5 px-4 text-center text-gold-400">28</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-red-400 font-body">Extrema</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">22</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">24</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">25</td>
+                  <td class="py-2.5 px-4 text-center text-stone-300">29</td>
+                  <td class="py-2.5 px-4 text-center text-gold-400 font-bold">30</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tabela Explicativa de Combinações de Atributos -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <h3 class="font-cinzel text-lg text-gold-400 font-bold flex items-center gap-2">
+              <i class="fa-solid fa-list-check"></i> Exemplo de Rolagens & Combinações de Atributos
+            </h3>
+            <span class="text-xs text-stone-400 font-mono">Qtd de d20s = Atributo A + Atributo B</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-stone-300 border-collapse">
+              <thead>
+                <tr class="border-b border-gold-600/40 font-cinzel text-gold-300 text-xs uppercase bg-stone-950/60">
+                  <th class="py-3 px-4">Categoria</th>
+                  <th class="py-3 px-4">Ação / Aferição</th>
+                  <th class="py-3 px-4">Combinação de Atributos</th>
+                  <th class="py-3 px-4">Lógica Mecânica</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-800/60">
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-red-400 text-xs">Combate</td>
+                  <td class="py-2.5 px-4 font-semibold text-stone-200">Ataque Corpo a Corpo (Luta)</td>
+                  <td class="py-2.5 px-4 font-mono text-gold-300 text-xs">Potência + Destreza</td>
+                  <td class="py-2.5 px-4 text-xs">Soma dos dois atributos para o pool de d20s + bônus da perícia Luta.
+                  </td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-red-400 text-xs">Combate</td>
+                  <td class="py-2.5 px-4 font-semibold text-stone-200">Ataque Bruto / Esmagar</td>
+                  <td class="py-2.5 px-4 font-mono text-gold-300 text-xs">Potência + Vigor</td>
+                  <td class="py-2.5 px-4 text-xs">Força física bruta aliada à sustentação corporal para golpear.</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-red-400 text-xs">Defesa</td>
+                  <td class="py-2.5 px-4 font-semibold text-stone-200">Defender / Aparar Golpe</td>
+                  <td class="py-2.5 px-4 font-mono text-gold-300 text-xs">Vigor + Percepção</td>
+                  <td class="py-2.5 px-4 text-xs">Resistência física para absorver impacto combinada com a leitura rápida do ataque.</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-red-400 text-xs">Defesa</td>
+                  <td class="py-2.5 px-4 font-semibold text-stone-200">Esquivar de Ataque</td>
+                  <td class="py-2.5 px-4 font-mono text-gold-300 text-xs">Destreza + Percepção</td>
+                  <td class="py-2.5 px-4 text-xs">Reflexos ágeis alinhados à atenção dos movimentos do oponente.</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-sky-400 text-xs">Distância</td>
+                  <td class="py-2.5 px-4 font-semibold text-stone-200">Atirar (Arco / Besta / Fogo)</td>
+                  <td class="py-2.5 px-4 font-mono text-gold-300 text-xs">Destreza + Percepção</td>
+                  <td class="py-2.5 px-4 text-xs">Mira precisa e leitura instantânea de trajetória, alvo e vento.</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-emerald-400 text-xs">Exploração</td>
+                  <td class="py-2.5 px-4 font-semibold text-stone-200">Furtividade & Ocultação</td>
+                  <td class="py-2.5 px-4 font-mono text-gold-300 text-xs">Destreza + Percepção</td>
+                  <td class="py-2.5 px-4 text-xs">Mover-se em silêncio notando e aproveitando os pontos cegos do ambiente.</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-emerald-400 text-xs">Exploração</td>
+                  <td class="py-2.5 px-4 font-semibold text-stone-200">Perceber Perigo / Armadilha</td>
+                  <td class="py-2.5 px-4 font-mono text-gold-300 text-xs">Percepção + Destreza</td>
+                  <td class="py-2.5 px-4 text-xs">Instinto ambiental apurado com capacidade de reação corporal imediata.</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-purple-400 text-xs">Mental</td>
+                  <td class="py-2.5 px-4 font-semibold text-stone-200">Investigar Pistas / Cena</td>
+                  <td class="py-2.5 px-4 font-mono text-gold-300 text-xs">Erudição + Percepção</td>
+                  <td class="py-2.5 px-4 text-xs">Análise técnica e deduções lógicas cruzadas com observação detalhada.</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-amber-400 text-xs">Social</td>
+                  <td class="py-2.5 px-4 font-semibold text-stone-200">Persuasão & Negociação</td>
+                  <td class="py-2.5 px-4 font-mono text-gold-300 text-xs">Autoridade + Percepção</td>
+                  <td class="py-2.5 px-4 text-xs">Imposição de presença social combinada com a leitura emocional do interlocutor.</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-amber-400 text-xs">Social</td>
+                  <td class="py-2.5 px-4 font-semibold text-stone-200">Intimidação Moral</td>
+                  <td class="py-2.5 px-4 font-mono text-gold-300 text-xs">Autoridade + Ímpeto</td>
+                  <td class="py-2.5 px-4 text-xs">Projeção da firmeza da alma e imposição de comando sobre o oponente.</td>
+                </tr>
+                <tr class="hover:bg-stone-900/40">
+                  <td class="py-2.5 px-4 font-bold text-indigo-400 text-xs">Espiritual</td>
+                  <td class="py-2.5 px-4 font-semibold text-stone-200">Resistir ao Pânico / Medo</td>
+                  <td class="py-2.5 px-4 font-mono text-gold-300 text-xs">Ímpeto + Vigor</td>
+                  <td class="py-2.5 px-4 text-xs">Força de vontade mental (SAN) temperada por resiliência física.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- ================= SEÇÃO: SISTEMA DE DESCANSO & RECUPERAÇÃO ================= -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-5">
+
+          <!-- Header da Seção -->
+          <div class="border-b border-gold-600/40 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div>
+              <h3 class="font-cinzel text-lg text-gold-400 font-bold flex items-center gap-2 glow-gold">
+                <i class="fa-solid fa-campground text-gold-500"></i> Sistema de Descanso & Recuperação
+              </h3>
+              <p class="text-xs text-stone-400">
+                Regras para restauração de fôlego corporal, estamina mental, saúde física e alívio de traumas.
+              </p>
+            </div>
+            <span class="text-xs text-stone-400 font-mono">Gestão de Sobrevivência</span>
+          </div>
+
+          <!-- Cards dos 3 Tipos de Descanso -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+
+            <!-- Pausa Curta -->
+            <div class="bg-stone-950/90 border border-amber-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center gap-2 border-b border-stone-800 pb-2">
+                <div class="w-7 h-7 rounded bg-amber-950 border border-amber-600 flex items-center justify-center text-amber-400 text-xs">
+                  <i class="fa-solid fa-clock"></i>
+                </div>
+                <h4 class="font-cinzel font-bold text-amber-400 text-xs">1. Pausa Curta (15–30 min)</h4>
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Pausa rápida fora de combate para reorganizar equipamento e estancar ferimentos superficiais.
+              </p>
+              <div class="space-y-1.5 border-t border-stone-900 pt-2 text-[11px]">
+                <div class="bg-stone-900 p-2 rounded border border-stone-800 space-y-1">
+                  <strong class="text-emerald-400 font-cinzel block text-[10px]">Com Ração / Água:</strong>
+                  <div class="text-stone-300">• <strong>PE-F:</strong> Recupera <span class="text-gold-400 font-mono font-bold">1d6 + Vigor</span></div>
+                  <div class="text-stone-300">• <strong>PE-M:</strong> Recupera <span class="text-sky-400 font-mono font-bold">1d6 + Ímpeto</span></div>
+                </div>
+                <div class="bg-stone-900 p-2 rounded border border-stone-800 space-y-1">
+                  <strong class="text-amber-400 font-cinzel block text-[10px]">Sem Ração / Água:</strong>
+                  <div class="text-stone-300">• <strong>PE-F:</strong> Recupera <span class="text-gold-400 font-mono font-bold">1d4</span></div>
+                  <div class="text-stone-300">• <strong>PE-M:</strong> Recupera <span class="text-sky-400 font-mono font-bold">1d4</span></div>
+                </div>
+                <p class="text-stone-500 text-[10px] italic">
+                  *Não cura HP nem SAN sem auxílio médico ou espiritual.
+                </p>
+              </div>
+            </div>
+
+            <!-- Descanso Longo -->
+            <div class="bg-stone-950/90 border border-sky-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center gap-2 border-b border-stone-800 pb-2">
+                <div class="w-7 h-7 rounded bg-sky-950 border border-sky-600 flex items-center justify-center text-sky-400 text-xs">
+                  <i class="fa-solid fa-bed"></i>
+                </div>
+                <h4 class="font-cinzel font-bold text-sky-400 text-xs">2. Descanso Longo (8 Horas)</h4>
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Noite inteira de sono contínuo (mínimo de 6h de sono real) em local seguro ou acampamento.
+              </p>
+              <ul class="text-stone-300 space-y-1 border-t border-stone-900 pt-2 text-[11px]">
+                <li><strong class="text-sky-300">Esforço:</strong> Restaura <span class="text-gold-400 font-bold">100% do PE-F e PE-M</span>.</li>
+                <li><strong class="text-red-400">HP (Seguro / Estalagem):</strong> Recupera <span class="text-gold-400 font-mono font-bold">1d6 + (Vigor × 2)</span>.</li>
+                <li><strong class="text-amber-400">HP (Inóspito / Precário):</strong> Recupera <span class="text-gold-400 font-mono font-bold">1d4 + Vigor</span>.</li>
+                <li><strong class="text-purple-400">SAN:</strong> Recupera <span class="text-purple-300 font-mono font-bold">1 + Ímpeto</span> (ou <span class="text-purple-300 font-mono font-bold">1 + [Ímpeto × 2]</span> se houver conforto e refeição).</li>
+              </ul>
+            </div>
+
+            <!-- Sono Interrompido -->
+            <div class="bg-stone-950/90 border border-red-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center gap-2 border-b border-stone-800 pb-2">
+                <div class="w-7 h-7 rounded bg-red-950 border border-red-600 flex items-center justify-center text-red-400 text-xs">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h4 class="font-cinzel font-bold text-red-400 text-xs">3. Sono Parcial (4–6h)</h4>
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Acampamento emboscado, perigo iminente ou turnos de vigília sob extrema ameaça.
+              </p>
+              <ul class="text-stone-300 space-y-1 border-t border-stone-900 pt-2 text-[11px]">
+                <li><strong class="text-amber-400">Esforço:</strong> Restaura apenas <span class="text-gold-400 font-bold">metade do PE-F e PE-M</span>.</li>
+                <li><strong class="text-red-400">HP:</strong> Restaura apenas <span class="text-gold-400 font-mono font-bold">1d6 HP</span>.</li>
+                <li><strong class="text-purple-400">SAN:</strong> <span class="text-red-400 font-bold">Não recupera Sanidade</span>.</li>
+                <li><strong class="text-stone-300">Resistência:</strong> Exige teste de <span class="text-gold-300">Ímpeto + Vigor (DT 13)</span> para não acionar a condição <em class="text-amber-400">Cansado</em> (-1 em rolagens físicas).</li>
+              </ul>
+            </div>
+
+          </div>
+
+          <!-- Seção de Medicina & Socorros -->
+          <div class="space-y-4 pt-2 border-t border-stone-800">
+            <h4 class="font-cinzel text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-user-nurse"></i> Medicina & Cura de Campo
+            </h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+
+              <!-- Estabilização & Cura em Combate -->
+              <div class="bg-stone-950 p-4 rounded border border-stone-800 space-y-2.5">
+                <h5 class="font-cinzel font-bold text-amber-400 text-xs flex items-center gap-1.5">
+                  <i class="fa-solid fa-heart-pulse"></i> 1. Primeiros Socorros em Combate
+                </h5>
+
+                <div class="space-y-1 border-b border-stone-900 pb-2">
+                  <strong class="text-stone-200 font-cinzel text-[11px] block">Estabilização (0 HP / Morrendo):</strong>
+                  <p class="text-stone-400 text-[11px] leading-relaxed">
+                    Exige o gasto de 1 uso de item de cura (Kit, Bandagem ou Improviso).
+                  </p>
+                  <ul class="text-stone-300 text-[11px] space-y-0.5 list-disc list-inside">
+                    <li><strong class="text-emerald-400">Com Habilidade Medicina:</strong> Teste de Erudição + Destreza + Medicina contra <span class="text-gold-400 font-mono font-bold">DT 14</span> (Gasta 1 Ação Principal).</li>
+                    <li><strong class="text-red-400">Sem Habilidade Medicina:</strong> Teste de Erudição + Destreza + Medicina contra <span class="text-gold-400 font-mono font-bold">DT 17</span> (Gasta 2 Ações / Turno Inteiro).</li>
+                  </ul>
+                  <p class="text-stone-400 text-[10px] italic pt-0.5">
+                    *Tira do risco de morte imediata e deixa o alvo com 1 HP inconsciente. A estabilização dura apenas até o término do combate; sem atendimento urgente após a luta, o aliado pode falecer.
+                  </p>
+                </div>
+
+                <div class="space-y-1">
+                  <strong class="text-stone-200 font-cinzel text-[11px] block">Cura Tática em Combate:</strong>
+                  <p class="text-stone-400 text-[11px] leading-relaxed">
+                    Gasta 1 uso de Kit ou Bandagem durante o confronto (Erudição + Destreza + Medicina):
+                  </p>
+                  <ul class="text-stone-300 text-[11px] space-y-0.5 list-disc list-inside">
+                    <li><strong class="text-red-400">Resultado &lt; DT 15:</strong> Falha na aplicação.</li>
+                    <li><strong class="text-amber-300">Resultado ≥ DT 15:</strong> Cura <span class="text-gold-400 font-mono">Bônus do Item / 2</span> em HP.</li>
+                    <li><strong class="text-emerald-300">Resultado ≥ DT 18:</strong> Cura <span class="text-gold-400 font-mono">(Bônus do Item / 2) + Erudição</span> em HP.</li>
+                    <li><strong class="text-gold-300">20 Natural (Crítico):</strong> Cura <span class="text-gold-400 font-mono">(Bônus do Item / 2) + 1d4 + Erudição</span> em HP.</li>
+                  </ul>
+                  <p class="text-emerald-400 text-[10px] font-bold pt-0.5">
+                    ✓ Efeito Secundário: Estanca imediatamente a condição Sangrando.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Curativo de Campo & Suprimentos -->
+              <div class="bg-stone-950 p-4 rounded border border-stone-800 space-y-2.5">
+                <h5 class="font-cinzel font-bold text-emerald-400 text-xs flex items-center gap-1.5">
+                  <i class="fa-solid fa-kit-medical"></i> 2. Curativo de Campo (Pós-Combate)
+                </h5>
+
+                <div class="space-y-1">
+                  <p class="text-stone-400 text-[11px] leading-relaxed">
+                    Tratamento calmo de ferimentos (10 minutos por paciente). Teste de Erudição + Destreza + Medicina:
+                  </p>
+                  <ul class="text-stone-300 text-[11px] space-y-0.5 list-disc list-inside">
+                    <li><strong class="text-red-400">Resultado &lt; DT 14:</strong> Falha.</li>
+                    <li><strong class="text-amber-300">Resultado ≥ DT 14:</strong> Cura <span class="text-gold-400 font-mono">100% do Bônus do Item</span> em HP.</li>
+                    <li><strong class="text-emerald-300">Resultado ≥ DT 18:</strong> Cura <span class="text-gold-400 font-mono">Bônus do Item + Erudição</span> em HP.</li>
+                    <li><strong class="text-gold-300">20 Natural (Crítico):</strong> Cura <span class="text-gold-400 font-mono">Bônus do Item + 2d4 + Erudição</span> em HP e anula uma sequela temporária (Atordoado/Cansado).</li>
+                  </ul>
+                </div>
+
+                <!-- Tabela de Suprimentos -->
+                <div class="bg-stone-900 p-2.5 rounded border border-stone-800 space-y-1.5 text-[11px] border-t border-stone-800">
+                  <strong class="text-gold-300 font-cinzel block text-[10px] uppercase tracking-wider">Propriedades dos Itens Médicos:</strong>
+                  <ul class="space-y-1 text-stone-300 text-[11px]">
+                    <li>
+                      <strong class="text-gold-400">Kit Médico:</strong> Exige Habilidade de Medicina. Concede <span class="text-emerald-400 font-bold">+2 no teste</span> e cura <span class="text-gold-300 font-mono">2d8 HP</span> (<span class="text-emerald-400 font-bold">+4 no teste</span> em estabilização).
+                    </li>
+                    <li>
+                      <strong class="text-gold-400">Bandagem:</strong> Não exige habilidade. Cura <span class="text-gold-300 font-mono">2d4 HP</span> (<span class="text-emerald-400 font-bold">+2 no teste</span> em estabilização).
+                    </li>
+                    <li>
+                      <strong class="text-gold-400">Item Improvisado:</strong> Não exige habilidade. Cura <span class="text-gold-300 font-mono">1d4 HP</span> (somente se tiver Habilidade em Medicina; leigos não curam HP no improviso, apenas realizam a rolagem de estabilização sem bônus).
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Tratamento Mental & Alívio de Trauma -->
+          <div class="bg-stone-950 p-4 rounded border border-purple-900/50 space-y-2 text-xs">
+            <h4 class="font-cinzel font-bold text-purple-400 text-xs flex items-center gap-2">
+              <i class="fa-solid fa-comments text-purple-400"></i> Tratamento Mental & Alívio de Trauma (SAN)
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
+              <div class="bg-stone-900/60 p-2.5 rounded border border-purple-900/30 space-y-1">
+                <strong class="text-purple-300 font-cinzel block">1. Apoio Moral (Interlúdio / Descanso)</strong>
+                <p class="text-stone-300">
+                  Um aliado dedica tempo conversando e consolando o personagem. Rola <strong>Autoridade + Percepção</strong> (Perícia <em>Intuição</em> ou <em>Vontade</em>).
+                </p>
+                <div class="text-emerald-400 font-mono">
+                  Sucesso: Recupera 1d4 + Autoridade do Orador em SAN.
+                </div>
+              </div>
+
+              <div class="bg-stone-900/60 p-2.5 rounded border border-purple-900/30 space-y-1">
+                <strong class="text-purple-300 font-cinzel block">2. Itens de Conforto & Vícios</strong>
+                <p class="text-stone-300">
+                  • <strong>Bebida Quente / Comida Predileta:</strong> Restaura <span class="text-purple-300 font-mono">+1d4 SAN</span> durante o descanso.
+                  <br>• <strong>Cigarro / Estimulante Forte:</strong> Restaura <span class="text-purple-300 font-mono">1d6 SAN ou PE-M</span> imediatamente, mas causa a perda do mesmo valor em HP.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= ABA 2: ATRIBUTOS E PERÍCIAS ================= -->
+      <section id="sec-atributos" class="tab-content hidden space-y-6">
+
+        <!-- Header -->
+        <div class="bg-parchment gold-border p-5 rounded-lg">
+          <h2 class="font-cinzel text-xl font-bold text-gold-400 mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-brain"></i> Os Três Pilares da Existência
+          </h2>
+          <p class="text-stone-300 text-sm">
+            Os atributos medem a constituição natural, capacidade intelectual e a chama espiritual do seu personagem.
+            Cada atributo varia naturalmente de <strong>0 a 4</strong>.
+          </p>
+        </div>
+
+       <!-- Três Pilares de Atributos -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+          <!-- MENTE -->
+          <div class="bg-stone-950/90 gold-border p-4 rounded-lg space-y-3">
+            <div class="border-b border-gold-600/40 pb-2">
+              <span class="font-cinzel text-xs text-stone-400 uppercase tracking-widest">Pilar Intelectual</span>
+              <h3 class="font-cinzel text-lg font-bold text-sky-400 flex items-center gap-2">
+                <i class="fa-solid fa-book-bookmark"></i> MENTE
+              </h3>
+            </div>
+            <ul class="space-y-3 text-xs">
+              <li class="bg-stone-900 p-2.5 rounded border border-stone-800">
+                <strong class="text-gold-300 block font-cinzel text-sm">Percepção</strong>
+                <span class="text-stone-300">Atenção aos detalhes, instinto tático, consciência ambiental, visão/audição e leitura de campo.</span>
+              </li>
+              <li class="bg-stone-900 p-2.5 rounded border border-stone-800">
+                <strong class="text-gold-300 block font-cinzel text-sm">Erudição</strong>
+                <span class="text-stone-300">Aprendizado formal, memória técnica, dedução lógica, medicina, análise de mecanismos e sigilos.</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- CORPO -->
+          <div class="bg-stone-950/90 gold-border p-4 rounded-lg space-y-3">
+            <div class="border-b border-gold-600/40 pb-2">
+              <span class="font-cinzel text-xs text-stone-400 uppercase tracking-widest">Pilar Físico</span>
+              <h3 class="font-cinzel text-lg font-bold text-red-400 flex items-center gap-2">
+                <i class="fa-solid fa-child-reaching"></i> CORPO
+              </h3>
+            </div>
+            <ul class="space-y-3 text-xs">
+              <li class="bg-stone-900 p-2.5 rounded border border-stone-800">
+                <strong class="text-gold-300 block font-cinzel text-sm">Potência</strong>
+                <span class="text-stone-300">Força bruta e capacidade de causar impacto. Usado em golpes corporais, arrombamento e carga.</span>
+              </li>
+              <li class="bg-stone-900 p-2.5 rounded border border-stone-800">
+                <strong class="text-gold-300 block font-cinzel text-sm">Vigor</strong>
+                <span class="text-stone-300">Resistência física, estamina, resiliência biológica e tolerância a ferimentos e fadiga.</span>
+              </li>
+              <li class="bg-stone-900 p-2.5 rounded border border-stone-800">
+                <strong class="text-gold-300 block font-cinzel text-sm">Destreza</strong>
+                <span class="text-stone-300">Coordenação motora, agilidade, reflexos corporais, furtividade e precisão fina com mãos e armas.</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- ALMA -->
+          <div class="bg-stone-950/90 gold-border p-4 rounded-lg space-y-3">
+            <div class="border-b border-gold-600/40 pb-2">
+              <span class="font-cinzel text-xs text-stone-400 uppercase tracking-widest">Pilar Espiritual</span>
+              <h3 class="font-cinzel text-lg font-bold text-purple-400 flex items-center gap-2">
+                <i class="fa-solid fa-ankh"></i> ALMA
+              </h3>
+            </div>
+            <ul class="space-y-3 text-xs">
+              <li class="bg-stone-900 p-2.5 rounded border border-stone-800">
+                <strong class="text-gold-300 block font-cinzel text-sm">Autoridade</strong>
+                <span class="text-stone-300">Projeção exterior da alma: presença social, liderança, lábia, persuasão, diplomacia e imponência.</span>
+              </li>
+              <li class="bg-stone-900 p-2.5 rounded border border-stone-800">
+                <strong class="text-gold-300 block font-cinzel text-sm">Ímpeto</strong>
+                <span class="text-stone-300">Força interior da alma: manutenção da Sanidade (SAN), convicção mística e firmeza contra o pânico.</span>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- ================= SEÇÃO: PROGRESSÃO & LIMITES DE ATRIBUTOS ================= -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-5">
+
+          <!-- Header da Seção -->
+          <div class="border-b border-gold-600/40 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div>
+              <h3 class="font-cinzel text-lg font-bold text-gold-400 flex items-center gap-2 glow-gold">
+                <i class="fa-solid fa-layer-group text-gold-500"></i> Limites & Progressão de Atributos
+              </h3>
+              <p class="text-xs text-stone-400">
+                O desenvolvimento do personagem é travado por etapas biológicas e espirituais. O teto máximo de qualquer atributo e perícia expande conforme ele amadurece e se expõe ao mundo.
+              </p>
+            </div>
+            <span class="text-xs text-stone-400 font-mono">Desenvolvimento Biológico</span>
+          </div>
+
+          <!-- Cards dos Estágios de Atributos -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+            <!-- ESTÁGIO 1: INFÂNCIA -->
+            <div class="bg-stone-950/90 border border-stone-800 p-4 rounded-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+                <h4 class="font-cinzel font-bold text-stone-300 text-sm">1. Criação (Infância)</h4>
+                <span class="px-2 py-0.5 rounded bg-stone-900 border border-gold-600/40 text-gold-400 font-mono text-xs font-bold">TETO: 2</span>
+              </div>
+              <p class="text-stone-400 text-[11px] leading-relaxed">
+                Na infância, o corpo e a mente ainda estão em desenvolvimento. Nenhum atributo pode ultrapassar o valor <strong>2</strong> durante a distribuição inicial.
+              </p>
+            </div>
+
+            <!-- ESTÁGIO 2: DESENVOLVIMENTO DA RAIZ -->
+            <div class="bg-stone-950/90 border border-amber-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+                <h4 class="font-cinzel font-bold text-amber-400 text-sm">2. Evolução da Raiz</h4>
+                <span class="px-2 py-0.5 rounded bg-amber-950 border border-amber-600 text-amber-300 font-mono text-xs font-bold">TETO: 3</span>
+              </div>
+              <p class="text-stone-400 text-[11px] leading-relaxed">
+                Ao avançar na Árvore de Raiz e conquistar o aprendizado do ofício familiar, o limite máximo de atributos expande para <strong>3</strong>.
+              </p>
+            </div>
+
+            <!-- ESTÁGIO 3: FASE ADULTA -->
+            <div class="bg-stone-950/90 border border-gold-600/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+                <h4 class="font-cinzel font-bold text-gold-400 text-sm">3. Fase Adulta (Vocação)</h4>
+                <span class="px-2 py-0.5 rounded bg-gold-950 border border-gold-400 text-gold-300 font-mono text-xs font-bold">TETO: 4</span>
+              </div>
+              <p class="text-stone-400 text-[11px] leading-relaxed">
+                Ao ingressar na Vocação adulta, o personagem atinge o ápice mortal padrão, liberando o limite natural absoluto de até <strong>4</strong> pontos.
+              </p>
+            </div>
+
+            <!-- ESTÁGIO 4: SUPERATIVAÇÃO MÍSTICA -->
+            <div class="bg-stone-950/90 border border-purple-900/80 p-4 rounded-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+                <h4 class="font-cinzel font-bold text-purple-400 text-sm">4. Transgressão Mística</h4>
+                <span class="px-2 py-0.5 rounded bg-purple-950 border border-purple-500 text-purple-300 font-mono text-xs font-bold">TETO: 5+</span>
+              </div>
+              <p class="text-stone-400 text-[11px] leading-relaxed">
+                Poderes arcanos, marcas do Véu Negro, rituais proibidos ou pactos de Equivalência permitem <strong>quebrar o limite mortal</strong> de 4.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- BLOCO INTEGRADO: REGRA DE PERÍCIAS & CONVERSÃO -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+
+            <!-- Limites de Perícia por Estágio -->
+            <div class="bg-stone-950 p-4 rounded border border-gold-600/40 space-y-2">
+              <h4 class="font-cinzel font-bold text-gold-300 text-xs flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-gold-500"></i> Tetos Máximos de Perícia
+              </h4>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Para manter a relevância da rolagem dos dados e evitar a inflação de bônus, as Perícias possuem tetos de desenvolvimento travados por fase biológica:
+              </p>
+              <ul class="text-stone-300 space-y-1.5 list-disc list-inside text-[11px]">
+                <li><strong>Cap na Infância / Raiz:</strong> Bônus máximo de <strong class="text-amber-400">+7</strong> em qualquer perícia individual.</li>
+                <li><strong>Cap na Fase Adulta / Vocação:</strong> Bônus máximo de <strong class="text-gold-400">+10</strong> em qualquer perícia (Teto Absoluto Mortal).</li>
+              </ul>
+            </div>
+
+            <!-- Mecânica de Conversão -->
+            <div class="bg-stone-950 p-4 rounded border border-emerald-900/60 space-y-2">
+              <h4 class="font-cinzel font-bold text-emerald-400 text-xs flex items-center gap-2">
+                <i class="fa-solid fa-arrow-rotate-right text-emerald-500"></i> Conversão de Maestria em Atributo
+              </h4>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                O acúmulo extremo de prática em um ofício expande a própria biologia ou capacidade mental do personagem:
+              </p>
+              <ul class="text-stone-300 space-y-1.5 list-disc list-inside text-[11px]">
+                <li><strong class="text-emerald-300">Taxa de Conversão:</strong> O jogador pode sacrificar <strong>5 Pontos de Perícia</strong> para adquirir <strong>+1 Ponto de Atributo relacionado</strong>.</li>
+                <li><strong>Respeito ao Teto:</strong> A conversão não permite ultrapassar o Teto de Atributo da fase biológica atual.</li>
+              </ul>
+            </div>
+
+          </div>
+
+          <!-- Detalhamento de Quebra Mística -->
+          <div class="bg-stone-950 p-3.5 rounded border border-purple-900/40 text-xs space-y-1.5">
+            <div class="font-cinzel font-bold text-purple-300 flex items-center gap-2">
+              <i class="fa-solid fa-skull text-purple-400"></i> Mecânica de Quebra de Limite (Transgressão)
+            </div>
+            <p class="text-stone-300 text-[11px] leading-relaxed">
+              Ultrapassar o valor 4 em qualquer atributo não é algo humano. Para subir um atributo para 5 ou mais, o personagem deve adquirir um <em>Estigma do Véu</em>, uma <em>Dádiva dos Tronos</em> ou pagar um <strong>Preço Vitalício de Equivalência</strong> (como perda permanente de SAN, mutação somática ou um sacrifício físico).
+            </p>
+          </div>
+
+        </div>
+
+        <!-- ================= SEÇÃO: ESTATÍSTICAS DE SOBREVIVÊNCIA (HP, SAN, PE-F, PE-M) ================= -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-5">
+
+          <!-- Header da Seção -->
+          <div class="border-b border-gold-600/40 pb-3">
+            <h3 class="font-cinzel text-lg font-bold text-gold-400 flex items-center gap-2 glow-gold">
+              <i class="fa-solid fa-chart-simple text-gold-500"></i> Estatísticas de Sobrevivência
+            </h3>
+            <p class="text-xs text-stone-400">
+              Os limites físicos, energéticos e mentais calculados a partir dos seus atributos e ajustados pela sua Raiz.
+            </p>
+          </div>
+
+          <!-- Cards das 4 Estatísticas (HP, SAN, PE-F, PE-M) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+            <!-- CARD HP -->
+            <div class="bg-stone-950/90 border border-red-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center gap-2 border-b border-stone-800 pb-2">
+                <div class="w-7 h-7 rounded bg-red-950 border border-red-600 flex items-center justify-center text-red-400 text-xs">
+                  <i class="fa-solid fa-droplet"></i>
+                </div>
+                <h4 class="font-cinzel font-bold text-red-400 text-xs">Pontos de Vida (HP)</h4>
+              </div>
+              <div class="bg-stone-900 p-2 rounded border border-red-900/30 text-center font-mono text-gold-400 text-[11px] font-bold">
+                10 + (Vigor × 3) + Raiz
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Resistência física, vigor corporal e capacidade de absorver impactos e ferimentos antes de cair.
+              </p>
+            </div>
+
+            <!-- CARD SAN -->
+            <div class="bg-stone-950/90 border border-purple-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center gap-2 border-b border-stone-800 pb-2">
+                <div class="w-7 h-7 rounded bg-purple-950 border border-purple-600 flex items-center justify-center text-purple-400 text-xs">
+                  <i class="fa-solid fa-brain"></i>
+                </div>
+                <h4 class="font-cinzel font-bold text-purple-400 text-xs">Sanidade (SAN)</h4>
+              </div>
+              <div class="bg-stone-900 p-2 rounded border border-purple-900/30 text-center font-mono text-gold-400 text-[11px] font-bold">
+                10 + (Ímpeto × 3) + Raiz
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Firmeza mental e resiliência espiritual contra o Pânico, dogmas opressores e o horror do Véu Negro.
+              </p>
+            </div>
+
+            <!-- CARD PE-FÍSICO -->
+            <div class="bg-stone-950/90 border border-amber-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center gap-2 border-b border-stone-800 pb-2">
+                <div class="w-7 h-7 rounded bg-amber-950 border border-amber-600 flex items-center justify-center text-amber-400 text-xs">
+                  <i class="fa-solid fa-person-running"></i>
+                </div>
+                <h4 class="font-cinzel font-bold text-amber-400 text-xs">Esforço Físico (PE-F)</h4>
+              </div>
+              <div class="bg-stone-900 p-2 rounded border border-amber-900/30 text-center font-mono text-gold-400 text-[11px] font-bold">
+                5 + Destreza + Vigor + Raiz
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Estamina corporal usada para Reações Complexas, manobras físicas e esquivas.
+              </p>
+            </div>
+
+            <!-- CARD PE-MENTAL -->
+            <div class="bg-stone-950/90 border border-sky-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center gap-2 border-b border-stone-800 pb-2">
+                <div class="w-7 h-7 rounded bg-sky-950 border border-sky-600 flex items-center justify-center text-sky-400 text-xs">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <h4 class="font-cinzel font-bold text-sky-400 text-xs">Esforço Mental (PE-M)</h4>
+              </div>
+              <div class="bg-stone-900 p-2 rounded border border-sky-900/30 text-center font-mono text-gold-400 text-[11px] font-bold">
+                5 + Ímpeto + Erudição + Raiz
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Foco mental e energia mística para conjurar e sustentar poderes paranormais e rituais.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Aviso de Herança & Órfão -->
+          <div class="bg-stone-950 p-3.5 rounded border border-gold-600/40 text-xs space-y-1.5">
+            <div class="font-cinzel font-bold text-gold-300 flex items-center gap-2">
+              <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Regras Importantes de Aplicação
+            </div>
+            <ul class="text-stone-300 space-y-1 list-disc list-inside text-[11px]">
+              <li><strong>Escolha de Raiz Principal:</strong> Se o personagem possuir <em>Raiz Dupla</em> ou <em>Herança Singular</em>, escolha apenas <strong>1 Raiz Principal</strong> para fornecer a base dos recursos.</li>
+              <li><strong>Condição de Órfão (Autodidata):</strong> Não possui bônus de profissão familiar, mas recebe modificador fixo de <span class="text-emerald-400 font-bold">+2 HP</span> | <span class="text-amber-400 font-bold">+2 PE-F</span> | <span class="text-sky-400 font-bold">+2 PE-M</span> | <span class="text-red-400 font-bold">-2 SAN</span> e <strong class="text-gold-300">+1 Ponto de Atributo Livre</strong> na criação.</li>
+            </ul>
+          </div>
+
+          <!-- Tabela de Bônus por Raiz -->
+          <div class="space-y-2 pt-1">
+            <h4 class="font-cinzel text-xs font-bold text-stone-300 uppercase tracking-wider">
+              Tabela de Modificadores por Raiz / Profissão
+            </h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-stone-300 border-collapse">
+                <thead>
+                  <tr class="border-b border-gold-600/40 font-cinzel text-gold-300 text-[11px] uppercase bg-stone-950/80">
+                    <th class="py-2.5 px-3">Raiz / Profissão</th>
+                    <th class="py-2.5 px-3 text-center text-red-400">HP</th>
+                    <th class="py-2.5 px-3 text-center text-purple-400">SAN</th>
+                    <th class="py-2.5 px-3 text-center text-amber-400">PE-F</th>
+                    <th class="py-2.5 px-3 text-center text-sky-400">PE-M</th>
+                    <th class="py-2.5 px-3">Foco Narrativo</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-stone-800/60 bg-stone-950/40">
+                  <tr class="hover:bg-stone-900/40">
+                    <td class="py-2 px-3 font-bold text-stone-200">Lenhador</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+6</td>
+                    <td class="py-2 px-3 text-center font-mono text-stone-500">+0</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono text-stone-500">+0</td>
+                    <td class="py-2 px-3 text-stone-400 text-[11px]">Resistência corporal calejada pelo trabalho pesado.</td>
+                  </tr>
+                  <tr class="hover:bg-stone-900/40">
+                    <td class="py-2 px-3 font-bold text-stone-200">Ferreiro</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+4</td>
+                    <td class="py-2 px-3 text-center font-mono text-stone-500">+0</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-stone-400 text-[11px]">Força física combinada à disciplina de forja.</td>
+                  </tr>
+                  <tr class="hover:bg-stone-900/40">
+                    <td class="py-2 px-3 font-bold text-stone-200">Guarda / Vigia</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+4</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono text-stone-500">+0</td>
+                    <td class="py-2 px-3 text-stone-400 text-[11px]">Patrulha constante e preparo mental para a vigília.</td>
+                  </tr>
+                  <tr class="hover:bg-stone-900/40">
+                    <td class="py-2 px-3 font-bold text-stone-200">Caçador</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono text-stone-500">+0</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+4</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-stone-400 text-[11px]">Agilidade e reflexos apurados na mata.</td>
+                  </tr>
+                  <tr class="hover:bg-stone-900/40">
+                    <td class="py-2 px-3 font-bold text-stone-200">Carpinteiro</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono text-stone-500">+0</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+4</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-stone-400 text-[11px]">Foco técnico e precisão sob esforço contínuo.</td>
+                  </tr>
+                  <tr class="hover:bg-stone-900/40">
+                    <td class="py-2 px-3 font-bold text-stone-200">Cozinheiro / Padeiro</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-stone-400 text-[11px]">Equilíbrio físico e convívio social constante.</td>
+                  </tr>
+                  <tr class="hover:bg-stone-900/40">
+                    <td class="py-2 px-3 font-bold text-stone-200">Pastor / Criador</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+4</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono text-stone-500">+0</td>
+                    <td class="py-2 px-3 text-stone-400 text-[11px]">Paciência no isolamento e força de vontade.</td>
+                  </tr>
+                  <tr class="hover:bg-stone-900/40">
+                    <td class="py-2 px-3 font-bold text-stone-200">Mercador</td>
+                    <td class="py-2 px-3 text-center font-mono text-stone-500">+0</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+4</td>
+                    <td class="py-2 px-3 text-stone-400 text-[11px]">Lábia rápida e leitura perspicaz de pessoas.</td>
+                  </tr>
+                  <tr class="hover:bg-stone-900/40">
+                    <td class="py-2 px-3 font-bold text-stone-200">Curandeiro</td>
+                    <td class="py-2 px-3 text-center font-mono text-stone-500">+0</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+4</td>
+                    <td class="py-2 px-3 text-center font-mono text-stone-500">+0</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+4</td>
+                    <td class="py-2 px-3 text-stone-400 text-[11px]">Controle emocional e preparo contra o sofrimento.</td>
+                  </tr>
+                  <tr class="hover:bg-stone-900/40">
+                    <td class="py-2 px-3 font-bold text-stone-200">Escriba / Devoto</td>
+                    <td class="py-2 px-3 text-center font-mono text-stone-500">+0</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+6</td>
+                    <td class="py-2 px-3 text-center font-mono text-stone-500">+0</td>
+                    <td class="py-2 px-3 text-center font-mono font-bold text-gold-400">+2</td>
+                    <td class="py-2 px-3 text-stone-400 text-[11px]">Fervor doutrinário e proteção espiritual contra a dúvida.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+        <!-- BUSCADOR DE PERÍCIAS -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+            <div>
+              <h3 class="font-cinzel text-lg font-bold text-gold-400">Compêndio de Perícias</h3>
+              <p class="text-xs text-stone-400">Filtre ou busque pericias disponíveis para montagem do personagem.</p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <div class="relative">
+                <input type="text" id="skill-search" oninput="filterSkills()" placeholder="Buscar perícia..."
+                  class="bg-stone-950 border border-stone-700 rounded px-3 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-gold-500 w-40 sm:w-48 pl-8">
+                <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-stone-500 text-xs"></i>
+              </div>
+              <select id="skill-category" onchange="filterSkills()"
+                class="bg-stone-950 border border-stone-700 rounded px-3 py-1.5 text-xs text-gold-400 focus:outline-none focus:border-gold-500">
+                <option value="all">Todas Categorias</option>
+                <option value="Sobrevivência">Sobrevivência / Campo</option>
+                <option value="Combate">Combate</option>
+                <option value="Conhecimento">Conhecimento</option>
+                <option value="Técnica">Técnica / Trabalho</option>
+                <option value="Social">Social / Psicológico</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Cards de Perícias -->
+          <div id="skills-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <!-- Inserido dinamicamente via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= ABA 3: RAIZ & VOCAÇÃO ================= -->
+      <section id="sec-formacao" class="tab-content hidden space-y-6">
+
+        <!-- Concept Header -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-3">
+          <h2 class="font-cinzel text-xl font-bold text-gold-400 flex items-center gap-2">
+            <i class="fa-solid fa-tree"></i> Sistema de Raiz & Vocação
+          </h2>
+          <p class="text-stone-300 text-sm leading-relaxed">
+            Em <strong>Pantheon</strong>, a formação de um indivíduo não vem de "classes abstratas", mas da vivência
+            real, trabalho duro na infância (<strong>Raiz</strong>) e das escolhas da vida adulta
+            (<strong>Vocação</strong>).
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div class="bg-stone-950/80 p-4 rounded border border-amber-900/40 space-y-2">
+              <h3 class="font-cinzel font-bold text-amber-400 text-base flex items-center gap-2">
+                <i class="fa-solid fa-seedling"></i> 1. A Raiz (Infância & Herança)
+              </h3>
+              <p class="text-stone-300 text-xs leading-relaxed">
+                Representa os aprendizados práticos adquiridos ajudando a família na juventude. Concede <strong>
+                  Perícias Básicas</strong> e <strong>uma árvore de evolução própria</strong>.
+              </p>
+            </div>
+
+            <div class="bg-stone-950/80 p-4 rounded border border-gold-600/40 space-y-2">
+              <h3 class="font-cinzel font-bold text-gold-400 text-base flex items-center gap-2">
+                <i class="fa-solid fa-user-shield"></i> 2. A Vocação (Vida Adulta)
+              </h3>
+              <p class="text-stone-300 text-xs leading-relaxed">
+                O caminho especializado assumido na maturidade. Concede <strong>3 Perícias Avançadas</strong> e
+                <strong>1 Habilidade Ativa de Vocação</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Condição Familiar / Heranças -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-4">
+          <h3 class="font-cinzel text-lg font-bold text-gold-400 flex items-center gap-2">
+            <i class="fa-solid fa-people-roof"></i> Condições Familiares de Raiz
+          </h3>
+          <p class="text-xs text-stone-400">A estrutura familiar de onde o personagem surgiu altera como sua Raiz é
+            distribuída:</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+
+            <div class="bg-stone-950 p-4 rounded border border-stone-800 space-y-1.5">
+              <span class="font-cinzel font-bold text-gold-300 text-sm block">1. Raiz Singular (Aprendizado
+                Misto)</span>
+              <p class="text-stone-300">Você aprendeu com ambos os pais em áreas distintas. Formação versátil.</p>
+              <div class="text-gold-500 font-mono text-[11px] pt-1">
+                Perícias: +2 em duas principais, +1 em uma secundária, +1 em mundo.
+              </div>
+            </div>
+
+            <div class="bg-stone-950 p-4 rounded border border-stone-800 space-y-1.5">
+              <span class="font-cinzel font-bold text-gold-300 text-sm block">2. Herança Singular (Foco Único)</span>
+              <p class="text-stone-300">Treinado exclusivamente por um único mestre ou pai especialista.</p>
+              <div class="text-gold-500 font-mono text-[11px] pt-1">
+                Perícias: +3 principal A, +2 principal B, +2 em uma secundária, +2 mundo. Habilidade inicial mais forte.
+              </div>
+            </div>
+
+            <div class="bg-stone-950 p-4 rounded border border-stone-800 space-y-1.5">
+              <span class="font-cinzel font-bold text-gold-300 text-sm block">3. Raiz Dupla (Tradição Familiar)</span>
+              <p class="text-stone-300">Ambos os pais exerciam a mesma profissão. Foco total em uma especialidade.</p>
+              <div class="text-gold-500 font-mono text-[11px] pt-1">
+                Perícias: +2 em duas principais, +1 nas duas secundárias, +1 em mundo. Permite explorar completamente ramificações restritas.
+              </div>
+            </div>
+
+            <div class="bg-stone-950 p-4 rounded border border-stone-800 space-y-1.5">
+              <span class="font-cinzel font-bold text-red-400 text-sm block">4. Autodidata (Órfão)</span>
+              <p class="text-stone-300">Sem aprendizado familiar. Cresceu sobrevivendo nas ruas ou no improviso.</p>
+              <div class="text-red-400 font-mono text-[11px] pt-1">
+                Fixos: Sobrevivência +2, Atletismo +2, Reflexo +2, Intuição +2. +2 Passatempos Extras.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 10 Profissões Base -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-4">
+          <h3 class="font-cinzel text-lg font-bold text-gold-400 flex items-center gap-2">
+            <i class="fa-solid fa-briefcase"></i> As 10 Profissões de Formação
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="jobs-container">
+            <!-- Renderizado via JS -->
+          </div>
+        </div>
+
+        <!-- 24 Passatempos da Infância -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center">
+            <h3 class="font-cinzel text-lg font-bold text-gold-400 flex items-center gap-2">
+              <i class="fa-solid fa-dice-three"></i> 24 Passatempos Infantis (Bônus de Perícia)
+            </h3>
+            <span class="text-xs text-stone-400 font-mono">1 Focado (+2) + 1 Misto (+1/+1) por personagem</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3" id="hobbies-container">
+            <!-- Renderizado via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= ABA 4: AÇÕES & COMBATE ================= -->
+      <section id="sec-veu" class="tab-content hidden space-y-6">
+
+        <!-- Intro Banner -->
+        <div class="bg-parchment gold-border-heavy p-6 rounded-lg relative overflow-hidden">
+          <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+            <i class="fa-solid fa-swords text-9xl text-gold-500"></i>
+          </div>
+          <h2 class="font-cinzel text-2xl font-bold text-gold-400 mb-2 glow-gold flex items-center gap-3">
+            <i class="fa-solid fa-shield-halved"></i> Economia de Combate & Manobras Táticas
+          </h2>
+          <p class="text-stone-300 leading-relaxed max-w-3xl">
+            O confronto físico em <strong>Pantheon</strong> é dinâmico, visceral e estratégico. A sobrevivência depende
+            da gestão inteligente de suas ações no turno, do domínio do ritmo de reações e da coordenação tática entre
+            aliados.
+          </p>
+        </div>
+
+        <!-- 1. Economia de Turno & Reações -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <!-- Tipos de Ações -->
+          <div class="bg-parchment border gold-border p-5 rounded-lg space-y-3">
+            <h3 class="font-cinzel text-base text-gold-400 font-bold flex items-center gap-2">
+              <i class="fa-solid fa-hourglass-half"></i> Economia de Ações (Seu Turno)
+            </h3>
+            <ul class="text-xs text-stone-300 space-y-2">
+              <li class="bg-stone-950 p-2.5 rounded border border-stone-800">
+                <strong class="text-gold-300 font-cinzel text-sm block">1. Ação Principal</strong>
+                Ação primária da rodada: realizar um ataque, conjurar uma habilidade/ritual, curar um aliado ou
+                interagir com mecanismos complexos.
+              </li>
+              <li class="bg-stone-950 p-2.5 rounded border border-stone-800">
+                <strong class="text-gold-300 font-cinzel text-sm block">2. Ação de Movimento</strong>
+                Deslocamento corporal. Padrão de 6 metros se realizar uma Ação Principal, ou 9 metros se usar o turno
+                exclusivamente para correr.
+              </li>
+              <li class="bg-stone-950 p-2.5 rounded border border-stone-800">
+                <strong class="text-gold-300 font-cinzel text-sm block">3. Ação Livre / Bônus</strong>
+                Gestos rápidos: falar frases curtas, soltar um objeto mantido na mão ou sacar uma arma equipada em
+                bandoleira rápida.
+              </li>
+            </ul>
+          </div>
+
+          <!-- Sistema de Reações -->
+          <div class="bg-parchment border gold-border p-5 rounded-lg space-y-3">
+            <h3 class="font-cinzel text-base text-gold-400 font-bold flex items-center gap-2">
+              <i class="fa-solid fa-bolt"></i> Sistema de Reações (Fora do Turno)
+            </h3>
+            <div class="space-y-2 text-xs">
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800">
+                <div class="flex justify-between items-center mb-1">
+                  <strong class="text-emerald-400 font-cinzel text-sm">Reação Básica</strong>
+                  <span
+                    class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono text-[10px]">2
+                    Gratuitas / Rodada</span>
+                </div>
+                <p class="text-stone-300">Respostas reflexivas e ágeis. Utilizada principalmente para <strong>Esquivar
+                    (Desviar)</strong> de ataques corporais ou projéteis lentos.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800">
+                <div class="flex justify-between items-center mb-1">
+                  <strong class="text-amber-400 font-cinzel text-sm">Reação Complexa</strong>
+                  <span
+                    class="px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800 font-mono text-[10px]">1
+                    Gratuita / Rodada</span>
+                </div>
+                <p class="text-stone-300">Ações de alto impacto ou esforço físico. Utilizada para <strong>Bloquear /
+                    Aparar</strong> com armas ou escudos, contra-atacar ou posturas defensivas.</p>
+              </div>
+
+              <div class="bg-stone-900/80 p-2.5 rounded border border-red-900/40 text-stone-300">
+                <strong class="text-red-400 font-cinzel block text-xs">Custo de Reações Extras:</strong>
+                Caso exceda suas reações gratuitas na mesma rodada, cada reação adicional exige o gasto de <strong>1 PE
+                  (Ponto de Esforço)</strong> ou impõe <strong>-2 cumulativo</strong> em todos os testes de reação
+                seguintes.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 2. Resolução de Defesa (GD) & Esquiva vs. Bloqueio -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-4">
+          <div class="border-b border-gold-600/40 pb-2 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div>
+              <h3 class="font-cinzel text-lg text-gold-400 font-bold flex items-center gap-2">
+                <i class="fa-solid fa-shield-cat"></i> Resolução de Ataque vs. Defesa
+              </h3>
+              <p class="text-xs text-stone-400">Como o confronto físico e a proteção de equipamentos são calculados.</p>
+            </div>
+            <span class="text-xs text-stone-400 font-mono">Bônus de Equipamento = GD × 2 / GA × 2</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+
+            <!-- Bloquear / Aparar -->
+            <div class="bg-stone-950 p-4 rounded border border-stone-800 space-y-2">
+              <h4 class="font-cinzel font-bold text-gold-300 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-shield-blank text-gold-500"></i> Bloquear / Aparar (Reação Complexa)
+              </h4>
+              <p class="text-stone-300 leading-relaxed">
+                Utiliza a estrutura de um escudo ou a lâmina de uma arma para absorver ou desviar a força do golpe.
+              </p>
+              <div class="bg-stone-900 p-2 rounded font-mono text-gold-400 text-[11px]">
+                Teste de Defesa = Maior d20(Vigor+Astúcia) + Defesa + (GD × 2)
+              </div>
+              <ul class="text-stone-400 space-y-1 list-disc list-inside text-[11px]">
+                <li><strong class="text-emerald-400">Defesa Completa (Resultado ≥ Ataque):</strong> Anula 100% do dano.
+                </li>
+                <li><strong class="text-amber-400">Defesa Parcial (Ataque - 4 ≤ Resultado &lt; Ataque):</strong> Reduz o
+                  dano pela metade (50%).</li>
+                <li><strong class="text-red-400">Falha na Defesa (Resultado &lt; Ataque - 5):</strong> Sofre 100% do
+                  dano integral.</li>
+              </ul>
+            </div>
+
+            <!-- Esquivar / Desviar -->
+            <div class="bg-stone-950 p-4 rounded border border-stone-800 space-y-2">
+              <h4 class="font-cinzel font-bold text-sky-400 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-person-running text-sky-500"></i> Esquivar / Desviar (Reação Básica)
+              </h4>
+              <p class="text-stone-300 leading-relaxed">
+                Utiliza agilidade pura e reflexos para sair da trajetória do ataque sem contato físico direto.
+              </p>
+              <div class="bg-stone-900 p-2 rounded font-mono text-sky-300 text-[11px]">
+                Teste de Esquiva = Maior d20 (Destreza + Astúcia) + Reflexo
+              </div>
+              <ul class="text-stone-400 space-y-1 list-disc list-inside text-[11px]">
+                <li><strong class="text-emerald-400">Sucesso (Resultado ≥ Ataque):</strong> Anula 100% do dano e de
+                  efeitos secundários.</li>
+                <li><strong class="text-red-400">Falha (Resultado &lt; Ataque):</strong> Não há meio-termo na esquiva;
+                  sofre 100% do dano.</li>
+                <li><strong class="text-amber-400">Armas de longo alcance:</strong> Só é possível esquivar se o atacante tirar
+                  menos de 15 no dado puro.</li>
+              </ul>
+            </div>
+
+          </div>
+          <!-- Contra-Ataque (Reação Complexa) -->
+          <div class="bg-stone-950 p-4 rounded border border-amber-900/50 space-y-2">
+            <div class="flex justify-between items-center">
+
+              <span
+                class="px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800 font-mono text-[10px]">1
+                PE + Reação Complexa</span>
+            </div>
+            <p class="text-stone-300 text-xs leading-relaxed">
+              Ao ser alvo de um ataque corpo a corpo, você pode declarar um <strong>Contra-Ataque</strong> instintivo
+              antes do atacante rolar o dano. Em vez de apenas bloquear, você busca desviar a arma inimiga e responder
+              com um golpe imediato.
+            </p>
+            <div class="bg-stone-900 p-2 rounded font-mono text-amber-300 text-[11px]">
+              Você deve fazer o teste normal de defesa ou esquiva
+            </div>
+            <ul class="text-stone-400 space-y-1 list-disc list-inside text-[11px]">
+              <li><strong class="text-emerald-400">Sucesso Absoluto (Seu Resultado ≥ Ataque Inimigo + 2):</strong> Você
+                anula 100% do dano do ataque sofrido e realiza um <strong>ataque de resposta imediato</strong> contra o
+                agressor com a sua arma equipada.</li>
+
+              <li><strong class="text-red-400">Falha (Seu Resultado &lt; Ataque Inimigo+2):</strong> Sua guarda fica
+                totalmente aberta; você sofre <strong>100% do dano integral</strong> do ataque inimigo e não realiza o
+                contra-golpe.</li>
+            </ul>
+          </div>
+        </div>
+
+       <!-- 3. Sistema de Combos -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-4">
+          <div class="border-b border-gold-600/40 pb-2 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div>
+              <h3 class="font-cinzel text-lg text-gold-400 font-bold flex items-center gap-2 glow-gold">
+                <i class="fa-solid fa-users-gear text-gold-500"></i> Sistema de Combos & Táticas em Grupo
+              </h3>
+              <p class="text-xs text-stone-400">Ações coordenadas entre dois ou mais combatentes. A falha pode gerar riscos severos ao grupo.</p>
+            </div>
+            <span class="text-xs text-stone-400 font-mono">Fidelidade Regras Caminhantes</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            
+            <!-- 1. Ataque em Sequência -->
+            <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-1.5">
+              <strong class="text-gold-300 block font-cinzel text-sm">1. Ataque em Sequência</strong>
+              <p class="text-stone-400">2+ aliados com o mesmo alvo, agindo em ordem seguida na iniciativa.</p>
+              <div class="text-gold-500 font-mono text-[11px]">
+                <strong>Efeito:</strong> Cada acerto dá +1 acumulativo no teste do próximo aliado.<br>
+                <strong>Risco:</strong> Se um errar, quebra a sequência e o alvo ganha +2 para reagir contra a investida.
+              </div>
+            </div>
+
+            <!-- 2. Golpe Sincronizado -->
+            <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-1.5">
+              <strong class="text-gold-300 block font-cinzel text-sm">2. Golpe Sincronizado</strong>
+              <p class="text-stone-400">2 aliados, um deles realizando um teste de Tática (DT 17).</p>
+              <div class="text-gold-500 font-mono text-[11px]">
+                <strong>Efeito:</strong> Ajusta a iniciativa para agir logo após e ambos recebem +1d6 de dano.<br>
+                <strong>Risco:</strong> Ações fora do plano exigem novo teste para manter o bônus.
+              </div>
+            </div>
+
+            <!-- 3. Ataque Concentrado -->
+            <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-1.5">
+              <strong class="text-gold-300 block font-cinzel text-sm">3. Ataque Concentrado</strong>
+              <p class="text-stone-400">3+ aliados declaram ataque ao mesmo alvo antes de rolar dados.</p>
+              <div class="text-gold-500 font-mono text-[11px]">
+                <strong>Efeito:</strong> +2 no acerto a partir do primeiro golpe conectado e +50% de dano total somado.<br>
+                <strong>Risco:</strong> Se a maioria errar, o último fica Exposto (-2 GD, -5 Reflexo).
+              </div>
+            </div>
+
+            <!-- 4. Compensação de Erro -->
+            <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-1.5">
+              <strong class="text-gold-300 block font-cinzel text-sm">4. Compensação de Erro</strong>
+              <p class="text-stone-400">Se um aliado próximo errar, o outro usa 1 Reação Complexa.</p>
+              <div class="text-gold-500 font-mono text-[11px]">
+                <strong>Efeito:</strong> Realiza um ataque imediato de compensação com +2 no teste.<br>
+                <strong>Risco:</strong> Se errar, o inimigo ganha +2 no ataque contra ele no próximo turno.
+              </div>
+            </div>
+
+            <!-- 5. Engano Forçado -->
+            <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-1.5">
+              <strong class="text-gold-300 block font-cinzel text-sm">5. Engano Forçado</strong>
+              <p class="text-stone-400">O primeiro aliado faz um ataque "falso" e rola Tática para distrair.</p>
+              <div class="text-gold-500 font-mono text-[11px]">
+                <strong>Efeito:</strong> O segundo aliado recebe -3 na margem necessária para Acerto Crítico.<br>
+                <strong>Risco:</strong> Se o teste de Tática falhar, o alvo não é distraído e o bônus é anulado.
+              </div>
+            </div>
+
+            <!-- 6. Flanqueamento -->
+            <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-1.5">
+              <strong class="text-gold-300 block font-cinzel text-sm">6. Flanqueamento</strong>
+              <p class="text-stone-400">2+ aliados em posições exatamente opostas em relação ao alvo.</p>
+              <div class="text-gold-500 font-mono text-[11px]">
+                <strong>Efeito:</strong> Concede bônus fixo de +3 no teste de ataque para ambos.<br>
+                <strong>Risco:</strong> Se um aliado sair da posição antes de atacar, o bônus se perde.
+              </div>
+            </div>
+
+            <!-- 7. Ataque Perfeito -->
+            <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-1.5">
+              <strong class="text-gold-300 block font-cinzel text-sm">7. Ataque Perfeito</strong>
+              <p class="text-stone-400">Participantes realizam teste de Destreza + Atletismo/Luta (DT 13).</p>
+              <div class="text-gold-500 font-mono text-[11px]">
+                <strong>Efeito:</strong> Se todos acertarem, inimigos pequenos/médios ficam imobilizados.<br>
+                <strong>Risco:</strong> Se alguém falhar, não imobiliza e o grupo fica com -2 em Defesa.
+              </div>
+            </div>
+
+            <!-- 8. Proteção Cruzada -->
+            <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-1.5">
+              <strong class="text-gold-300 block font-cinzel text-sm">8. Proteção Cruzada</strong>
+              <p class="text-stone-400">2 ou 3 aliados próximos (um com GD ≥ 2) gastam 1 Reação Complexa.</p>
+              <div class="text-gold-500 font-mono text-[11px]">
+                <strong>Efeito:</strong> Usa o maior GD do grupo +2 por integrante no teste de defesa.<br>
+                <strong>Risco:</strong> Se falharem no teste, todos os defensores recebem o dano.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 4. Sistema de Ocupar um Inimigo -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-4">
+          <div class="border-b border-gold-600/40 pb-2 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div>
+              <h3 class="font-cinzel text-lg text-gold-400 font-bold flex items-center gap-2 glow-gold">
+                <i class="fa-solid fa-handshake-slash text-amber-500"></i> Mecânica de Ocupar um Inimigo
+              </h3>
+              <p class="text-xs text-stone-400">Manter um alvo preso em combate para proteger aliados. Durante a ocupação, todos os ocupadores causam metade do dano (50%).</p>
+            </div>
+            <span class="text-xs text-stone-400 font-mono">Foco: Controle Tático</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            
+            <!-- Ocupação Individual & Grupo -->
+            <div class="bg-stone-950 p-4 rounded border border-stone-800 space-y-2">
+              <h4 class="font-cinzel font-bold text-amber-400 text-sm">1. Ocupação Individual & em Grupo</h4>
+              <p class="text-stone-300">
+                <strong>Distância:</strong> Manter-se dentro de até metade do seu raio de ataque do alvo.
+              </p>
+              <p class="text-stone-300">
+                <strong>Teste Inicial:</strong> Fazer um teste de <strong>Tática</strong> contra a DT do alvo. No grupo, pelo menos metade dos participantes deve passar no teste (DT menor que individual).
+              </p>
+              <p class="text-stone-300">
+                <strong>Manutenção:</strong> Os ocupadores só podem realizar ataques e defesas. Tentar qualquer outra ação cria brechas, expondo o personagem a ataques de oportunidade.
+              </p>
+            </div>
+
+            <!-- Brechas, Quebra & Ataque de Oportunidade -->
+            <div class="bg-stone-950 p-4 rounded border border-stone-800 space-y-2">
+              <h4 class="font-cinzel font-bold text-amber-400 text-sm">2. Brechas, Quebra & Oportunidade</h4>
+              <p class="text-stone-300">
+                <strong>Brechas:</strong> Ocorrem quando um ocupador se afasta demais, realiza ações fora de ataque/defesa, é atacado exposto ou fica atordoado.
+              </p>
+              <p class="text-stone-300">
+                <strong>Quebra de Ocupação:</strong> Se o alvo sair da metade da área de ataque, os ocupadores têm 1 turno para se reposicionar. Se o alvo sair da área total de ataque, a ocupação rompe imediatamente (exige novo teste de Tática para retomar).
+              </p>
+              <p class="text-stone-300">
+                <strong>Ataque de Oportunidade:</strong> Disparado imediatamente fora do turno sempre que um alvo tenta fugir ou um ocupador se expõe abrindo uma brecha.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 5. Compêndio Completo de Condições & Sequelas -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-5">
+          <div class="border-b border-gold-600/40 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div>
+              <h3 class="font-cinzel text-lg text-gold-400 font-bold flex items-center gap-2 glow-gold">
+                <i class="fa-solid fa-heart-crack text-red-500"></i> Compêndio Completo de Condições & Ferimentos
+              </h3>
+              <p class="text-xs text-stone-400">Efeitos temporários de combate, alterações emocionais e mutilações
+                físicas de longo prazo.</p>
+            </div>
+          </div>
+
+          <!-- 1. CONDIÇÕES FÍSICAS DE COMBATE -->
+          <div class="space-y-2">
+            <h4 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-person-burst"></i> 1. Condições Físicas Temporárias (Combate & Ambiente)
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 text-xs">
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-gold-300 font-cinzel block">Caído</strong>
+                <p class="text-stone-400">Inimigos corpo a corpo ganham +2 para acertar; ataques à distância contra você
+                  sofrem -2. Deslocamento 0 até gastar 1 Ação de Movimento para levantar.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-gold-300 font-cinzel block">Atordoado</strong>
+                <p class="text-stone-400">Perde 1 reação no turno; sofre -3 em testes de ataque, -2 em GD e deslocamento
+                  reduzido pela metade.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-gold-300 font-cinzel block">Exposto</strong>
+                <p class="text-stone-400">Considera GD igual a 0 e sofre -5 em testes de esquiva até o próximo turno.
+                </p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-gold-300 font-cinzel block">Desprevenido</strong>
+                <p class="text-stone-400">Possui apenas 1 dado para reagir a qualquer ataque e não se beneficia de bônus
+                  de cobertura.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-gold-300 font-cinzel block">Vulnerável / Preso</strong>
+                <p class="text-stone-400">Não consegue realizar nenhuma reação. Deslocamento reduzido a 0 enquanto não
+                  se libertar (Vigor/Destreza DT 14).</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-gold-300 font-cinzel block">Flanqueado</strong>
+                <p class="text-stone-400">Quando cercado por 3 ou mais inimigos, sofre -3 em qualquer ação até mudar de
+                  posição.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-gold-300 font-cinzel block">Cansado / Exausto</strong>
+                <p class="text-stone-400"><strong>Cansado:</strong> -1 em testes físicos e deslocamento pela
+                  metade.<br><strong>Exausto:</strong> -2 em todos os testes, -1 GD e deslocamento 1/3.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-gold-300 font-cinzel block">Encurralado</strong>
+                <p class="text-stone-400">Impossibilitado de recuar ou se mover. Ataques corpo a corpo sofridos causam
+                  +1d6 de dano extra.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-red-400 font-cinzel block">Sangrando</strong>
+                <p class="text-stone-400">Sofre 1d8 de dano de vida por turno. Exige 1 Ação de Vigor (DT 14) ou
+                  Primeiros Socorros para estancar.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-red-400 font-cinzel block">Queimando</strong>
+                <p class="text-stone-400">Sofre 1d6 (ou 1d8) de dano de vida por turno. Exige 1 Ação Principal completa
+                  apagando o fogo para anular.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-red-400 font-cinzel block">Envenenado / Intoxicado</strong>
+                <p class="text-stone-400"><strong>Envenenado:</strong> Sofre 2d6 de dano por turno até
+                  antídoto.<br><strong>Intoxicado:</strong> Perde 1d12 PE por rodada na área tóxica.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-purple-400 font-cinzel block">Cego / Surdo</strong>
+                <p class="text-stone-400"><strong>Cego:</strong> -2 dados e -3 para ações
+                  íntegras.<br><strong>Surdo:</strong> -5 para reagir a qualquer ataque imprevisto.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. SEQUELAS FÍSICAS SEVERAS (MUTILAÇÕES & LESÕES) -->
+          <div class="space-y-2 pt-2 border-t border-stone-800">
+            <h4 class="font-cinzel text-xs font-bold text-red-500 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-bone"></i> 2. Sequelas Físicas Severas (Mutilações & Perdas Permanentes)
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
+              <div class="bg-stone-950 p-2.5 rounded border border-red-900/40 space-y-1">
+                <strong class="text-red-300 font-cinzel block">Sem um Braço / Mão Mutilada</strong>
+                <p class="text-stone-400">Sofre <strong>-2 dados</strong> em qualquer teste que utilize Potência ou
+                  manuseio de armas com as mãos.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-red-900/40 space-y-1">
+                <strong class="text-red-300 font-cinzel block">Sem uma Perna / Mancando</strong>
+                <p class="text-stone-400">Sofre <strong>-2 dados</strong> em testes de Agilidade/Destreza e reduz a
+                  velocidade de deslocamento pela metade.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-red-900/40 space-y-1">
+                <strong class="text-red-300 font-cinzel block">Despelado / Ferida Exposta</strong>
+                <p class="text-stone-400">Sofre <strong>-2 dados</strong> em todos os testes que exijam sustentação ou
+                  resiliência de Vigor.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-red-900/40 space-y-1">
+                <strong class="text-red-300 font-cinzel block">Trauma Cranioencefálico</strong>
+                <p class="text-stone-400">Sofre <strong>-2 dados</strong> em testes de Conhecimento, Raciocínio ou
+                  manutenção da Sanidade (Ímpeto).</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-red-900/40 space-y-1">
+                <strong class="text-red-300 font-cinzel block">Caolho / Visão Danificada</strong>
+                <p class="text-stone-400">Sofre <strong>-2 dados</strong> em testes de Percepção visual, Pontaria e
+                  combate à distância.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-red-900/40 space-y-1">
+                <strong class="text-red-300 font-cinzel block">Tremendo / Calafrios</strong>
+                <p class="text-stone-400">Sofre <strong>-2 dados</strong> em testes de Destreza fina, arrombamento,
+                  sutura médica e tiro de precisão.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-red-900/40 space-y-1">
+                <strong class="text-red-300 font-cinzel block">Deformado / Dismorfia</strong>
+                <p class="text-stone-400">Sofre <strong>-2 dados</strong> em testes sociais convencionais de Astúcia ou
+                  Persuasão (exceto Intimidação).</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-red-900/40 space-y-1">
+                <strong class="text-red-300 font-cinzel block">Leigo / Anestesiado</strong>
+                <p class="text-stone-400">Sofre <strong>-2 dados</strong> em testes de sensibilidade ou conjuração
+                  mística espiritual.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. CONDIÇÕES MENTAIS & EMOCIONAIS -->
+          <div class="space-y-2 pt-2 border-t border-stone-800">
+            <h4 class="font-cinzel text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-brain"></i> 3. Condições Mentais, Emocionais & Psicológicas
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 text-xs">
+              <div class="bg-stone-950 p-2.5 rounded border border-emerald-900/40 space-y-1">
+                <strong class="text-emerald-400 font-cinzel block">Motivado / Entusiasmado</strong>
+                <p class="text-stone-400"><strong>Motivado:</strong> +3 em todos os testes (ou +2 acerto e +1d4
+                  dano).<br><strong>Entusiasmado:</strong> +5 em todos os testes por 2 rodadas.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-emerald-900/40 space-y-1">
+                <strong class="text-emerald-400 font-cinzel block">Focado / Calmo</strong>
+                <p class="text-stone-400"><strong>Focado:</strong> +2 em ataques e na perícia
+                  escolhida.<br><strong>Calmo:</strong> +2 em testes sociais e de Vontade; imune a medo inicial.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-emerald-900/40 space-y-1">
+                <strong class="text-emerald-400 font-cinzel block">Irado / Maníaco</strong>
+                <p class="text-stone-400">Ganha +1 dado extra e +1d6 em ataques corporais, mas sofre -2 em defesas e não
+                  consegue raciocinar ações complexas.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-amber-400 font-cinzel block">Desmotivado / Desgastado</strong>
+                <p class="text-stone-400"><strong>Desmotivado:</strong> Sofre -3 em todos os
+                  testes.<br><strong>Desgastado:</strong> Sofre -5 em todos os testes da cena por exaustão mental.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-amber-400 font-cinzel block">Medo / Apavorado</strong>
+                <p class="text-stone-400"><strong>Medo:</strong> -2 em ataques e -1 na
+                  defesa.<br><strong>Apavorado:</strong> -3 em ataques, -2 na defesa e impossibilitado de avançar.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
+                <strong class="text-amber-400 font-cinzel block">Distraído / Confuso</strong>
+                <p class="text-stone-400"><strong>Distraído:</strong> -3 em reações e -2 em
+                  percepção.<br><strong>Confuso:</strong> Rola 1d6 no turno (1-2 perde ação, 3-4 age normal, 5-6 ataca
+                  aliado).</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-purple-900/40 space-y-1">
+                <strong class="text-purple-400 font-cinzel block">Paranoico</strong>
+                <p class="text-stone-400">Ganha +10 em qualquer dado envolvendo Percepção, mas perde 1 dado em todos os
+                  outros atributos.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-purple-900/40 space-y-1">
+                <strong class="text-purple-400 font-cinzel block">Pânico / Aterrorizado</strong>
+                <p class="text-stone-400">Todo dano de vida recebido causa o mesmo valor de perda em Sanidade. Exige
+                  teste de Ímpeto/Vontade (DT 16) para estabilizar.</p>
+              </div>
+
+              <div class="bg-stone-950 p-2.5 rounded border border-purple-900/40 space-y-1">
+                <strong class="text-red-400 font-cinzel block">Insanidade</strong>
+                <p class="text-stone-400">O personagem perde completamente o controle consciente (assumido pelo Mestre).
+                  Se não for curado em 3 rodadas, a degradação se torna irreversível.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  
+
+  <!-- FOOTER -->
+  <footer class="border-t border-gold-900/40 bg-stone-950 py-4 mt-8 text-center text-xs text-stone-500 font-cinzel">
+    <div class="max-w-7xl mx-auto px-4">
+      PANTHEON RPG &bull; Livro de Regras Oficiais Interativo &bull; Sistema de Jogo
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // DATA: Perícias
+    const skillsData = [
+      {name: "Sobrevivência", cat: "Sobrevivência", desc: "Caçar, rastrear, encontrar água e se orientar."},
+      {name: "Furtividade", cat: "Sobrevivência", desc: "Mover-se sem ser visto ou ouvido."},
+      {name: "Encontrar", cat: "Sobrevivência", desc: "Notar detalhes, emboscadas e ruídos estranhos."},
+      {name: "Atletismo", cat: "Sobrevivência", desc: "Escalar, saltar, correr e esforço corporal."},
+      {name: "Tenacidade", cat: "Sobrevivência", desc: "Resistência ao cansaço e labuta contínua."},
+
+      {name: "Luta", cat: "Combate", desc: "Combate corpo a corpo com armas ou desarmado."},
+      {name: "Pontaria", cat: "Combate", desc: "Disparos com arcos, fundas e projéteis."},
+      {name: "Defesa", cat: "Combate", desc: "Uso de escudos e postura defensiva contra golpes."},
+      {name: "Reflexo", cat: "Combate", desc: "Reação instantânea a perigos e esquiva."},
+
+      {name: "Investigação", cat: "Conhecimento", desc: "Analisar cenas de crime, procurar pistas ocultas."},
+      {name: "Erudição", cat: "Conhecimento", desc: "Leitura de línguas, história, plantas e metalurgia."},
+      {name: "Doutrina", cat: "Conhecimento", desc: "Conhecimento de dogmas teológicos e leis vigentes."},
+      {name: "Sigilos", cat: "Conhecimento", desc: "Compreensão de símbolos místicos e rituais."},
+
+      {name: "Ferramentas", cat: "Técnica", desc: "Forjar, reparar, carpintaria e artesanato."},
+      {name: "Medicina", cat: "Técnica", desc: "Tratar ferimentos, preparar unguentos e suturas."},
+      {name: "Culinária", cat: "Técnica", desc: "Preparo de refeições e conservação de víveres."},
+      {name: "Improviso", cat: "Técnica", desc: "Gambiarras e soluções rápidas sem ferramenta adequada."},
+
+      {name: "Persuasão", cat: "Social", desc: "Convencer com argumentos, lábia e carisma."},
+      {name: "Enganação", cat: "Social", desc: "Mentir, disfarçar intenções e trapacear."},
+      {name: "Intimidação", cat: "Social", desc: "Amedrontar fisicamente ou com presença espiritual."},
+      {name: "Intuição", cat: "Social", desc: "Ler a veracidade e intenções ocultas de pessoas."},
+      {name: "Vontade", cat: "Social", desc: "Resistência mental a manipulações e medo."}
+    ];
+
+    // DATA: Profissões
+    const jobsData = [
+      {title: "1. Caçador", main: "Sobrevivência + Pontaria", world: "Encontrar", sec: "Furtividade / Reflexo"},
+      {title: "2. Lenhador", main: "Atletismo + Tenacidade", world: "Luta", sec: "Ferramentas / Defesa"},
+      {title: "3. Ferreiro", main: "Ferramentas + Tenacidade", world: "Erudição", sec: "Luta / Improviso"},
+      {title: "4. Carpinteiro", main: "Ferramentas + Improviso", world: "Encontrar", sec: "Atletismo / Erudição"},
+      {title: "5. Curandeiro", main: "Medicina + Encontrar", world: "Intuição", sec: "Culinária / Sigilos"},
+      {title: "6. Cozinheiro / Padeiro", main: "Culinária + Tenacidade", world: "Persuasão", sec: "Encontrar / Medicina"},
+      {title: "7. Pastor / Criador", main: "Sobrevivência + Tenacidade", world: "Intuição", sec: "Encontrar / Atletismo"},
+      {title: "8. Mercador", main: "Persuasão + Enganação", world: "Erudição", sec: "Intuição / Investigação"},
+      {title: "9. Escriba / Devoto", main: "Doutrina + Erudição", world: "Investigação", sec: "Persuasão / Sigilos"},
+      {title: "10. Guarda / Vigia", main: "Defesa + Encontrar", world: "Intimidação", sec: "Luta / Tenacidade"}
+    ];
+
+    // DATA: Passatempos
+    const hobbiesData = [
+      {name: "Pique-Pega", bonus: "+2 Atletismo", type: "focado"},
+      {name: "Rezar até Passar", bonus: "+2 Vontade", type: "focado"},
+      {name: "Briga de Rua", bonus: "+2 Luta", type: "focado"},
+      {name: "Tiro ao Alvo", bonus: "+2 Pontaria", type: "focado"},
+      {name: "Ficar de Vigia", bonus: "+2 Encontrar", type: "focado"},
+      {name: "Caça ao Tesouro", bonus: "+2 Investigação", type: "focado"},
+      {name: "Ler Livros", bonus: "+2 Erudição", type: "focado"},
+      {name: "Ajudar na Cozinha", bonus: "+2 Culinária", type: "focado"},
+      {name: "Trabalhar Duro", bonus: "+2 Tenacidade", type: "focado"},
+      {name: "Contar Histórias", bonus: "+2 Persuasão", type: "focado"},
+      {name: "Desviar de Pedras", bonus: "+2 Reflexo", type: "focado"},
+      {name: "Mentir", bonus: "+2 Enganação", type: "focado"},
+
+      {name: "Explorar o Mato", bonus: "+1 Sobrevivência, +1 Encontrar", type: "misto"},
+      {name: "Subir em Telhados", bonus: "+1 Atletismo, +1 Reflexo", type: "misto"},
+      {name: "Brincar de Guarda", bonus: "+1 Defesa, +1 Intimidação", type: "misto"},
+      {name: "Ouvir os Velhos", bonus: "+1 Doutrina, +1 Intuição", type: "misto"},
+      {name: "Fazer Gambiarras", bonus: "+1 Improviso, +1 Ferramentas", type: "misto"},
+      {name: "Primeiros Socorros", bonus: "+1 Medicina, +1 Vontade", type: "misto"},
+      {name: "Pique-Esconde", bonus: "+1 Furtividade, +1 Encontrar", type: "misto"},
+      {name: "Jogo de Queimado", bonus: "+1 Reflexo, +1 Pontaria", type: "misto"},
+      {name: "Estudo Dirigido", bonus: "+1 Erudição, +1 Escolha", type: "misto"},
+      {name: "Ajudar no Templo", bonus: "+1 Doutrina, +1 Vontade", type: "misto"},
+      {name: "Lidar com Bichos", bonus: "+1 Sobrevivência, +1 Intuição", type: "misto"},
+      {name: "Malandragem", bonus: "+1 Enganação, +1 Intuição", type: "misto"}
+    ];
+
+    // TAB SWITCHING LOGIC
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('tab-active'));
+
+      document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+      document.getElementById(`tab-btn-${tabId}`).classList.add('tab-active');
+    }
+
+    // RENDER SKILLS
+    function filterSkills() {
+      const search = document.getElementById('skill-search').value.toLowerCase();
+      const cat = document.getElementById('skill-category').value;
+      const container = document.getElementById('skills-grid');
+
+      container.innerHTML = '';
+
+      skillsData
+        .filter(s => (cat === 'all' || s.cat === cat) && s.name.toLowerCase().includes(search))
+        .forEach(s => {
+          const div = document.createElement('div');
+          div.className = "bg-stone-950 p-3 rounded border border-stone-800 hover:border-gold-600/50 transition-all";
+          div.innerHTML = `
+            <div class="flex justify-between items-start mb-1">
+              <span class="font-cinzel font-bold text-gold-300 text-sm">${s.name}</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-stone-900 border border-stone-700 text-stone-400 font-mono">${s.cat}</span>
+            </div>
+            <p class="text-xs text-stone-400">${s.desc}</p>
+          `;
+          container.appendChild(div);
+        });
+    }
+
+    // RENDER JOBS
+    function renderJobs() {
+      const container = document.getElementById('jobs-container');
+      jobsData.forEach(j => {
+        const div = document.createElement('div');
+        div.className = "bg-stone-950 p-3.5 rounded border border-stone-800 text-xs space-y-1.5";
+        div.innerHTML = `
+          <h4 class="font-cinzel font-bold text-gold-400 text-sm">${j.title}</h4>
+          <div><strong class="text-stone-300">Principais:</strong> <span class="text-gold-300 font-mono">${j.main}</span></div>
+          <div><strong class="text-stone-300">Visão de Mundo:</strong> <span class="text-stone-400">${j.world}</span></div>
+          <div><strong class="text-stone-300">Secundária (Escolha 1):</strong> <span class="text-stone-400">${j.sec}</span></div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // RENDER HOBBIES
+    function renderHobbies() {
+      const container = document.getElementById('hobbies-container');
+      hobbiesData.forEach(h => {
+        const isFocado = h.type === 'focado';
+        const div = document.createElement('div');
+        div.className = `bg-stone-950 p-3 rounded border ${isFocado ? 'border-amber-900/40' : 'border-stone-800'} text-xs`;
+        div.innerHTML = `
+          <div class="flex justify-between items-center mb-1">
+            <span class="font-cinzel font-bold text-stone-200">${h.name}</span>
+            <span class="text-[9px] uppercase px-1 rounded ${isFocado ? 'bg-amber-950 text-amber-300 border border-amber-800' : 'bg-stone-900 text-stone-400'}">${h.type}</span>
+          </div>
+          <span class="font-mono text-gold-400 text-[11px]">${h.bonus}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // DICE ROLLER TOGGLE & LOGIC
+    function toggleDiceRoller() {
+      const panel = document.getElementById('dice-roller-panel');
+      panel.classList.toggle('translate-y-full');
+    }
+
+    function rollPantheonDice() {
+      const attr1Val = parseInt(document.getElementById('attr1-val').value);
+      const attr1Name = document.getElementById('attr1-name').value;
+      const attr2Name = document.getElementById('attr2-name').value;
+
+      const resultsArea = document.getElementById('dice-results-area');
+      const finalDisplay = document.getElementById('final-result-display');
+      const badge = document.getElementById('result-badge');
+      const diceContainer = document.getElementById('individual-dice-container');
+
+      resultsArea.classList.remove('hidden');
+      finalDisplay.innerHTML = `<i class="fa-solid fa-spinner rolling"></i>`;
+      diceContainer.innerHTML = '';
+
+      setTimeout(() => {
+        let rolls = [];
+        let finalVal = 0;
+        let isZeroAttr = (attr1Val === 0);
+
+        if (isZeroAttr) {
+          // Atributo 0: Rola 2d20 e PEGA O MENOR
+          rolls.push(Math.floor(Math.random() * 20) + 1);
+          rolls.push(Math.floor(Math.random() * 20) + 1);
+          finalVal = Math.min(...rolls);
+        } else {
+          // Atributo 1-4: Rola N d20s e PEGA O MAIOR
+          for (let i = 0; i < attr1Val; i++) {
+            rolls.push(Math.floor(Math.random() * 20) + 1);
+          }
+          finalVal = Math.max(...rolls);
+        }
+
+        // Display Final Result
+        finalDisplay.textContent = finalVal;
+
+        // Badge Status
+        if (finalVal === 20) {
+          badge.textContent = "SUCESSO CRÍTICO!";
+          badge.className = "inline-block px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-emerald-950 border border-emerald-500 text-emerald-300 glow-gold";
+        } else if (finalVal === 1) {
+          badge.textContent = "FALHA CRÍTICA!";
+          badge.className = "inline-block px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-red-950 border border-red-600 text-red-300 glow-red";
+        } else {
+          badge.textContent = isZeroAttr ? "Resultado Deficiente (Menor Dado)" : "Resultado Padrão (Maior Dado)";
+          badge.className = "inline-block px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-stone-900 border border-stone-700 text-stone-300";
+        }
+
+        // Render Individual Dice Badges
+        rolls.forEach(r => {
+          const span = document.createElement('span');
+          let isChosen = (r === finalVal);
+
+          span.className = `w-9 h-9 rounded flex items-center justify-center font-cinzel font-bold text-sm border ${isChosen
+            ? 'bg-gold-900/60 border-gold-400 text-gold-300 shadow-lg scale-105'
+            : 'bg-stone-900 border-stone-800 text-stone-500 opacity-60'
+            }`;
+          span.textContent = r;
+          diceContainer.appendChild(span);
+        });
+
+      }, 350);
+    }
+
+    // INITIALIZATION
+    window.onload = function () {
+      switchTab('mecanica');
+      filterSkills();
+      renderJobs();
+      renderHobbies();
+    };
+  </script>
+</body>
+
+</html>

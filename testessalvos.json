@@ -1,0 +1,18 @@
+[
+  {
+    "id": "macro_ataque_basico",
+    "nome": "Ataque Corpo a Corpo (Machado)",
+    "attr1": "potencia",
+    "attr2": "destreza",
+    "pericia": "Luta",
+    "habilidadeId": null
+  },
+  {
+    "id": "macro_bloqueio_escudo",
+    "nome": "Bloquear com Escudo (Com Aparo)",
+    "attr1": "vigor",
+    "attr2": "percepcao",
+    "pericia": "Defesa",
+    "habilidadeId": "hab_aparo_com_cabo"
+  }
+]
