@@ -43,13 +43,20 @@
           <h1 id="mesa-nome" class="font-cinzel text-xl md:text-2xl font-bold text-gold-400">Carregando Mesa...</h1>
           <div class="flex items-center gap-3 text-xs text-stone-400">
             <span id="badge-papel" class="px-2 py-0.5 rounded font-cinzel text-[10px] uppercase border"></span>
-            <span>Código de Convite: <strong id="mesa-codigo" class="font-mono text-gold-300 select-all">---</strong></span>
+            <span>Código: <strong id="mesa-codigo" class="font-mono text-gold-300 select-all">---</strong></span>
             <button id="btn-copiar-codigo" class="text-gold-400 hover:underline text-[11px]"><i class="fa-regular fa-copy"></i> Copiar</button>
           </div>
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Botões exclusivos do Mestre (gavetas recolhíveis) -->
+        <button id="btn-toggle-regras" hidden class="px-3 py-2 rounded bg-stone-900 border border-gold-600/60 hover:border-gold-400 text-gold-300 font-cinzel text-xs font-bold flex items-center gap-2">
+          <i class="fa-solid fa-sliders"></i> Regras da Mesa
+        </button>
+        <button id="btn-toggle-itens" hidden class="px-3 py-2 rounded bg-stone-900 border border-emerald-600/60 hover:border-emerald-400 text-emerald-300 font-cinzel text-xs font-bold flex items-center gap-2">
+          <i class="fa-solid fa-suitcase"></i> Catálogo de Itens
+        </button>
         <a id="btn-abrir-editor" href="#" hidden class="px-3 py-2 rounded bg-amber-950/80 border border-amber-600 hover:bg-amber-800/60 text-amber-300 font-cinzel text-xs font-bold flex items-center gap-2">
           <i class="fa-solid fa-diagram-project"></i> Editor de Árvores
         </a>
@@ -63,37 +70,37 @@
   <!-- Conteúdo Principal -->
   <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    <!-- Coluna Esquerda / Central (Fichas + Configurações do Mestre) -->
+    <!-- ========================================================= -->
+    <!-- COLUNA ESQUERDA / CENTRAL (GAVETAS + FICHAS)              -->
+    <!-- ========================================================= -->
     <div class="lg:col-span-8 space-y-6">
 
-      <!-- ========================================================= -->
-      <!-- PAINEL DO MESTRE: REGRAS DA MESA & RAÍZES                  -->
-      <!-- ========================================================= -->
-      <section id="painel-mestre" hidden class="bg-parchment gold-border rounded-xl p-5 space-y-5">
+      <!-- GAVETA 1: CONFIGURAÇÕES DA CAMPANHA (FECHADA POR PADRÃO) -->
+      <section id="gaveta-regras" hidden class="bg-parchment gold-border rounded-xl p-5 space-y-5">
         <div class="border-b border-gold-600/40 pb-3 flex flex-wrap justify-between items-center gap-2">
           <div>
             <h2 class="font-cinzel text-lg font-bold text-gold-400 flex items-center gap-2">
-              <i class="fa-solid fa-crown text-gold-500"></i> Configurações da Campanha (Mestre)
+              <i class="fa-solid fa-crown text-gold-500"></i> Configurações da Campanha
             </h2>
-            <p class="text-xs text-stone-400">Defina os limites de criação, estágios biológicos, regras de carga e raízes disponíveis.</p>
+            <p class="text-xs text-stone-400">Parâmetros de criação, estágios biológicos, regras de carga e raízes.</p>
           </div>
-          <button id="btn-salvar-regras" class="px-4 py-2 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
-            <i class="fa-solid fa-floppy-disk"></i> Salvar Regras da Mesa
-          </button>
+          <div class="flex items-center gap-2">
+            <button id="btn-salvar-regras" class="px-4 py-2 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
+              <i class="fa-solid fa-floppy-disk"></i> Salvar Regras
+            </button>
+            <button id="btn-fechar-regras" class="px-2.5 py-2 rounded bg-stone-900 border border-stone-700 text-stone-400 hover:text-white text-xs">✕</button>
+          </div>
         </div>
 
-        <!-- 1. Regras de Criação de Ficha -->
-        <div class="space-y-3">
-          <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">
-            1. Parâmetros de Criação de Ficha
-          </h3>
+        <!-- 1. Regras de Criação -->
+        <div class="space-y-2">
+          <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">1. Parâmetros de Criação de Ficha</h3>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <div class="bg-stone-950 p-3 rounded border border-stone-800 space-y-1">
               <label class="text-stone-400 block font-cinzel text-[10px]">Pontos de Atributo</label>
               <input type="number" id="cfg-pontos-attr" min="0" max="30" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-gold-300 font-mono font-bold">
               <span class="text-[10px] text-stone-500 block">Órfão recebe +1 auto</span>
             </div>
-
             <div class="bg-stone-950 p-3 rounded border border-stone-800 space-y-1">
               <label class="text-stone-400 block font-cinzel text-[10px]">Estágio Inicial da Mesa</label>
               <select id="cfg-estagio-inicial" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-gold-300 font-semibold">
@@ -102,28 +109,21 @@
                 <option value="3">3. Fase Adulta (Vocação)</option>
                 <option value="4">4. Transgressão Mística</option>
               </select>
-              <span class="text-[10px] text-stone-500 block">Define teto na criação</span>
             </div>
-
             <div class="bg-stone-950 p-3 rounded border border-stone-800 space-y-1">
               <label class="text-stone-400 block font-cinzel text-[10px]">Pts Evolução Iniciais</label>
               <input type="number" id="cfg-pontos-evo" min="0" max="100" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-emerald-400 font-mono font-bold">
-              <span class="text-[10px] text-stone-500 block">Pts de árvore ao criar</span>
             </div>
-
             <div class="bg-stone-950 p-3 rounded border border-stone-800 space-y-1">
               <label class="text-stone-400 block font-cinzel text-[10px]">Slots Raiz Extra (Criação)</label>
               <input type="number" id="cfg-slots-extra" min="0" max="5" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-sky-400 font-mono font-bold">
-              <span class="text-[10px] text-stone-500 block">Árvores extras livres</span>
             </div>
           </div>
         </div>
 
-        <!-- 2. Tetos de Atributos por Estágio Biológico -->
-        <div class="space-y-3 pt-2 border-t border-stone-800">
-          <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">
-            2. Tetos Máximos de Atributo por Estágio Biológico
-          </h3>
+        <!-- 2. Tetos por Estágio -->
+        <div class="space-y-2 pt-2 border-t border-stone-800">
+          <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">2. Tetos Máximos de Atributo por Estágio</h3>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <div class="bg-stone-950 p-2.5 rounded border border-stone-800">
               <label class="text-stone-400 block text-[10px]">1. Criação (Infância)</label>
@@ -144,7 +144,7 @@
           </div>
         </div>
 
-        <!-- 3. Passatempos Infantis & Regra de Carga -->
+        <!-- 3. Passatempos & Carga -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-stone-800 text-xs">
           <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-2">
             <h4 class="font-cinzel font-bold text-gold-300">3. Passatempos Infantis na Criação</h4>
@@ -164,9 +164,7 @@
           <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-2 flex flex-col justify-between">
             <div>
               <h4 class="font-cinzel font-bold text-gold-300">4. Inventário & Trava Ascendente</h4>
-              <p class="text-[11px] text-stone-400 mt-1">
-                Quando ativa, impede combinar slots menores (Leve/Médio) para carregar itens Pesados acima do Vigor.
-              </p>
+              <p class="text-[11px] text-stone-400 mt-1">Impede combinar slots menores (Leve/Médio) para carregar itens Pesados acima do Vigor.</p>
             </div>
             <label class="flex items-center gap-2.5 cursor-pointer pt-1">
               <input type="checkbox" id="cfg-trava-ascendente" class="w-4 h-4 accent-amber-500">
@@ -175,21 +173,15 @@
           </div>
         </div>
 
-        <!-- 5. Gestão de Raízes Disponíveis na Mesa -->
+        <!-- 4. Raízes da Mesa -->
         <div class="space-y-3 pt-2 border-t border-stone-800">
           <div class="flex flex-wrap justify-between items-center gap-2">
-            <div>
-              <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">
-                5. Raízes / Origens Cadastradas na Mesa
-              </h3>
-              <p class="text-[11px] text-stone-400">Cada Raiz vincula-se à sua respectiva Árvore de Evolução e define os bônus de HP/SAN/PE.</p>
-            </div>
+            <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">5. Raízes / Origens da Mesa</h3>
             <button id="btn-importar-raizes-livro" class="px-3 py-1.5 rounded bg-stone-900 border border-gold-600/60 hover:border-gold-400 text-gold-300 font-cinzel text-[11px]">
               <i class="fa-solid fa-book-open"></i> Importar 10 Raízes + Órfão do Livro
             </button>
           </div>
 
-          <!-- Form adicionar raiz -->
           <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 bg-stone-950 p-2.5 rounded border border-stone-800 text-xs">
             <input type="text" id="nova-raiz-nome" placeholder="Nome (ex: Ferreiro)" class="col-span-2 bg-stone-900 border border-stone-700 rounded px-2 py-1">
             <input type="number" id="nova-raiz-hp" placeholder="HP" class="bg-stone-900 border border-stone-700 rounded px-2 py-1 text-center font-mono">
@@ -201,13 +193,147 @@
             </div>
           </div>
 
-          <!-- Lista de raízes cadastradas -->
           <div id="lista-raizes-mesa" class="flex flex-wrap gap-2"></div>
         </div>
       </section>
 
+      <!-- GAVETA 2: CATÁLOGO DE ITENS DA MESA (FECHADA POR PADRÃO) -->
+      <section id="gaveta-itens" hidden class="bg-parchment gold-border rounded-xl p-5 space-y-5">
+        <div class="border-b border-gold-600/40 pb-3 flex flex-wrap justify-between items-center gap-2">
+          <div>
+            <h2 class="font-cinzel text-lg font-bold text-emerald-400 flex items-center gap-2">
+              <i class="fa-solid fa-suitcase"></i> Catálogo Oficial de Itens da Mesa
+            </h2>
+            <p class="text-xs text-stone-400">Cadastre armas, armaduras, escudos, itens de cura e equipamentos com habilidades vinculadas.</p>
+          </div>
+          <button id="btn-fechar-itens" class="px-2.5 py-2 rounded bg-stone-900 border border-stone-700 text-stone-400 hover:text-white text-xs">✕</button>
+        </div>
+
+        <!-- Formulário de Cadastro de Item -->
+        <div class="bg-stone-950 p-4 rounded-lg border border-stone-800 space-y-3 text-xs">
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div class="sm:col-span-2">
+              <label class="text-stone-400 text-[10px] font-cinzel block">Nome do Item</label>
+              <input type="text" id="item-nome" placeholder="Ex: Espada Longa, Kit Médico, Cota de Malha..." class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2.5 py-1.5 text-stone-200">
+            </div>
+            <div>
+              <label class="text-stone-400 text-[10px] font-cinzel block">Categoria</label>
+              <select id="item-categoria" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2.5 py-1.5 text-gold-300 font-semibold">
+                <option value="arma">⚔️ Arma</option>
+                <option value="escudo">🛡️ Escudo</option>
+                <option value="armadura">👕 Armadura</option>
+                <option value="cura">🩹 Item de Cura</option>
+                <option value="utilitario">🎒 Utilitário / Outro</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-stone-400 text-[10px] font-cinzel block">Peso (Slot de Carga)</label>
+              <select id="item-peso" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2.5 py-1.5 text-stone-200">
+                <option value="miudeza">Miudeza (Bolso)</option>
+                <option value="leve" selected>Leve (Base 1)</option>
+                <option value="medio">Médio (Base 2)</option>
+                <option value="pesado">Pesado (Base 3)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Campos Específicos: ARMA -->
+          <div id="campos-item-arma" class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2 border-t border-stone-900">
+            <div>
+              <label class="text-stone-400 text-[10px] block">Dano Base</label>
+              <input type="text" id="item-arma-dano" placeholder="Ex: 1d8" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-red-300">
+            </div>
+            <div>
+              <label class="text-stone-400 text-[10px] block">Margem Crítico</label>
+              <select id="item-arma-crit-margem" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-amber-300">
+                <option value="20">20 Natural</option>
+                <option value="19">19 - 20</option>
+                <option value="18">18 - 20</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-stone-400 text-[10px] block">Multiplicador Crítico</label>
+              <select id="item-arma-crit-mult" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-amber-300">
+                <option value="2">x2</option>
+                <option value="3">x3</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-stone-400 text-[10px] block">Bônus Extra Crítico</label>
+              <input type="text" id="item-arma-crit-extra" placeholder="Ex: +1d6 ou 0" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono">
+            </div>
+            <div class="flex items-end pb-1">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="item-arma-defensiva" class="w-4 h-4 accent-emerald-500">
+                <span class="text-[11px] text-emerald-300 font-semibold">Arma Defensiva (+1 GD)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Campos Específicos: ESCUDO -->
+          <div id="campos-item-escudo" hidden class="pt-2 border-t border-stone-900 text-stone-300">
+            <span class="text-[11px] text-emerald-400">
+              <i class="fa-solid fa-shield-halved"></i> Regra do Livro: Escudos concedem automaticamente <strong>GD = Peso + 1</strong> (Leve = GD 2, Médio = GD 3, Pesado = GD 4).
+            </span>
+          </div>
+
+          <!-- Campos Específicos: ARMADURA -->
+          <div id="campos-item-armadura" hidden class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-stone-900">
+            <div>
+              <label class="text-stone-400 text-[10px] block">Redução de Dano (RD)</label>
+              <input type="number" id="item-armadura-rd" value="2" min="0" max="20" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-sky-300 font-bold">
+            </div>
+            <div>
+              <label class="text-stone-400 text-[10px] block">Penalidade Deslocamento (m)</label>
+              <input type="number" id="item-armadura-pen-desl" value="0" max="0" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-red-300">
+            </div>
+          </div>
+
+          <!-- Campos Específicos: ITEM DE CURA -->
+          <div id="campos-item-cura" hidden class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-stone-900">
+            <div>
+              <label class="text-stone-400 text-[10px] block">Fórmula de Cura (HP)</label>
+              <input type="text" id="item-cura-formula" placeholder="Ex: 2d8 ou 2d4" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-emerald-300">
+            </div>
+            <div>
+              <label class="text-stone-400 text-[10px] block">Bônus no Teste Medicina</label>
+              <input type="number" id="item-cura-bonus" value="0" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-gold-300">
+            </div>
+            <div>
+              <label class="text-stone-400 text-[10px] block">Qtd de Usos</label>
+              <input type="number" id="item-cura-usos" value="3" min="1" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono">
+            </div>
+          </div>
+
+          <!-- Descrição & Habilidade Vinculada ao Item -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-stone-900">
+            <div>
+              <label class="text-stone-400 text-[10px] font-cinzel block">Descrição / Propriedades do Item</label>
+              <textarea id="item-desc" rows="2" placeholder="Detalhes narrativos ou mecânicos..." class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2.5 py-1.5"></textarea>
+            </div>
+            <div class="bg-stone-900/60 p-2.5 rounded border border-purple-900/40 space-y-1.5">
+              <div class="flex justify-between items-center">
+                <span class="font-cinzel text-[10px] font-bold text-purple-300 uppercase">Habilidade Vinculada (Opcional)</span>
+                <input type="text" id="item-hab-custo" placeholder="Custo (ex: 2 PE-F)" class="w-28 bg-stone-950 border border-stone-700 rounded px-1.5 py-0.5 text-[10px] font-mono text-amber-300">
+              </div>
+              <input type="text" id="item-hab-nome" placeholder="Nome da habilidade do item" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-[11px]">
+              <input type="text" id="item-hab-efeito" placeholder="Efeito / Dano / Teste da habilidade" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-[11px]">
+            </div>
+          </div>
+
+          <div class="flex justify-end">
+            <button id="btn-salvar-item-catalogo" class="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-cinzel text-xs font-bold">
+              <i class="fa-solid fa-plus"></i> Adicionar Item ao Catálogo
+            </button>
+          </div>
+        </div>
+
+        <!-- Lista de Itens Cadastrados -->
+        <div id="lista-catalogo-itens" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
+      </section>
+
       <!-- ========================================================= -->
-      <!-- LISTA DE FICHAS DA MESA                                   -->
+      <!-- LISTA DE FICHAS DA MESA (VISÃO PRINCIPAL LIMPA)           -->
       <!-- ========================================================= -->
       <section class="bg-parchment gold-border rounded-xl p-5 space-y-4">
         <div class="flex justify-between items-center border-b border-gold-600/40 pb-2">
@@ -224,28 +350,88 @@
 
     </div>
 
-    <!-- Coluna Direita: Histórico de Rolagens ao Vivo + Info -->
-    <aside class="lg:col-span-4 space-y-6">
+    <!-- ========================================================= -->
+    <!-- COLUNA DIREITA: HISTÓRICO DE ROLAGENS + ROLADOR DO MESTRE -->
+    <!-- ========================================================= -->
+    <aside class="lg:col-span-4 space-y-4">
 
-      <!-- Resumo das Regras Ativas da Mesa (visível para todos) -->
-      <section class="bg-parchment gold-border rounded-xl p-4 space-y-2 text-xs">
-        <h3 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
-          <i class="fa-solid fa-scale-balanced"></i> Regras Ativas desta Mesa
-        </h3>
-        <div id="resumo-regras-jogadores" class="space-y-1 text-stone-300"></div>
-      </section>
-
-      <!-- Log de Dados ao Vivo -->
-      <section class="bg-parchment gold-border rounded-xl p-4 flex flex-col h-[520px]">
+      <!-- Histórico de Dados ao Vivo -->
+      <section class="bg-parchment gold-border rounded-xl p-4 flex flex-col h-[390px]">
         <div class="border-b border-gold-600/40 pb-2 mb-3 flex justify-between items-center">
           <h3 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
-            <i class="fa-solid fa-dice-d20 text-gold-500"></i> Rolagens ao Vivo
+            <i class="fa-solid fa-dice-d20 text-gold-500"></i> Histórico de Rolagens
           </h3>
           <button id="btn-limpar-log" hidden class="text-[11px] text-stone-400 hover:text-red-400">Limpar</button>
         </div>
 
         <div id="feed-rolagens" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
           <p class="text-stone-500 italic text-center mt-8">Nenhuma rolagem registrada ainda.</p>
+        </div>
+      </section>
+
+      <!-- Rolador Livre do Mestre (Embaixo do Histórico) -->
+      <section id="box-rolador-mestre" hidden class="bg-parchment gold-border rounded-xl p-4 space-y-3 text-xs">
+        <div class="border-b border-gold-600/40 pb-2 flex justify-between items-center">
+          <h3 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
+            <i class="fa-solid fa-dice text-gold-500"></i> Rolador Livre do Mestre
+          </h3>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="text-[10px] text-stone-400 block">Qtd Dados</label>
+            <input type="number" id="mestre-dado-qtd" value="1" min="1" max="20" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 font-mono text-center text-gold-300 font-bold">
+          </div>
+          <div>
+            <label class="text-[10px] text-stone-400 block">Tipo de Dado</label>
+            <select id="mestre-dado-faces" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 font-mono text-gold-300 font-bold">
+              <option value="4">d4</option>
+              <option value="6">d6</option>
+              <option value="8">d8</option>
+              <option value="10">d10</option>
+              <option value="12">d12</option>
+              <option value="16">d16</option>
+              <option value="20" selected>d20</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] text-stone-400 block">Modificador</label>
+            <input type="number" id="mestre-dado-mod" value="0" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 font-mono text-center text-stone-200">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[10px] text-stone-400 block">Modo de Resolução</label>
+            <select id="mestre-dado-modo" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 text-stone-200">
+              <option value="soma">Somar todos os dados</option>
+              <option value="maior">Pegar o MAIOR dado</option>
+              <option value="menor">Pegar o MENOR dado</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] text-stone-400 block">Rótulo (Opcional)</label>
+            <input type="text" id="mestre-dado-rotulo" placeholder="Ex: Ataque Lobo" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 text-stone-200">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <label class="flex items-center gap-2 cursor-pointer text-[11px] text-stone-300">
+            <input type="checkbox" id="mestre-rolagem-publica" checked class="w-3.5 h-3.5 accent-amber-500">
+            <span>Mostrar no histórico público</span>
+          </label>
+          <button id="btn-rolar-mestre" class="px-4 py-1.5 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel font-bold">
+            🎲 Rolar
+          </button>
+        </div>
+
+        <!-- Resultado Local (destaca rolagens secretas) -->
+        <div id="mestre-resultado-local" hidden class="bg-stone-950 border border-gold-600/50 rounded p-2.5 space-y-1">
+          <div class="flex justify-between items-center">
+            <span id="mestre-res-tag" class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded"></span>
+            <span id="mestre-res-total" class="font-cinzel text-xl font-bold text-gold-400">0</span>
+          </div>
+          <div id="mestre-res-detalhes" class="font-mono text-[11px] text-stone-400"></div>
         </div>
       </section>
 
@@ -256,7 +442,7 @@
   <script type="module">
     import {
       auth, db, onAuthStateChanged,
-      doc, getDoc, updateDoc, addDoc, deleteDoc,
+      doc, updateDoc, addDoc, deleteDoc, getDocs,
       collection, query, where, orderBy, limit, onSnapshot, serverTimestamp
     } from '../js/firebase-config.js';
 
@@ -296,10 +482,13 @@
       4: "4. Transgressão Mística"
     };
 
+    const PESO_BASE = { miudeza: 0, leve: 1, medio: 2, pesado: 3 };
+
     let usuarioAtual = null;
     let mesaDados = null;
     let souMestre = false;
     let regrasAtuais = { ...REGRAS_PADRAO };
+    let formRegrasPreenchido = false;
 
     onAuthStateChanged(auth, (user) => {
       if (!user) return window.location.href = '../index.html';
@@ -308,7 +497,6 @@
     });
 
     function iniciarListeners() {
-      // 1. Escuta em tempo real da Mesa
       onSnapshot(doc(db, "mesas", mesaId), (snap) => {
         if (!snap.exists()) {
           alert("Mesa não encontrada!");
@@ -323,11 +511,10 @@
         };
 
         renderizarCabecalhoMesa();
-        renderizarPainelMestre();
-        renderizarResumoRegrasJogadores();
+        renderizarGavetaRegras();
+        renderizarCatalogoItens();
       });
 
-      // 2. Escuta em tempo real das Fichas da Mesa
       const qFichas = query(collection(db, "fichas"), where("mesaId", "==", mesaId));
       onSnapshot(qFichas, (snapshot) => {
         const fichas = [];
@@ -335,7 +522,6 @@
         renderizarListaFichas(fichas);
       });
 
-      // 3. Escuta em tempo real das Rolagens da Mesa
       const qRolagens = query(
         collection(db, "rolagens"),
         where("mesaId", "==", mesaId),
@@ -346,10 +532,7 @@
         const lista = [];
         snapshot.forEach(d => lista.push({ id: d.id, ...d.data() }));
         renderizarFeedRolagens(lista);
-      }, (err) => {
-        // Fallback caso o índice composto ainda não esteja criado no Firestore
-        console.warn("Aguardando índice para ordenação de rolagens:", err.message);
-      });
+      }, (err) => console.warn("Aguardando índice de rolagens:", err.message));
     }
 
     function renderizarCabecalhoMesa() {
@@ -360,32 +543,55 @@
       if (souMestre) {
         badge.textContent = "👑 Mestre da Mesa";
         badge.className = "px-2 py-0.5 rounded font-cinzel text-[10px] uppercase border border-gold-500 text-gold-300 bg-gold-950/60";
+        document.getElementById('btn-toggle-regras').hidden = false;
+        document.getElementById('btn-toggle-itens').hidden = false;
         document.getElementById('btn-abrir-editor').hidden = false;
         document.getElementById('btn-abrir-editor').href = `editor.html?mesaId=${mesaId}`;
-        document.getElementById('painel-mestre').hidden = false;
         document.getElementById('btn-limpar-log').hidden = false;
+        document.getElementById('box-rolador-mestre').hidden = false;
       } else {
         badge.textContent = "⚔️ Jogador";
         badge.className = "px-2 py-0.5 rounded font-cinzel text-[10px] uppercase border border-sky-600 text-sky-300 bg-sky-950/50";
+        document.getElementById('btn-toggle-regras').hidden = true;
+        document.getElementById('btn-toggle-itens').hidden = true;
         document.getElementById('btn-abrir-editor').hidden = true;
-        document.getElementById('painel-mestre').hidden = true;
         document.getElementById('btn-limpar-log').hidden = true;
+        document.getElementById('box-rolador-mestre').hidden = true;
       }
     }
 
     document.getElementById('btn-copiar-codigo').onclick = () => {
       navigator.clipboard.writeText(document.getElementById('mesa-codigo').textContent);
-      alert("Código copiado para a área de transferência!");
+      alert("Código copiado!");
     };
 
     /* ========================================================= */
-    /* PAINEL DO MESTRE: CONFIGURAÇÕES & RAÍZES                  */
+    /* CONTROLE DAS GAVETAS RECOLHÍVEIS                          */
     /* ========================================================= */
-    let formPreenchido = false;
-    function renderizarPainelMestre() {
+    const gavetaRegras = document.getElementById('gaveta-regras');
+    const gavetaItens = document.getElementById('gaveta-itens');
+
+    document.getElementById('btn-toggle-regras').onclick = () => {
+      const abrindo = gavetaRegras.hidden;
+      gavetaRegras.hidden = !abrindo;
+      if (abrindo) gavetaItens.hidden = true;
+    };
+    document.getElementById('btn-fechar-regras').onclick = () => gavetaRegras.hidden = true;
+
+    document.getElementById('btn-toggle-itens').onclick = () => {
+      const abrindo = gavetaItens.hidden;
+      gavetaItens.hidden = !abrindo;
+      if (abrindo) gavetaRegras.hidden = true;
+    };
+    document.getElementById('btn-fechar-itens').onclick = () => gavetaItens.hidden = true;
+
+    /* ========================================================= */
+    /* GAVETA 1: REGRAS DA MESA & RAÍZES                         */
+    /* ========================================================= */
+    function renderizarGavetaRegras() {
       if (!souMestre) return;
 
-      if (!formPreenchido) {
+      if (!formRegrasPreenchido) {
         document.getElementById('cfg-pontos-attr').value = regrasAtuais.pontosAtributoIniciais;
         document.getElementById('cfg-estagio-inicial').value = regrasAtuais.estagioInicial;
         document.getElementById('cfg-pontos-evo').value = regrasAtuais.pontosEvolucaoIniciais;
@@ -399,15 +605,14 @@
         document.getElementById('cfg-pass-focado').value = regrasAtuais.passatemposFocados;
         document.getElementById('cfg-pass-misto').value = regrasAtuais.passatemposMistos;
         document.getElementById('cfg-trava-ascendente').checked = regrasAtuais.travaAscendenteCarga !== false;
-        formPreenchido = true;
+        formRegrasPreenchido = true;
       }
 
-      // Renderiza chips das raízes cadastradas
       const raizes = mesaDados.raizesDisponiveis || {};
       const container = document.getElementById('lista-raizes-mesa');
       const nomes = Object.keys(raizes);
       if (!nomes.length) {
-        container.innerHTML = `<span class="text-xs text-stone-500 italic">Nenhuma raiz cadastrada. Clique em "Importar 10 Raízes + Órfão do Livro" acima.</span>`;
+        container.innerHTML = `<span class="text-xs text-stone-500 italic">Nenhuma raiz cadastrada.</span>`;
         return;
       }
 
@@ -427,7 +632,7 @@
       container.querySelectorAll('[data-del-raiz]').forEach(btn => {
         btn.onclick = async () => {
           const alvo = btn.dataset.delRaiz;
-          if (!confirm(`Remover a raiz "${alvo}" da mesa?`)) return;
+          if (!confirm(`Remover a raiz "${alvo}"?`)) return;
           const copia = { ...(mesaDados.raizesDisponiveis || {}) };
           delete copia[alvo];
           await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: copia });
@@ -452,7 +657,8 @@
         travaAscendenteCarga: document.getElementById('cfg-trava-ascendente').checked
       };
       await updateDoc(doc(db, "mesas", mesaId), { regras: novasRegras });
-      alert("Regras da campanha atualizadas com sucesso!");
+      gavetaRegras.hidden = true;
+      alert("Regras da campanha salvas!");
     };
 
     document.getElementById('btn-importar-raizes-livro').onclick = async () => {
@@ -476,21 +682,160 @@
       ['hp', 'san', 'pef', 'pem'].forEach(k => document.getElementById(`nova-raiz-${k}`).value = '');
     };
 
-    function renderizarResumoRegrasJogadores() {
-      const r = regrasAtuais;
-      document.getElementById('resumo-regras-jogadores').innerHTML = `
-        <div>• <strong>Pontos de Atributo:</strong> ${r.pontosAtributoIniciais} pts (+1 se Órfão)</div>
-        <div>• <strong>Estágio Inicial:</strong> ${NOMES_ESTAGIOS[r.estagioInicial]} (Teto: ${r.tetosPorEstagio[r.estagioInicial]})</div>
-        <div>• <strong>Pontos de Evolução Iniciais:</strong> ${r.pontosEvolucaoIniciais} PT</div>
-        <div>• <strong>Raízes Extras na Criação:</strong> ${r.slotsRaizExtraCriacao}</div>
-        <div>• <strong>Passatempos:</strong> ${r.passatemposFocados} Focado(s) + ${r.passatemposMistos} Misto(s)</div>
-        <div>• <strong>Trava Ascendente de Carga:</strong> ${r.travaAscendenteCarga ? 'Ativa (Padrão)' : 'Desativada pelo Mestre'}</div>
-      `;
+    /* ========================================================= */
+    /* GAVETA 2: CATÁLOGO OFICIAL DE ITENS DA MESA               */
+    /* ========================================================= */
+    const selCatItem = document.getElementById('item-categoria');
+    selCatItem.onchange = () => {
+      const cat = selCatItem.value;
+      document.getElementById('campos-item-arma').hidden = cat !== 'arma';
+      document.getElementById('campos-item-escudo').hidden = cat !== 'escudo';
+      document.getElementById('campos-item-armadura').hidden = cat !== 'armadura';
+      document.getElementById('campos-item-cura').hidden = cat !== 'cura';
+    };
+
+    document.getElementById('btn-salvar-item-catalogo').onclick = async () => {
+      const nome = document.getElementById('item-nome').value.trim();
+      if (!nome) return alert("Informe o nome do item.");
+
+      const categoria = selCatItem.value;
+      const peso = document.getElementById('item-peso').value;
+      const pesoVal = PESO_BASE[peso] || 0;
+
+      const novoItem = {
+        id: 'item_' + Date.now(),
+        nome,
+        categoria,
+        peso,
+        descricao: document.getElementById('item-desc').value.trim()
+      };
+
+      if (categoria === 'arma') {
+        const defensiva = document.getElementById('item-arma-defensiva').checked;
+        novoItem.dano = document.getElementById('item-arma-dano').value.trim() || '1d6';
+        novoItem.criticoMargem = parseInt(document.getElementById('item-arma-crit-margem').value) || 20;
+        novoItem.criticoMult = parseInt(document.getElementById('item-arma-crit-mult').value) || 2;
+        novoItem.criticoExtra = document.getElementById('item-arma-crit-extra').value.trim() || '';
+        novoItem.ga = pesoVal;
+        novoItem.gd = pesoVal + (defensiva ? 1 : 0);
+        novoItem.armaDefensiva = defensiva;
+      } else if (categoria === 'escudo') {
+        novoItem.gd = pesoVal + 1;
+      } else if (categoria === 'armadura') {
+        novoItem.rd = parseInt(document.getElementById('item-armadura-rd').value) || 0;
+        novoItem.penalidadeDesl = parseInt(document.getElementById('item-armadura-pen-desl').value) || 0;
+      } else if (categoria === 'cura') {
+        novoItem.curaFormula = document.getElementById('item-cura-formula').value.trim() || '1d4';
+        novoItem.curaBonus = parseInt(document.getElementById('item-cura-bonus').value) || 0;
+        novoItem.usosMax = Math.max(1, parseInt(document.getElementById('item-cura-usos').value) || 1);
+      }
+
+      const habNome = document.getElementById('item-hab-nome').value.trim();
+      if (habNome) {
+        novoItem.habilidade = {
+          nome: habNome,
+          custo: document.getElementById('item-hab-custo').value.trim(),
+          efeito: document.getElementById('item-hab-efeito').value.trim()
+        };
+      }
+
+      const atuais = [...(mesaDados.catalogoItens || []), novoItem];
+      await updateDoc(doc(db, "mesas", mesaId), { catalogoItens: atuais });
+
+      // Limpa campos principais
+      document.getElementById('item-nome').value = '';
+      document.getElementById('item-desc').value = '';
+      document.getElementById('item-hab-nome').value = '';
+      document.getElementById('item-hab-custo').value = '';
+      document.getElementById('item-hab-efeito').value = '';
+      document.getElementById('item-arma-defensiva').checked = false;
+    };
+
+    function renderizarCatalogoItens() {
+      if (!souMestre) return;
+      const lista = mesaDados.catalogoItens || [];
+      const container = document.getElementById('lista-catalogo-itens');
+      if (!lista.length) {
+        container.innerHTML = `<p class="text-stone-500 italic col-span-2">Nenhum item cadastrado no catálogo desta mesa.</p>`;
+        return;
+      }
+
+      container.innerHTML = lista.map(it => {
+        let stats = '';
+        if (it.categoria === 'arma') {
+          stats = `Dano: <strong class="text-red-300">${it.dano}</strong> | Crít: <strong>${it.criticoMargem}+ (x${it.criticoMult})</strong> | GA ${it.ga} / GD ${it.gd}`;
+        } else if (it.categoria === 'escudo') {
+          stats = `Escudo | <strong class="text-emerald-300">GD ${it.gd}</strong> (+${it.gd * 2} Bloqueio)`;
+        } else if (it.categoria === 'armadura') {
+          stats = `Armadura | <strong class="text-sky-300">RD ${it.rd}</strong> ${it.penalidadeDesl ? `(${it.penalidadeDesl}m Desl)` : ''}`;
+        } else if (it.categoria === 'cura') {
+          stats = `Cura: <strong class="text-emerald-300">${it.curaFormula}</strong> | Bônus Med: <strong>${it.curaBonus >= 0 ? '+' + it.curaBonus : it.curaBonus}</strong> (${it.usosMax} usos)`;
+        }
+
+        return `
+          <div class="bg-stone-950 border border-stone-800 rounded p-3 flex justify-between items-start gap-2">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <strong class="font-cinzel text-gold-300">${it.nome}</strong>
+                <span class="px-1.5 py-0.5 rounded bg-stone-900 text-stone-400 font-mono text-[10px] uppercase">${it.peso}</span>
+              </div>
+              ${stats ? `<div class="font-mono text-[11px] text-stone-300">${stats}</div>` : ''}
+              ${it.descricao ? `<p class="text-stone-400 text-[11px]">${it.descricao}</p>` : ''}
+              ${it.habilidade ? `<div class="text-[11px] text-purple-300">✨ <strong>${it.habilidade.nome}</strong> ${it.habilidade.custo ? `(${it.habilidade.custo})` : ''}: ${it.habilidade.efeito}</div>` : ''}
+            </div>
+            <button data-del-item="${it.id}" class="text-stone-500 hover:text-red-400">✕</button>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('[data-del-item]').forEach(btn => {
+        btn.onclick = async () => {
+          if (!confirm("Remover este item do catálogo?")) return;
+          const filtrados = (mesaDados.catalogoItens || []).filter(x => x.id !== btn.dataset.delItem);
+          await updateDoc(doc(db, "mesas", mesaId), { catalogoItens: filtrados });
+        };
+      });
     }
 
     /* ========================================================= */
-    /* CRIAÇÃO E LISTAGEM DE FICHAS                              */
+    /* FICHAS DA MESA (COM VIDA E RECURSOS ATUAIS)               */
     /* ========================================================= */
+    function calcularResumoRecursos(ficha) {
+      const h = ficha.raizesHeranca || {};
+      const raizPrincipal = h.tipo === 'auto' ? 'Órfão' : (h.r1 || '');
+      const bonusRaiz = (mesaDados?.raizesDisponiveis || {})[raizPrincipal] || [0, 0, 0, 0];
+
+      // Soma atributos base + bônus de nós desbloqueados + conversões
+      const attr = { ...(ficha.atributosBase || {}) };
+      const arvores = mesaDados?.arvores || [];
+      Object.entries(ficha.nosDesbloqueados || {}).forEach(([arvId, nosIds]) => {
+        const arv = arvores.find(a => a.id === arvId);
+        if (!arv) return;
+        (nosIds || []).forEach(noId => {
+          const no = (arv.nos || []).find(n => n.id === noId);
+          if (no?.efeitoTipo === 'atributo' && no.efeitoAlvo) {
+            attr[no.efeitoAlvo] = (attr[no.efeitoAlvo] || 0) + (parseInt(no.efeitoValor) || 1);
+          }
+        });
+      });
+      (ficha.conversoesMaestria || []).forEach(c => {
+        if (c.atributo) attr[c.atributo] = (attr[c.atributo] || 0) + 1;
+      });
+
+      const hpMax = 10 + ((attr.vigor || 0) * 3) + (bonusRaiz[0] || 0) + (ficha.bonusRecursosArvore?.hp || 0);
+      const sanMax = 10 + ((attr.impeto || 0) * 3) + (bonusRaiz[1] || 0) + (ficha.bonusRecursosArvore?.san || 0);
+      const pefMax = 5 + (attr.destreza || 0) + (attr.vigor || 0) + (bonusRaiz[2] || 0) + (ficha.bonusRecursosArvore?.pef || 0);
+      const pemMax = 5 + (attr.impeto || 0) + (attr.erudicao || 0) + (bonusRaiz[3] || 0) + (ficha.bonusRecursosArvore?.pem || 0);
+
+      const atuais = ficha.recursosAtuais || {};
+      return {
+        hp: { cur: atuais.hp ?? hpMax, max: hpMax },
+        san: { cur: atuais.san ?? sanMax, max: sanMax },
+        pef: { cur: atuais.pef ?? pefMax, max: pefMax },
+        pem: { cur: atuais.pem ?? pemMax, max: pemMax }
+      };
+    }
+
     document.getElementById('btn-nova-ficha').onclick = async () => {
       const nome = prompt("Nome do novo personagem:");
       if (!nome || !nome.trim()) return;
@@ -532,7 +877,7 @@
 
       const visiveis = souMestre ? fichas : fichas.filter(f => f.donoId === usuarioAtual.uid);
       if (!visiveis.length) {
-        grid.innerHTML = `<p class="text-xs text-stone-400 italic col-span-2">Nenhuma ficha encontrada. Clique em "+ Nova Ficha" para criar seu personagem.</p>`;
+        grid.innerHTML = `<p class="text-xs text-stone-400 italic col-span-2">Nenhuma ficha encontrada. Clique em "+ Nova Ficha" para começar.</p>`;
         return;
       }
 
@@ -548,39 +893,55 @@
 
         const estagio = f.estagioBiologico || 1;
         const tetoEfetivo = f.tetoIndividualOverride || regrasAtuais.tetosPorEstagio[estagio] || 2;
+        const rec = calcularResumoRecursos(f);
+        const pctHp = Math.max(0, Math.min(100, Math.round((rec.hp.cur / Math.max(1, rec.hp.max)) * 100)));
 
         return `
           <div class="bg-stone-950/90 border border-stone-800 hover:border-gold-600/60 rounded-lg p-4 flex flex-col justify-between gap-3">
-            <div>
+            <div class="space-y-2.5">
               <div class="flex justify-between items-start gap-2">
                 <div>
                   <h3 class="font-cinzel font-bold text-base text-gold-300">${f.nome}</h3>
-                  <p class="text-[11px] text-stone-400">Jogador: ${f.donoNome || '—'}</p>
+                  <p class="text-[11px] text-stone-400">${f.donoNome || '—'} · ${origemTxt}</p>
                 </div>
                 <span class="px-2 py-0.5 rounded text-[10px] font-mono ${f.criacaoFinalizada ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : 'bg-sky-950 text-sky-300 border border-sky-700'}">
                   ${f.criacaoFinalizada ? '🔒 Finalizada' : '✏️ Em Criação'}
                 </span>
               </div>
 
-              <div class="mt-2 text-xs text-stone-300 space-y-1">
-                <div><strong>Origem:</strong> ${origemTxt}</div>
-                <div><strong>Estágio:</strong> ${NOMES_ESTAGIOS[estagio]} <span class="text-gold-400 font-mono">(Teto Attr: ${tetoEfetivo})</span></div>
-                <div><strong>Pontos de Evolução:</strong> <span class="text-emerald-400 font-mono font-bold">${f.pontosEvolucao || 0} PT</span></div>
-                ${(f.raizesExtras || []).length ? `<div class="text-emerald-400 text-[11px]">+ Raízes Extras: ${f.raizesExtras.join(', ')}</div>` : ''}
+              <!-- Barra de Vida Atual + Recursos Rápidos -->
+              <div class="bg-stone-900/90 p-2.5 rounded border border-stone-800 space-y-1.5">
+                <div class="flex justify-between text-[11px] font-mono">
+                  <span class="text-red-400 font-bold">❤️ HP: ${rec.hp.cur} / ${rec.hp.max}</span>
+                  <span class="text-purple-300">🧠 SAN: ${rec.san.cur}/${rec.san.max}</span>
+                </div>
+                <div class="w-full h-2 bg-stone-950 rounded-full overflow-hidden border border-stone-800">
+                  <div class="h-full bg-red-600 transition-all" style="width: ${pctHp}%"></div>
+                </div>
+                <div class="flex justify-between text-[10px] font-mono text-stone-400 pt-0.5">
+                  <span class="text-amber-300">⚡ PE-F: ${rec.pef.cur}/${rec.pef.max}</span>
+                  <span class="text-sky-300">✨ PE-M: ${rec.pem.cur}/${rec.pem.max}</span>
+                </div>
               </div>
+
+              <div class="text-[11px] text-stone-300 flex flex-wrap justify-between gap-1">
+                <span>${NOMES_ESTAGIOS[estagio]} (Teto: <strong class="text-gold-400">${tetoEfetivo}</strong>)</span>
+                <span class="text-emerald-400 font-mono font-bold">${f.pontosEvolucao || 0} PT</span>
+              </div>
+              ${(f.raizesExtras || []).length ? `<div class="text-emerald-400 text-[11px]">+ Extras: ${f.raizesExtras.join(', ')}</div>` : ''}
             </div>
 
             <!-- Ações -->
-            <div class="pt-2 border-t border-stone-900 flex flex-wrap gap-2 items-center">
+            <div class="pt-2 border-t border-stone-900 flex flex-wrap gap-1.5 items-center">
               <a href="ficha.html?mesaId=${mesaId}&fichaId=${f.id}" class="flex-1 text-center px-3 py-1.5 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
                 Abrir Ficha
               </a>
 
               ${souMestre ? `
-                <button data-pts="${f.id}" data-cur="${f.pontosEvolucao || 0}" class="px-2.5 py-1.5 rounded bg-emerald-950 border border-emerald-700 text-emerald-300 text-xs font-mono" title="Dar Pontos de Evolução">+PT</button>
-                <button data-extra="${f.id}" class="px-2.5 py-1.5 rounded bg-sky-950 border border-sky-700 text-sky-300 text-xs" title="Conceder Raiz Extra">+Raiz</button>
-                <button data-estagio="${f.id}" data-cur-est="${estagio}" class="px-2.5 py-1.5 rounded bg-amber-950 border border-amber-700 text-amber-300 text-xs" title="Avançar Estágio Biológico">Estágio</button>
-                <button data-trava="${f.id}" data-locked="${f.criacaoFinalizada ? '1' : '0'}" class="px-2.5 py-1.5 rounded bg-stone-900 border border-stone-700 text-stone-300 text-xs" title="Travar / Reabrir Criação">
+                <button data-pts="${f.id}" data-cur="${f.pontosEvolucao || 0}" class="px-2 py-1.5 rounded bg-emerald-950 border border-emerald-700 text-emerald-300 text-xs font-mono" title="Dar Pontos de Evolução">+PT</button>
+                <button data-extra="${f.id}" class="px-2 py-1.5 rounded bg-sky-950 border border-sky-700 text-sky-300 text-xs" title="Conceder Raiz Extra">+Raiz</button>
+                <button data-estagio="${f.id}" data-cur-est="${estagio}" class="px-2 py-1.5 rounded bg-amber-950 border border-amber-700 text-amber-300 text-xs" title="Estágio Biológico / Teto Individual">Estágio</button>
+                <button data-trava="${f.id}" data-locked="${f.criacaoFinalizada ? '1' : '0'}" class="px-2 py-1.5 rounded bg-stone-900 border border-stone-700 text-stone-300 text-xs" title="Travar / Reabrir Criação">
                   ${f.criacaoFinalizada ? '🔓' : '🔒'}
                 </button>
               ` : ''}
@@ -589,21 +950,21 @@
         `;
       }).join('');
 
-      // Eventos dos botões rápidos do Mestre
       if (souMestre) {
         grid.querySelectorAll('[data-pts]').forEach(b => {
           b.onclick = async () => {
-            const qtd = parseInt(prompt("Quantos Pontos de Evolução deseja adicionar? (Use negativo para remover)", "1"));
+            const qtd = parseInt(prompt("Quantos Pontos de Evolução adicionar? (Use negativo para remover)", "1"));
             if (isNaN(qtd) || qtd === 0) return;
-            const novoTotal = Math.max(0, (parseInt(b.dataset.cur) || 0) + qtd);
-            await updateDoc(doc(db, "fichas", b.dataset.pts), { pontosEvolucao: novoTotal });
+            await updateDoc(doc(db, "fichas", b.dataset.pts), {
+              pontosEvolucao: Math.max(0, (parseInt(b.dataset.cur) || 0) + qtd)
+            });
           };
         });
 
         grid.querySelectorAll('[data-extra]').forEach(b => {
           b.onclick = async () => {
             const disponiveis = Object.keys(mesaDados.raizesDisponiveis || {});
-            const escolhida = prompt(`Digite o nome da Raiz Extra para liberar:\nDisponíveis: ${disponiveis.join(', ')}`);
+            const escolhida = prompt(`Digite o nome da Raiz Extra:\nDisponíveis: ${disponiveis.join(', ')}`);
             if (!escolhida || !escolhida.trim()) return;
             const ficha = fichas.find(x => x.id === b.dataset.extra);
             const atuais = ficha?.raizesExtras || [];
@@ -615,12 +976,24 @@
 
         grid.querySelectorAll('[data-estagio]').forEach(b => {
           b.onclick = async () => {
-            const novoEst = parseInt(prompt(
-              "Escolha o novo Estágio Biológico:\n1 - Criação (Infância)\n2 - Evolução da Raiz\n3 - Fase Adulta (Vocação)\n4 - Transgressão Mística",
+            const ficha = fichas.find(x => x.id === b.dataset.estagio);
+            const resp = prompt(
+              "Escolha o Estágio Biológico (1 a 4):\n1 - Criação (Infância)\n2 - Evolução da Raiz\n3 - Fase Adulta (Vocação)\n4 - Transgressão Mística",
               b.dataset.curEst
-            ));
+            );
+            const novoEst = parseInt(resp);
             if (![1, 2, 3, 4].includes(novoEst)) return;
-            await updateDoc(doc(db, "fichas", b.dataset.estagio), { estagioBiologico: novoEst });
+
+            const tetoCustom = prompt(
+              "Teto individual de atributo para esta ficha? (Deixe vazio para usar o padrão do estágio)",
+              ficha?.tetoIndividualOverride || ''
+            );
+            const tetoParsed = tetoCustom && !isNaN(parseInt(tetoCustom)) ? parseInt(tetoCustom) : null;
+
+            await updateDoc(doc(db, "fichas", b.dataset.estagio), {
+              estagioBiologico: novoEst,
+              tetoIndividualOverride: tetoParsed
+            });
           };
         });
 
@@ -634,7 +1007,7 @@
     }
 
     /* ========================================================= */
-    /* FEED DE ROLAGENS AO VIVO                                  */
+    /* HISTÓRICO E ROLADOR LIVRE DO MESTRE                       */
     /* ========================================================= */
     function renderizarFeedRolagens(lista) {
       const feed = document.getElementById('feed-rolagens');
@@ -644,9 +1017,9 @@
       }
 
       feed.innerHTML = lista.map(r => `
-        <div class="bg-stone-950 border border-stone-800 rounded p-2.5 space-y-1">
+        <div class="bg-stone-950 border ${r.ehMestre ? 'border-gold-700/50' : 'border-stone-800'} rounded p-2.5 space-y-1">
           <div class="flex justify-between items-baseline">
-            <strong class="font-cinzel text-gold-300">${r.personagemNome || 'Personagem'}</strong>
+            <strong class="font-cinzel ${r.ehMestre ? 'text-amber-400' : 'text-gold-300'}">${r.personagemNome || 'Personagem'}</strong>
             <span class="font-cinzel font-bold text-lg text-gold-400">${r.total}</span>
           </div>
           <div class="text-[11px] text-stone-300">${r.descricao || ''}</div>
@@ -655,10 +1028,67 @@
       `).join('');
     }
 
+    document.getElementById('btn-rolar-mestre').onclick = async () => {
+      const qtd = Math.max(1, Math.min(20, parseInt(document.getElementById('mestre-dado-qtd').value) || 1));
+      const faces = parseInt(document.getElementById('mestre-dado-faces').value) || 20;
+      const mod = parseInt(document.getElementById('mestre-dado-mod').value) || 0;
+      const modo = document.getElementById('mestre-dado-modo').value;
+      const rotulo = document.getElementById('mestre-dado-rotulo').value.trim();
+      const publica = document.getElementById('mestre-rolagem-publica').checked;
+
+      const dados = [];
+      for (let i = 0; i < qtd; i++) {
+        dados.push(Math.floor(Math.random() * faces) + 1);
+      }
+
+      let base = 0;
+      let modoTxt = '';
+      if (modo === 'soma') {
+        base = dados.reduce((a, b) => a + b, 0);
+        modoTxt = 'Soma';
+      } else if (modo === 'maior') {
+        base = Math.max(...dados);
+        modoTxt = 'Maior';
+      } else {
+        base = Math.min(...dados);
+        modoTxt = 'Menor';
+      }
+
+      const total = base + mod;
+      const modStr = mod !== 0 ? (mod > 0 ? ` + ${mod}` : ` - ${Math.abs(mod)}`) : '';
+      const descricao = `${rotulo ? rotulo + ' · ' : ''}${qtd}d${faces} (${modoTxt})${modStr}`;
+      const detalhes = `Dados: [${dados.join(', ')}]${modStr}`;
+
+      // Exibe sempre no visor local do Mestre
+      const boxRes = document.getElementById('mestre-resultado-local');
+      const tagRes = document.getElementById('mestre-res-tag');
+      boxRes.hidden = false;
+      document.getElementById('mestre-res-total').textContent = total;
+      document.getElementById('mestre-res-detalhes').textContent = `${descricao} → ${detalhes}`;
+
+      if (publica) {
+        tagRes.textContent = "👁️ Pública (Enviada)";
+        tagRes.className = "text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700";
+
+        await addDoc(collection(db, "rolagens"), {
+          mesaId,
+          ehMestre: true,
+          personagemNome: "👑 Mestre",
+          total,
+          descricao,
+          detalhes,
+          criadoEm: serverTimestamp()
+        });
+      } else {
+        tagRes.textContent = "🙈 Secreta (Só Mestre)";
+        tagRes.className = "text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-700";
+      }
+    };
+
     document.getElementById('btn-limpar-log').onclick = async () => {
-      if (!confirm("Deseja apagar todas as rolagens recentes do histórico?")) return;
+      if (!confirm("Deseja apagar todas as rolagens do histórico público?")) return;
       const q = query(collection(db, "rolagens"), where("mesaId", "==", mesaId));
-      const snap = await import('../js/firebase-config.js').then(m => m.getDocs(q));
+      const snap = await getDocs(q);
       snap.forEach(d => deleteDoc(doc(db, "rolagens", d.id)));
     };
   </script>
