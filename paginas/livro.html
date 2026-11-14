@@ -844,6 +844,8 @@
 
           </div>
 
+          
+
           <!-- BLOCO INTEGRADO: REGRA DE PERÍCIAS & CONVERSÃO -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
 
@@ -1086,6 +1088,182 @@
           </div>
 
         </div>
+
+<!-- ================= SEÇÃO: SISTEMA DE CARGA & INVENTÁRIO ================= -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-5">
+
+          <!-- Header da Seção -->
+          <div class="border-b border-gold-600/40 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div>
+              <h3 class="font-cinzel text-lg text-gold-400 font-bold flex items-center gap-2 glow-gold">
+                <i class="fa-solid fa-box-archive text-gold-500"></i> Sistema de Carga & Inventário por Vigor
+              </h3>
+              <p class="text-xs text-stone-400">
+                A capacidade de transporte do personagem é determinada diretamente por sua resistência corporal (Vigor).
+              </p>
+            </div>
+            <span class="text-xs text-stone-400 font-mono">Gestão de Inventário</span>
+          </div>
+
+          <!-- Cards das 4 Categorias de Carga -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+
+            <!-- PESADO -->
+            <div class="bg-stone-950/90 border border-red-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+                <h4 class="font-cinzel font-bold text-red-400 text-xs">Itens Pesados</h4>
+                <span class="px-2 py-0.5 rounded bg-red-950 border border-red-700 text-red-300 font-mono text-[11px] font-bold">Vigor</span>
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Armaduras Pesadas, Escudos Torre, Armas de Duas Mãos, Baús e Toras. 
+              </p>
+              <div class="bg-stone-900 p-2 rounded border border-red-900/30 text-stone-400 text-[10px] italic">
+                *Personagens com <strong>Vigor 0</strong> possuem limite 0 e não conseguem carregar itens pesados.
+              </div>
+            </div>
+
+            <!-- MÉDIO -->
+            <div class="bg-stone-950/90 border border-amber-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+                <h4 class="font-cinzel font-bold text-amber-400 text-xs">Itens Médios</h4>
+                <span class="px-2 py-0.5 rounded bg-amber-950 border border-amber-700 text-amber-300 font-mono text-[11px] font-bold">Vigor + 1</span>
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Armaduras Médias, Escudos Médios, Armas de Uma Mão e Cordas.
+              </p>
+            </div>
+
+            <!-- LEVE -->
+            <div class="bg-stone-950/90 border border-sky-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+                <h4 class="font-cinzel font-bold text-sky-400 text-xs">Itens Leves</h4>
+                <span class="px-2 py-0.5 rounded bg-sky-950 border border-sky-700 text-sky-300 font-mono text-[11px] font-bold">Vigor + 2</span>
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Armaduras Leves, Escudos Leves (Broquel), Adagas, Kits Médicos, Rações de Viagem e Tochas.
+              </p>
+            </div>
+
+            <!-- PEQUENOS -->
+            <div class="bg-stone-950/90 border border-emerald-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+                <h4 class="font-cinzel font-bold text-emerald-400 text-xs">Bolso de Miudezas</h4>
+                <span class="px-2 py-0.5 rounded bg-emerald-950 border border-emerald-700 text-emerald-300 font-mono text-[11px] font-bold">10 (Fixo)</span>
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Bandagens avulsas, moedas, papéis, ervas, poções pequenas, chaves e trapos.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Regra de Conversão de Slots & Trava Ascendente -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-1">
+
+            <div class="bg-stone-950 p-4 rounded border border-gold-600/40 space-y-2">
+              <h4 class="font-cinzel font-bold text-gold-300 text-xs flex items-center gap-2">
+                <i class="fa-solid fa-arrows-split-up-and-left text-gold-500"></i> Regra de Conversão Descendente
+              </h4>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Se o personagem optar por não utilizar um slot de categoria maior, ele pode converter esse espaço para carregar itens menores:
+              </p>
+              <ul class="text-stone-300 space-y-1 list-disc list-inside text-[11px]">
+                <li><strong class="text-red-400">1 Slot Pesado:</strong> Pode ser trocado por <span class="text-amber-400 font-bold">1 Médio + 1 Leve</span> <u>OU</u> por <span class="text-sky-400 font-bold">3 Leves</span>.</li>
+                <li><strong class="text-amber-400">1 Slot Médio:</strong> Pode ser trocado por <span class="text-sky-400 font-bold">2 Leves</span>.</li>
+              </ul>
+            </div>
+
+            <div class="bg-stone-950 p-4 rounded border border-red-900/40 space-y-2">
+              <h4 class="font-cinzel font-bold text-red-400 text-xs flex items-center gap-2">
+                <i class="fa-solid fa-ban text-red-500"></i> Trava Ascendente de Carga
+              </h4>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                O caminho inverso é <strong>estritamente proibido</strong>. Juntar vários itens leves ou médios não concede a capacidade biológica de carregar um Item Pesado extra se o personagem não tiver o Vigor necessário.
+              </p>
+              <p class="text-stone-400 text-[10px] italic border-t border-stone-900 pt-1.5">
+                Exemplo: Um personagem de Vigor 0 não pode somar 3 slots leves para tentar carregar um Machado de Duas Mãos.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ================= SEÇÃO: SISTEMA DE DESLOCAMENTO & MOBILIDADE ================= -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-5">
+
+          <!-- Header da Seção -->
+          <div class="border-b border-gold-600/40 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div>
+              <h3 class="font-cinzel text-lg text-gold-400 font-bold flex items-center gap-2 glow-gold">
+                <i class="fa-solid fa-person-running text-gold-500"></i> Sistema de Deslocamento & Mobilidade
+              </h3>
+              <p class="text-xs text-stone-400">
+                A capacidade de movimentação tática do personagem calculada a partir dos seus reflexos e coordenação motora.
+              </p>
+            </div>
+            <span class="text-xs text-stone-400 font-mono">Cálculo Base: 5m + Destreza</span>
+          </div>
+
+          <!-- Cards de Tipos de Movimento -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+
+            <!-- Movimento Padrão -->
+            <div class="bg-stone-950/90 border border-amber-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+                <h4 class="font-cinzel font-bold text-amber-400 text-xs">Deslocamento Base</h4>
+                <span class="px-2 py-0.5 rounded bg-amber-950 border border-amber-700 text-amber-300 font-mono text-[11px] font-bold">1 Ação de Movimento</span>
+              </div>
+              <div class="bg-stone-900 p-2 rounded border border-amber-900/30 text-center font-mono text-gold-400 text-xs font-bold">
+                5 + Destreza (em metros)
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Distância máxima percorrida no seu turno ao utilizar uma Ação de Movimento comum.
+              </p>
+            </div>
+
+            <!-- Corrida (Turno Completo) -->
+            <div class="bg-stone-950/90 border border-sky-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+                <h4 class="font-cinzel font-bold text-sky-400 text-xs">Ação de Corrida</h4>
+                <span class="px-2 py-0.5 rounded bg-sky-950 border border-sky-700 text-sky-300 font-mono text-[11px] font-bold">Principal + Movimento</span>
+              </div>
+              <div class="bg-stone-900 p-2 rounded border border-sky-900/30 text-center font-mono text-gold-400 text-xs font-bold">
+                (5 + Destreza) × 2 (em metros)
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Gasta a Ação Principal e a Ação de Movimento para disparar em velocidade total na rodada.
+              </p>
+            </div>
+
+            <!-- Movimento Penalizado -->
+            <div class="bg-stone-950/90 border border-red-900/60 p-4 rounded-lg space-y-2">
+              <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+                <h4 class="font-cinzel font-bold text-red-400 text-xs">Terreno Difícil & Furtividade</h4>
+                <span class="px-2 py-0.5 rounded bg-red-950 border border-red-700 text-red-300 font-mono text-[11px] font-bold">Custo Dobrado</span>
+              </div>
+              <div class="bg-stone-900 p-2 rounded border border-red-900/30 text-center font-mono text-gold-400 text-xs font-bold">
+                Metade do deslocamento base 
+              </div>
+              <p class="text-stone-300 text-[11px] leading-relaxed">
+                Mover-se em terrenos acidentados (lama, escombros), agachado ou tentando não fazer barulho reduz o avanço pela metade.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Nota sobre Penalidades de Equipamento -->
+          <div class="bg-stone-950 p-3.5 rounded border border-gold-600/40 text-xs space-y-1">
+            <div class="font-cinzel font-bold text-gold-300 flex items-center gap-2">
+              <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Modificadores de Deslocamento por Equipamento
+            </div>
+            <p class="text-stone-300 text-[11px] leading-relaxed">
+              O valor final do deslocamento pode ser reduzido por estigmas, ferimentos ou pela utilização de equipamentos volumosos (como <strong>Armaduras Pesadas</strong>, que aplicam reduções fixas de <span class="text-red-400 font-bold">-1m</span> ou <span class="text-red-400 font-bold">-2m</span> no total percorrido).
+            </p>
+          </div>
+
+        </div>
+
         <!-- BUSCADOR DE PERÍCIAS -->
         <div class="bg-parchment gold-border p-5 rounded-lg space-y-4">
           <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
@@ -1541,6 +1719,200 @@
           </div>
         </div>
 
+        <!-- ================= SEÇÃO: ARMADURAS, RD & ZONAS DE ALCANCE ================= -->
+        <!-- ================= SEÇÃO: ARMADURAS, ESCUDOS & RD ================= -->
+        <div class="bg-parchment gold-border p-5 rounded-lg space-y-5">
+
+          <!-- Header da Seção -->
+          <div class="border-b border-gold-600/40 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div>
+              <h3 class="font-cinzel text-lg text-gold-400 font-bold flex items-center gap-2 glow-gold">
+                <i class="fa-solid fa-shield-cat text-gold-500"></i> Proteção, Armaduras & Escudos
+              </h3>
+              <p class="text-xs text-stone-400">
+                Regras para Redução de Dano (RD), ocupação de slots de inventário e bônus de Bloqueio por Grau de Defesa (GD).
+              </p>
+            </div>
+            <span class="text-xs text-stone-400 font-mono">Absorção de Impacto</span>
+          </div>
+
+          <!-- BLOCO 1: ARMADURAS POR NÍVEL DE SLOT -->
+          <div class="space-y-3">
+            <h4 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-shirt text-amber-500"></i> 1. Armaduras & Redução de Dano (RD)
+            </h4>
+            <p class="text-xs text-stone-300 leading-relaxed">
+              No <strong>Pantheon</strong>, armaduras não alteram sua Dificuldade de Defesa (GD), mas absorvem diretamente a quantidade de dano sofrido em cada golpe. Cada armadura ocupa <strong>1 Slot da sua respetiva categoria de peso</strong> no inventário.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+
+              <!-- Armadura Leve -->
+              <div class="bg-stone-950/90 border border-sky-900/60 p-4 rounded-lg space-y-2">
+                <div class="flex justify-between items-center border-b border-stone-800 pb-2">
+                  <h5 class="font-cinzel font-bold text-sky-400 text-xs">Armadura Leve</h5>
+                  <span class="px-2 py-0.5 rounded bg-sky-950 border border-sky-700 text-sky-300 font-mono text-[10px] font-bold">1 Slot Leve</span>
+                </div>
+                <div class="bg-stone-900 p-2 rounded border border-sky-900/30 text-center font-mono text-gold-400 text-xs font-bold">
+                  RD 2 (Absorve 2 de Dano)
+                </div>
+                <p class="text-stone-300 text-[11px] leading-relaxed">
+                  Couro acolchoado, gibões de pano grosso ou peles simples. Proteção básica contra raspões.
+                </p>
+                <div class="text-emerald-400 text-[10px] font-bold border-t border-stone-900 pt-1.5">
+                  ✓ Sem penalidades de movimento ou furtividade.
+                </div>
+              </div>
+
+              <!-- Armadura Média -->
+              <div class="bg-stone-950/90 border border-amber-900/60 p-4 rounded-lg space-y-2">
+                <div class="flex justify-between items-center border-b border-stone-800 pb-2">
+                  <h5 class="font-cinzel font-bold text-amber-400 text-xs">Armadura Média</h5>
+                  <span class="px-2 py-0.5 rounded bg-amber-950 border border-amber-700 text-amber-300 font-mono text-[10px] font-bold">1 Slot Médio</span>
+                </div>
+                <div class="bg-stone-900 p-2 rounded border border-amber-900/30 text-center font-mono text-gold-400 text-xs font-bold">
+                  RD 4 (Absorve 4 de Dano)
+                </div>
+                <p class="text-stone-300 text-[11px] leading-relaxed">
+                  Couro batido reforçado, brigandina ou cota de malha leve. Equilíbrio perfeito entre defesa e agilidade.
+                </p>
+                <div class="text-amber-300 text-[10px] font-bold border-t border-stone-900 pt-1.5">
+                  ⚠ Exige ao menos Vigor 1 para ser carregada sem converter slots.
+                </div>
+              </div>
+
+              <!-- Armadura Pesada -->
+              <div class="bg-stone-950/90 border border-red-900/60 p-4 rounded-lg space-y-2">
+                <div class="flex justify-between items-center border-b border-stone-800 pb-2">
+                  <h5 class="font-cinzel font-bold text-red-400 text-xs">Armadura Pesada</h5>
+                  <span class="px-2 py-0.5 rounded bg-red-950 border border-red-700 text-red-300 font-mono text-[10px] font-bold">1 Slot Pesado</span>
+                </div>
+                <div class="bg-stone-900 p-2 rounded border border-red-900/30 text-center font-mono text-gold-400 text-xs font-bold">
+                  RD 6 (Absorve 6 de Dano)
+                </div>
+                <p class="text-stone-300 text-[11px] leading-relaxed">
+                  Cota de malha pesada ou armadura de placas completa de aço. Blindagem máxima para a linha de frente.
+                </p>
+                <div class="text-red-400 text-[10px] font-bold space-y-0.5 border-t border-stone-900 pt-1.5">
+                  <div>✖ Penalidade: <strong>-2m no Deslocamento</strong></div>
+                  <div>✖ Penalidade: <strong>-2 em rolagens que envolvam Destreza</strong></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- BLOCO 2: ESCUDOS E GRAU DE DEFESA (GD) -->
+          <div class="space-y-3 pt-2 border-t border-stone-800">
+            <h4 class="font-cinzel text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-shield-halved text-emerald-500"></i> 2. Escudos & Bônus de Bloqueio (GD + 1)
+            </h4>
+            <p class="text-xs text-stone-300 leading-relaxed">
+              Escudos aumentam drasticamente a eficiência da Reação Complexa de <strong>Bloqueio</strong> (<span class="text-gold-300">Vigor + Percepção + [GD × 2]</span>). Por sua natureza defensiva, cada escudo possui <strong>+1 Grau de Defesa (GD) além do seu peso real</strong>:
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+
+              <!-- Escudo Leve -->
+              <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-1.5">
+                <div class="flex justify-between items-center border-b border-stone-900 pb-1">
+                  <strong class="text-stone-200 font-cinzel text-xs">Escudo Leve (Broquel)</strong>
+                  <span class="px-1.5 py-0.5 rounded bg-stone-900 text-sky-400 font-mono text-[10px]">1 Slot Leve</span>
+                </div>
+                <div class="text-gold-400 font-mono text-[11px] font-bold">
+                  Peso Real: Leve | GD Efetivo: 2 (+4 Bloqueio)
+                </div>
+                <p class="text-stone-400 text-[11px]">
+                  Broquel pequeno preso ao antebraço. Deixa a mão livre para segurar tochas ou manusear itens leves.
+                </p>
+              </div>
+
+              <!-- Escudo Médio -->
+              <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-1.5">
+                <div class="flex justify-between items-center border-b border-stone-900 pb-1">
+                  <strong class="text-amber-400 font-cinzel text-xs">Escudo Médio (Gota / Redondo)</strong>
+                  <span class="px-1.5 py-0.5 rounded bg-stone-900 text-amber-400 font-mono text-[10px]">1 Slot Médio</span>
+                </div>
+                <div class="text-gold-400 font-mono text-[11px] font-bold">
+                  Peso Real: Médio | GD Efetivo: 3 (+6 Bloqueio)
+                </div>
+                <p class="text-stone-400 text-[11px]">
+                  Escudo clássico de madeira reforçada e bordo de metal. Proteção sólida para combatentes de infantaria.
+                </p>
+              </div>
+
+              <!-- Escudo Pesado -->
+              <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-1.5">
+                <div class="flex justify-between items-center border-b border-stone-900 pb-1">
+                  <strong class="text-red-400 font-cinzel text-xs">Escudo Pesado (Pavês / Torre)</strong>
+                  <span class="px-1.5 py-0.5 rounded bg-stone-900 text-red-400 font-mono text-[10px]">1 Slot Pesado</span>
+                </div>
+                <div class="text-gold-400 font-mono text-[11px] font-bold">
+                  Peso Real: Pesado | GD Efetivo: 4 (+8 Bloqueio)
+                </div>
+                <p class="text-stone-400 text-[11px]">
+                  Muralha de madeira e aço de corpo inteiro. Concede <strong>Cobertura Parcial (+2 Defesa)</strong> contra projéteis e reduz o Deslocamento em <strong>-1m</strong>.
+                </p>
+              </div>
+
+            </div>
+          </div>
+<!-- BLOCO 2: ZONAS DE ALCANCE E POSICIONAMENTO -->
+          <div class="space-y-3 pt-2 border-t border-stone-800">
+            <h4 class="font-cinzel text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-ruler-combined text-sky-500"></i> 2. Zonas de Alcance & Cobertura
+            </h4>
+            <p class="text-xs text-stone-300 leading-relaxed">
+              O espaço em combate é gerenciado de forma abstrata por Zonas ou por metros para facilitar a movimentação tática no campo.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+              
+              <div class="bg-stone-950 p-3 rounded border border-red-900/40 space-y-1">
+                <strong class="text-red-400 font-cinzel block text-xs">Corpo a Corpo (Engajado)</strong>
+                <span class="text-stone-500 font-mono text-[10px] block">Distância: 0 a 1,5 metros</span>
+                <p class="text-stone-400 text-[11px]">Distância de contato direto. Tentar sair dessa zona sem usar a ação <em>Desengajar</em> provoca <strong>Ataque de Oportunidade</strong> dos inimigos próximos.</p>
+              </div>
+
+              <div class="bg-stone-950 p-3 rounded border border-amber-900/40 space-y-1">
+                <strong class="text-amber-400 font-cinzel block text-xs">Alcance Curto</strong>
+                <span class="text-stone-500 font-mono text-[10px] block">Distância: 3 a 9 metros</span>
+                <p class="text-stone-400 text-[11px]">Distância de 1 Ação de Movimento. Ideal para arremesso de facas, machadinhas e magias/poderes de impacto rápido.</p>
+              </div>
+
+              <div class="bg-stone-950 p-3 rounded border border-sky-900/40 space-y-1">
+                <strong class="text-sky-400 font-cinzel block text-xs">Alcance Médio</strong>
+                <span class="text-stone-500 font-mono text-[10px] block">Distância: 12 a 24 metros</span>
+                <p class="text-stone-400 text-[11px]">Zona perfeita para disparos de arcos e pistolas. Exige 2 turnos de movimento direto para alcançar em corpo a corpo.</p>
+              </div>
+
+              <div class="bg-stone-950 p-3 rounded border border-purple-900/40 space-y-1">
+                <strong class="text-purple-400 font-cinzel block text-xs">Alcance Longo / Extremo</strong>
+                <span class="text-stone-500 font-mono text-[10px] block">Distância: 30+ metros</span>
+                <p class="text-stone-400 text-[11px]">Requer visão limpa ou armas pesadas (bestas pesadas, rifles). Ataques a essa distância sofrem <strong>-1 d20 sem mirante preparado</strong>.</p>
+              </div>
+
+            </div>
+
+            <!-- Regra Rápida de Cobertura -->
+            <div class="bg-stone-950 p-3 rounded border border-stone-800 text-xs flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+              <div class="space-y-0.5">
+                <strong class="text-gold-300 font-cinzel text-xs flex items-center gap-1.5">
+                  <i class="fa-solid fa-person-shelter text-gold-500"></i> Tipos de Cobertura de Campo
+                </strong>
+                <p class="text-stone-400 text-[11px]">
+                  <strong>Cobertura Parcial (Meio Corpo):</strong> Concede +2 na Defesa/Esquiva contra disparos à distância.
+                  <br>
+                  <strong>Cobertura Total (Parede/Rochas):</strong> Impede ataques diretos à distância até que o atirador mude de ângulo.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+          
+        
+
         <!-- 5. Compêndio Completo de Condições & Sequelas -->
         <div class="bg-parchment gold-border p-5 rounded-lg space-y-5">
           <div class="border-b border-gold-600/40 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
@@ -1806,7 +2178,7 @@
       {title: "2. Lenhador", main: "Atletismo + Tenacidade", world: "Luta", sec: "Ferramentas / Defesa"},
       {title: "3. Ferreiro", main: "Ferramentas + Tenacidade", world: "Erudição", sec: "Luta / Improviso"},
       {title: "4. Carpinteiro", main: "Ferramentas + Improviso", world: "Encontrar", sec: "Atletismo / Erudição"},
-      {title: "5. Curandeiro", main: "Medicina + Encontrar", world: "Intuição", sec: "Culinária / Sigilos"},
+      {title: "5. Curandeiro", main: "Medicina + Erudição", world: "Intuição", sec: "Culinária / Sigilos"},
       {title: "6. Cozinheiro / Padeiro", main: "Culinária + Tenacidade", world: "Persuasão", sec: "Encontrar / Medicina"},
       {title: "7. Pastor / Criador", main: "Sobrevivência + Tenacidade", world: "Intuição", sec: "Encontrar / Atletismo"},
       {title: "8. Mercador", main: "Persuasão + Enganação", world: "Erudição", sec: "Intuição / Investigação"},

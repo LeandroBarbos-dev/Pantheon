@@ -5,540 +5,663 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PANTHEON · Painel da Mesa</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=Faustina:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Faustina:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            gold: {
-              300: '#f6e05e',
-              400: '#ecc94b',
-              500: '#d69e2e',
-              600: '#b7791f',
-              700: '#975a16',
-              800: '#744210',
-            },
-            parchment: {
-              light: '#2a2620',
-              DEFAULT: '#1c1917',
-              dark: '#12100e',
-              border: '#3d3326'
-            }
+            gold: { 300: '#f6e05e', 400: '#ecc94b', 500: '#d69e2e', 600: '#b7791f', 700: '#975a16' },
+            parchment: { light: '#2a2620', DEFAULT: '#1c1917', dark: '#12100e', border: '#3d3326' }
           },
-          fontFamily: {
-            cinzel: ['Cinzel', 'serif'],
-            decorative: ['Cinzel Decorative', 'serif'],
-            body: ['Faustina', 'serif'],
-          }
+          fontFamily: { cinzel: ['Cinzel', 'serif'], body: ['Faustina', 'serif'] }
         }
       }
     }
   </script>
-
   <style>
-    body {
-      background-color: #090807;
-      color: #e2d8c3;
-      font-family: 'Faustina', serif;
-      background-image: radial-gradient(circle at 50% 20%, #1c1610 0%, #090807 80%);
-    }
-    .gold-border {
-      border: 1px solid #b7791f;
-      box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.85), 0 0 12px rgba(183, 121, 31, 0.15);
-    }
-    .glow-gold { text-shadow: 0 0 12px rgba(214, 158, 46, 0.55); }
+    body { background-color: #090807; color: #e2d8c3; font-family: 'Faustina', serif; }
+    .gold-border { border: 1px solid #b7791f; box-shadow: inset 0 0 12px rgba(0,0,0,0.8); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #090807; }
+    ::-webkit-scrollbar-thumb { background: #3d3326; border-radius: 3px; }
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col selection:bg-gold-700 selection:text-white">
+<body class="min-h-screen flex flex-col">
 
-  <!-- Barra Superior -->
-  <nav class="border-b border-gold-900/40 bg-stone-950/90 px-6 py-3 flex justify-between items-center backdrop-blur-md">
-    <div class="flex items-center gap-4">
-      <a href="../index.html" class="text-stone-400 hover:text-gold-400 text-xs font-cinzel flex items-center gap-1.5 transition-colors">
-        <i class="fa-solid fa-arrow-left"></i> Lobby
-      </a>
-      <span class="text-stone-700">|</span>
-      <span class="font-decorative text-gold-400 tracking-widest text-sm">PANTHEON</span>
-    </div>
-    <div id="user-badge" class="text-xs font-cinzel text-stone-400"></div>
-  </nav>
-
-  <!-- Cabeçalho da Mesa -->
-  <header class="max-w-6xl mx-auto w-full px-4 pt-8 pb-4">
-    <div class="bg-parchment gold-border rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <div>
-        <div class="flex items-center gap-2.5 mb-1">
-          <span id="papel-badge" class="font-mono text-[10px] uppercase px-2 py-0.5 rounded border border-gold-500 bg-amber-950/70 text-gold-300">
-            Carregando...
-          </span>
-          <span class="text-xs text-stone-400">Mestre: <strong id="mesa-mestre" class="text-stone-200">--</strong></span>
+  <!-- Cabeçalho -->
+  <header class="border-b border-gold-600/50 bg-parchment-dark/95 sticky top-0 z-30 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <a href="../index.html" class="px-3 py-1.5 rounded bg-stone-900 border border-stone-700 hover:border-gold-500 text-xs font-cinzel text-stone-300">
+          ← Início
+        </a>
+        <div>
+          <h1 id="mesa-nome" class="font-cinzel text-xl md:text-2xl font-bold text-gold-400">Carregando Mesa...</h1>
+          <div class="flex items-center gap-3 text-xs text-stone-400">
+            <span id="badge-papel" class="px-2 py-0.5 rounded font-cinzel text-[10px] uppercase border"></span>
+            <span>Código de Convite: <strong id="mesa-codigo" class="font-mono text-gold-300 select-all">---</strong></span>
+            <button id="btn-copiar-codigo" class="text-gold-400 hover:underline text-[11px]"><i class="fa-regular fa-copy"></i> Copiar</button>
+          </div>
         </div>
-        <h1 id="mesa-nome" class="font-cinzel text-2xl md:text-3xl font-bold text-gold-400 glow-gold">
-          Carregando Mesa...
-        </h1>
       </div>
 
-      <!-- Código de Convite -->
-      <div class="bg-stone-950 border border-stone-800 rounded-lg px-4 py-2.5 flex items-center gap-3">
-        <div>
-          <span class="block text-[10px] font-cinzel text-stone-500 uppercase">Código de Convite</span>
-          <span id="mesa-codigo" class="font-mono text-base font-bold text-gold-400 tracking-wider">----</span>
-        </div>
-        <button id="btn-copiar-codigo" class="p-2 rounded bg-stone-900 hover:bg-stone-800 text-gold-400 text-xs" title="Copiar código">
-          <i class="fa-regular fa-copy"></i>
+      <div class="flex items-center gap-2">
+        <a id="btn-abrir-editor" href="#" hidden class="px-3 py-2 rounded bg-amber-950/80 border border-amber-600 hover:bg-amber-800/60 text-amber-300 font-cinzel text-xs font-bold flex items-center gap-2">
+          <i class="fa-solid fa-diagram-project"></i> Editor de Árvores
+        </a>
+        <button id="btn-nova-ficha" class="px-4 py-2 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold flex items-center gap-2">
+          <i class="fa-solid fa-plus"></i> Nova Ficha
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Abas de Navegação -->
-  <div class="max-w-6xl mx-auto w-full px-4 mb-6">
-    <div class="flex gap-2 border-b border-stone-800 pb-2">
-      <button id="tab-fichas" class="px-4 py-2 rounded-t-lg font-cinzel text-xs font-bold bg-gold-900/40 text-gold-300 border border-b-0 border-gold-600/50">
-        <i class="fa-solid fa-users mr-1.5"></i> <span id="tab-fichas-label">Fichas</span>
-      </button>
-      <button id="tab-arvores" class="px-4 py-2 rounded-t-lg font-cinzel text-xs font-bold text-stone-400 hover:text-gold-300">
-        <i class="fa-solid fa-sitemap mr-1.5"></i> Raízes & Árvores da Mesa
-      </button>
-    </div>
-  </div>
+  <!-- Conteúdo Principal -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-  <!-- CONTEÚDO PRINCIPAL -->
-  <main class="max-w-6xl mx-auto w-full px-4 pb-12 flex-1">
+    <!-- Coluna Esquerda / Central (Fichas + Configurações do Mestre) -->
+    <div class="lg:col-span-8 space-y-6">
 
-    <!-- ABA 1: FICHAS -->
-    <section id="sec-fichas" class="space-y-6">
-      <div class="flex justify-between items-center">
-        <p id="fichas-subtitulo" class="text-sm text-stone-400">Gerencie os personagens desta campanha.</p>
-        <button id="btn-nova-ficha" class="px-4 py-2 bg-gradient-to-r from-gold-600 to-gold-700 hover:from-gold-500 hover:to-gold-600 text-stone-950 font-cinzel font-bold text-xs rounded-lg shadow-lg flex items-center gap-2">
-          <i class="fa-solid fa-plus"></i> Nova Ficha
-        </button>
-      </div>
-
-      <div id="grid-fichas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <p class="text-stone-500 italic text-sm">Carregando fichas...</p>
-      </div>
-    </section>
-
-    <!-- ABA 2: RAÍZES & ÁRVORES DA MESA -->
-    <section id="sec-arvores" class="hidden space-y-8">
-
-      <!-- Painel Exclusivo do Mestre para Gerenciar Raízes e Árvores -->
-      <div id="mestre-tools-arvores" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        <!-- Gerenciar Raízes Disponíveis na Mesa -->
-        <div class="bg-parchment gold-border rounded-xl p-5 space-y-4">
-          <div class="flex justify-between items-center">
-            <h3 class="font-cinzel text-sm font-bold text-gold-400 uppercase">
-              <i class="fa-solid fa-seedling mr-1.5"></i> Raízes Liberadas na Mesa
-            </h3>
-            <button id="btn-importar-raizes-padrao" class="px-2.5 py-1 rounded bg-stone-900 border border-gold-600/50 hover:bg-gold-900/40 text-gold-300 text-[11px] font-cinzel">
-              <i class="fa-solid fa-download mr-1"></i> Importar Base JSON
-            </button>
+      <!-- ========================================================= -->
+      <!-- PAINEL DO MESTRE: REGRAS DA MESA & RAÍZES                  -->
+      <!-- ========================================================= -->
+      <section id="painel-mestre" hidden class="bg-parchment gold-border rounded-xl p-5 space-y-5">
+        <div class="border-b border-gold-600/40 pb-3 flex flex-wrap justify-between items-center gap-2">
+          <div>
+            <h2 class="font-cinzel text-lg font-bold text-gold-400 flex items-center gap-2">
+              <i class="fa-solid fa-crown text-gold-500"></i> Configurações da Campanha (Mestre)
+            </h2>
+            <p class="text-xs text-stone-400">Defina os limites de criação, estágios biológicos, regras de carga e raízes disponíveis.</p>
           </div>
-          <p class="text-xs text-stone-400">Estas são as raízes que os jogadores poderão escolher na criação de ficha (ou que você pode liberar depois).</p>
-
-          <!-- Adicionar Nova Raiz Manualmente -->
-          <div class="bg-stone-950 p-3 rounded-lg border border-stone-800 space-y-2">
-            <input type="text" id="nova-raiz-nome" placeholder="Nome da Raiz (Ex: Ferreiro)" class="w-full bg-stone-900 border border-stone-700 rounded px-2.5 py-1.5 text-xs text-stone-200">
-            <div class="grid grid-cols-4 gap-1.5 text-center text-[10px] font-mono">
-              <div><label class="text-red-400 block">HP</label><input type="number" id="nova-raiz-hp" value="0" class="w-full bg-stone-900 border border-stone-700 rounded p-1 text-center"></div>
-              <div><label class="text-purple-400 block">SAN</label><input type="number" id="nova-raiz-san" value="0" class="w-full bg-stone-900 border border-stone-700 rounded p-1 text-center"></div>
-              <div><label class="text-amber-400 block">PE-F</label><input type="number" id="nova-raiz-pef" value="0" class="w-full bg-stone-900 border border-stone-700 rounded p-1 text-center"></div>
-              <div><label class="text-sky-400 block">PE-M</label><input type="number" id="nova-raiz-pem" value="0" class="w-full bg-stone-900 border border-stone-700 rounded p-1 text-center"></div>
-            </div>
-            <button id="btn-add-raiz" class="w-full py-1.5 bg-gold-700 hover:bg-gold-600 text-stone-950 font-cinzel font-bold text-xs rounded">
-              + Adicionar Raiz à Mesa
-            </button>
-          </div>
-
-          <div id="lista-raizes-mesa" class="flex flex-wrap gap-2"></div>
-        </div>
-
-        <!-- Gerenciar Árvores de Evolução da Mesa -->
-        <div class="bg-parchment gold-border rounded-xl p-5 space-y-4">
-          <div class="flex justify-between items-center">
-            <h3 class="font-cinzel text-sm font-bold text-gold-400 uppercase">
-              <i class="fa-solid fa-sitemap mr-1.5"></i> Árvores da Mesa
-            </h3>
-            <a id="link-editor-mesa" href="editor-arvores.html" class="px-3 py-1.5 rounded bg-gold-700 hover:bg-gold-600 text-stone-950 text-xs font-cinzel font-bold">
-              <i class="fa-solid fa-pen-ruler mr-1"></i> Abrir Editor na Mesa
-            </a>
-          </div>
-          <p class="text-xs text-stone-400">Importe uma árvore pré-pronta (JSON) ou crie novas pelo Editor vinculando o campo <strong>Raiz Associada</strong> ao nome da Raiz.</p>
-
-          <textarea id="import-arvore-json" rows="4" placeholder='Cole aqui o JSON exportado do Editor de Árvores...' class="w-full bg-stone-950 border border-stone-800 rounded p-2.5 font-mono text-[11px] text-gold-300 focus:outline-none focus:border-gold-500"></textarea>
-          <button id="btn-importar-arvore-json" class="w-full py-1.5 bg-sky-700 hover:bg-sky-600 text-stone-950 font-cinzel font-bold text-xs rounded">
-            <i class="fa-solid fa-file-import mr-1"></i> Adicionar Árvore via JSON
+          <button id="btn-salvar-regras" class="px-4 py-2 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
+            <i class="fa-solid fa-floppy-disk"></i> Salvar Regras da Mesa
           </button>
         </div>
 
-      </div>
+        <!-- 1. Regras de Criação de Ficha -->
+        <div class="space-y-3">
+          <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">
+            1. Parâmetros de Criação de Ficha
+          </h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div class="bg-stone-950 p-3 rounded border border-stone-800 space-y-1">
+              <label class="text-stone-400 block font-cinzel text-[10px]">Pontos de Atributo</label>
+              <input type="number" id="cfg-pontos-attr" min="0" max="30" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-gold-300 font-mono font-bold">
+              <span class="text-[10px] text-stone-500 block">Órfão recebe +1 auto</span>
+            </div>
 
-      <!-- Listagem Visual das Árvores Cadastradas na Mesa (Todos veem) -->
-      <div>
-        <h3 class="font-cinzel text-base font-bold text-gold-400 mb-3">Árvores Ativas nesta Campanha</h3>
-        <div id="lista-arvores-mesa" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <p class="text-stone-500 italic text-sm">Nenhuma árvore cadastrada ainda.</p>
+            <div class="bg-stone-950 p-3 rounded border border-stone-800 space-y-1">
+              <label class="text-stone-400 block font-cinzel text-[10px]">Estágio Inicial da Mesa</label>
+              <select id="cfg-estagio-inicial" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-gold-300 font-semibold">
+                <option value="1">1. Criação (Infância)</option>
+                <option value="2">2. Evolução da Raiz</option>
+                <option value="3">3. Fase Adulta (Vocação)</option>
+                <option value="4">4. Transgressão Mística</option>
+              </select>
+              <span class="text-[10px] text-stone-500 block">Define teto na criação</span>
+            </div>
+
+            <div class="bg-stone-950 p-3 rounded border border-stone-800 space-y-1">
+              <label class="text-stone-400 block font-cinzel text-[10px]">Pts Evolução Iniciais</label>
+              <input type="number" id="cfg-pontos-evo" min="0" max="100" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-emerald-400 font-mono font-bold">
+              <span class="text-[10px] text-stone-500 block">Pts de árvore ao criar</span>
+            </div>
+
+            <div class="bg-stone-950 p-3 rounded border border-stone-800 space-y-1">
+              <label class="text-stone-400 block font-cinzel text-[10px]">Slots Raiz Extra (Criação)</label>
+              <input type="number" id="cfg-slots-extra" min="0" max="5" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-sky-400 font-mono font-bold">
+              <span class="text-[10px] text-stone-500 block">Árvores extras livres</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-    </section>
+        <!-- 2. Tetos de Atributos por Estágio Biológico -->
+        <div class="space-y-3 pt-2 border-t border-stone-800">
+          <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">
+            2. Tetos Máximos de Atributo por Estágio Biológico
+          </h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div class="bg-stone-950 p-2.5 rounded border border-stone-800">
+              <label class="text-stone-400 block text-[10px]">1. Criação (Infância)</label>
+              <input type="number" id="cfg-teto-1" min="1" max="10" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono font-bold text-stone-200">
+            </div>
+            <div class="bg-stone-950 p-2.5 rounded border border-stone-800">
+              <label class="text-amber-400 block text-[10px]">2. Evolução da Raiz</label>
+              <input type="number" id="cfg-teto-2" min="1" max="10" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono font-bold text-amber-300">
+            </div>
+            <div class="bg-stone-950 p-2.5 rounded border border-stone-800">
+              <label class="text-gold-400 block text-[10px]">3. Fase Adulta (Vocação)</label>
+              <input type="number" id="cfg-teto-3" min="1" max="10" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono font-bold text-gold-300">
+            </div>
+            <div class="bg-stone-950 p-2.5 rounded border border-stone-800">
+              <label class="text-purple-400 block text-[10px]">4. Transgressão Mística</label>
+              <input type="number" id="cfg-teto-4" min="1" max="15" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono font-bold text-purple-300">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Passatempos Infantis & Regra de Carga -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-stone-800 text-xs">
+          <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-2">
+            <h4 class="font-cinzel font-bold text-gold-300">3. Passatempos Infantis na Criação</h4>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-stone-400 text-[10px] block">Focados (+2 Perícia)</label>
+                <input type="number" id="cfg-pass-focado" min="0" max="5" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-gold-300">
+              </div>
+              <div>
+                <label class="text-stone-400 text-[10px] block">Mistos (+1 / +1)</label>
+                <input type="number" id="cfg-pass-misto" min="0" max="5" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-gold-300">
+              </div>
+            </div>
+            <p class="text-[10px] text-stone-500">Órfãos ganham automaticamente +2 passatempos extras.</p>
+          </div>
+
+          <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-2 flex flex-col justify-between">
+            <div>
+              <h4 class="font-cinzel font-bold text-gold-300">4. Inventário & Trava Ascendente</h4>
+              <p class="text-[11px] text-stone-400 mt-1">
+                Quando ativa, impede combinar slots menores (Leve/Médio) para carregar itens Pesados acima do Vigor.
+              </p>
+            </div>
+            <label class="flex items-center gap-2.5 cursor-pointer pt-1">
+              <input type="checkbox" id="cfg-trava-ascendente" class="w-4 h-4 accent-amber-500">
+              <span class="font-cinzel font-bold text-stone-200">Habilitar Trava Ascendente de Carga</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 5. Gestão de Raízes Disponíveis na Mesa -->
+        <div class="space-y-3 pt-2 border-t border-stone-800">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <div>
+              <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">
+                5. Raízes / Origens Cadastradas na Mesa
+              </h3>
+              <p class="text-[11px] text-stone-400">Cada Raiz vincula-se à sua respectiva Árvore de Evolução e define os bônus de HP/SAN/PE.</p>
+            </div>
+            <button id="btn-importar-raizes-livro" class="px-3 py-1.5 rounded bg-stone-900 border border-gold-600/60 hover:border-gold-400 text-gold-300 font-cinzel text-[11px]">
+              <i class="fa-solid fa-book-open"></i> Importar 10 Raízes + Órfão do Livro
+            </button>
+          </div>
+
+          <!-- Form adicionar raiz -->
+          <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 bg-stone-950 p-2.5 rounded border border-stone-800 text-xs">
+            <input type="text" id="nova-raiz-nome" placeholder="Nome (ex: Ferreiro)" class="col-span-2 bg-stone-900 border border-stone-700 rounded px-2 py-1">
+            <input type="number" id="nova-raiz-hp" placeholder="HP" class="bg-stone-900 border border-stone-700 rounded px-2 py-1 text-center font-mono">
+            <input type="number" id="nova-raiz-san" placeholder="SAN" class="bg-stone-900 border border-stone-700 rounded px-2 py-1 text-center font-mono">
+            <input type="number" id="nova-raiz-pef" placeholder="PE-F" class="bg-stone-900 border border-stone-700 rounded px-2 py-1 text-center font-mono">
+            <div class="flex gap-1">
+              <input type="number" id="nova-raiz-pem" placeholder="PE-M" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-center font-mono">
+              <button id="btn-add-raiz" class="px-2.5 py-1 rounded bg-gold-600 text-stone-950 font-bold">+</button>
+            </div>
+          </div>
+
+          <!-- Lista de raízes cadastradas -->
+          <div id="lista-raizes-mesa" class="flex flex-wrap gap-2"></div>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- LISTA DE FICHAS DA MESA                                   -->
+      <!-- ========================================================= -->
+      <section class="bg-parchment gold-border rounded-xl p-5 space-y-4">
+        <div class="flex justify-between items-center border-b border-gold-600/40 pb-2">
+          <h2 class="font-cinzel text-lg font-bold text-gold-400 flex items-center gap-2">
+            <i class="fa-solid fa-scroll"></i> Personagens da Campanha
+          </h2>
+          <span id="contador-fichas" class="text-xs font-mono text-stone-400">0 fichas</span>
+        </div>
+
+        <div id="grid-fichas" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <p class="text-xs text-stone-400 italic">Carregando personagens...</p>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Coluna Direita: Histórico de Rolagens ao Vivo + Info -->
+    <aside class="lg:col-span-4 space-y-6">
+
+      <!-- Resumo das Regras Ativas da Mesa (visível para todos) -->
+      <section class="bg-parchment gold-border rounded-xl p-4 space-y-2 text-xs">
+        <h3 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
+          <i class="fa-solid fa-scale-balanced"></i> Regras Ativas desta Mesa
+        </h3>
+        <div id="resumo-regras-jogadores" class="space-y-1 text-stone-300"></div>
+      </section>
+
+      <!-- Log de Dados ao Vivo -->
+      <section class="bg-parchment gold-border rounded-xl p-4 flex flex-col h-[520px]">
+        <div class="border-b border-gold-600/40 pb-2 mb-3 flex justify-between items-center">
+          <h3 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
+            <i class="fa-solid fa-dice-d20 text-gold-500"></i> Rolagens ao Vivo
+          </h3>
+          <button id="btn-limpar-log" hidden class="text-[11px] text-stone-400 hover:text-red-400">Limpar</button>
+        </div>
+
+        <div id="feed-rolagens" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
+          <p class="text-stone-500 italic text-center mt-8">Nenhuma rolagem registrada ainda.</p>
+        </div>
+      </section>
+
+    </aside>
 
   </main>
-
-  <!-- Modal do Mestre: Liberar Raiz Extra na Ficha de um Jogador -->
-  <div id="modal-raiz-extra" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-parchment-dark gold-border rounded-xl p-6 w-full max-w-md space-y-4">
-      <h3 class="font-cinzel text-lg font-bold text-gold-400">Liberar Nova Raiz para Jogador</h3>
-      <p class="text-xs text-stone-300">Escolha uma raiz cadastrada na mesa para adicionar como Raiz Desbloqueada na ficha de <strong id="modal-ficha-nome" class="text-gold-300"></strong>:</p>
-      <select id="select-raiz-extra" class="w-full bg-stone-950 border border-stone-700 rounded px-3 py-2 text-sm text-stone-200"></select>
-      <div class="flex justify-end gap-2 pt-2">
-        <button id="btn-fechar-modal-raiz" class="px-4 py-1.5 bg-stone-900 border border-stone-700 text-xs font-cinzel rounded">Cancelar</button>
-        <button id="btn-confirmar-raiz-extra" class="px-4 py-1.5 bg-gold-700 text-stone-950 font-cinzel font-bold text-xs rounded">Liberar Raiz</button>
-      </div>
-    </div>
-  </div>
 
   <script type="module">
     import {
       auth, db, onAuthStateChanged,
-      collection, doc, addDoc, getDoc, updateDoc, deleteDoc,
-      query, where, onSnapshot, arrayUnion, increment
+      doc, getDoc, updateDoc, addDoc, deleteDoc,
+      collection, query, where, orderBy, limit, onSnapshot, serverTimestamp
     } from '../js/firebase-config.js';
 
     const params = new URLSearchParams(window.location.search);
     const mesaId = params.get('id');
     if (!mesaId) window.location.href = '../index.html';
 
+    const REGRAS_PADRAO = {
+      pontosAtributoIniciais: 5,
+      estagioInicial: 1,
+      tetosPorEstagio: { 1: 2, 2: 3, 3: 4, 4: 5 },
+      pontosEvolucaoIniciais: 0,
+      slotsRaizExtraCriacao: 0,
+      passatemposFocados: 1,
+      passatemposMistos: 1,
+      travaAscendenteCarga: true
+    };
+
+    const RAIZES_DO_LIVRO = {
+      "Órfão": [2, -2, 2, 2],
+      "Lenhador": [6, 0, 2, 0],
+      "Ferreiro": [4, 0, 2, 2],
+      "Guarda / Vigia": [4, 2, 2, 0],
+      "Caçador": [2, 0, 4, 2],
+      "Carpinteiro": [2, 0, 4, 2],
+      "Cozinheiro / Padeiro": [2, 2, 2, 2],
+      "Pastor / Criador": [2, 4, 2, 0],
+      "Mercador": [0, 2, 2, 4],
+      "Curandeiro": [0, 4, 0, 4],
+      "Escriba / Devoto": [0, 6, 0, 2]
+    };
+
+    const NOMES_ESTAGIOS = {
+      1: "1. Criação (Infância)",
+      2: "2. Evolução da Raiz",
+      3: "3. Fase Adulta (Vocação)",
+      4: "4. Transgressão Mística"
+    };
+
     let usuarioAtual = null;
     let mesaDados = null;
     let souMestre = false;
-    let fichaAlvoRaizExtra = null;
-
-    // Controle de Abas
-    const tabFichas = document.getElementById('tab-fichas');
-    const tabArvores = document.getElementById('tab-arvores');
-    const secFichas = document.getElementById('sec-fichas');
-    const secArvores = document.getElementById('sec-arvores');
-
-    tabFichas.onclick = () => {
-      secFichas.classList.remove('hidden');
-      secArvores.classList.add('hidden');
-      tabFichas.className = "px-4 py-2 rounded-t-lg font-cinzel text-xs font-bold bg-gold-900/40 text-gold-300 border border-b-0 border-gold-600/50";
-      tabArvores.className = "px-4 py-2 rounded-t-lg font-cinzel text-xs font-bold text-stone-400 hover:text-gold-300";
-    };
-
-    tabArvores.onclick = () => {
-      secArvores.classList.remove('hidden');
-      secFichas.classList.add('hidden');
-      tabArvores.className = "px-4 py-2 rounded-t-lg font-cinzel text-xs font-bold bg-gold-900/40 text-gold-300 border border-b-0 border-gold-600/50";
-      tabFichas.className = "px-4 py-2 rounded-t-lg font-cinzel text-xs font-bold text-stone-400 hover:text-gold-300";
-    };
+    let regrasAtuais = { ...REGRAS_PADRAO };
 
     onAuthStateChanged(auth, (user) => {
       if (!user) return window.location.href = '../index.html';
       usuarioAtual = user;
-      document.getElementById('user-badge').textContent = user.displayName;
-      iniciarEscutaMesa();
+      iniciarListeners();
     });
 
-    function iniciarEscutaMesa() {
-      const mesaRef = doc(db, "mesas", mesaId);
-      onSnapshot(mesaRef, (snap) => {
+    function iniciarListeners() {
+      // 1. Escuta em tempo real da Mesa
+      onSnapshot(doc(db, "mesas", mesaId), (snap) => {
         if (!snap.exists()) {
-          alert("Mesa não encontrada.");
+          alert("Mesa não encontrada!");
           return window.location.href = '../index.html';
         }
-
         mesaDados = snap.data();
         souMestre = mesaDados.mestreId === usuarioAtual.uid;
+        regrasAtuais = {
+          ...REGRAS_PADRAO,
+          ...(mesaDados.regras || {}),
+          tetosPorEstagio: { ...REGRAS_PADRAO.tetosPorEstagio, ...(mesaDados.regras?.tetosPorEstagio || {}) }
+        };
 
-        document.getElementById('mesa-nome').textContent = mesaDados.nome;
-        document.getElementById('mesa-mestre').textContent = mesaDados.mestreNome || 'Mestre';
-        document.getElementById('mesa-codigo').textContent = mesaDados.codigoConvite;
-
-        const badge = document.getElementById('papel-badge');
-        if (souMestre) {
-          badge.textContent = "👑 Visão do Mestre";
-          badge.className = "font-mono text-[10px] uppercase px-2 py-0.5 rounded border border-gold-500 bg-amber-950/70 text-gold-300";
-          document.getElementById('tab-fichas-label').textContent = "Todas as Fichas (Mestre)";
-          document.getElementById('mestre-tools-arvores').classList.remove('hidden');
-          document.getElementById('link-editor-mesa').href = `editor-arvores.html?mesaId=${mesaId}`;
-        } else {
-          badge.textContent = "⚔️ Jogador";
-          badge.className = "font-mono text-[10px] uppercase px-2 py-0.5 rounded border border-sky-500 bg-sky-950/70 text-sky-300";
-          document.getElementById('tab-fichas-label').textContent = "Minhas Fichas";
-        }
-
-        renderizarRaizesEArvores();
-        iniciarEscutaFichas();
+        renderizarCabecalhoMesa();
+        renderizarPainelMestre();
+        renderizarResumoRegrasJogadores();
       });
+
+      // 2. Escuta em tempo real das Fichas da Mesa
+      const qFichas = query(collection(db, "fichas"), where("mesaId", "==", mesaId));
+      onSnapshot(qFichas, (snapshot) => {
+        const fichas = [];
+        snapshot.forEach(d => fichas.push({ id: d.id, ...d.data() }));
+        renderizarListaFichas(fichas);
+      });
+
+      // 3. Escuta em tempo real das Rolagens da Mesa
+      const qRolagens = query(
+        collection(db, "rolagens"),
+        where("mesaId", "==", mesaId),
+        orderBy("criadoEm", "desc"),
+        limit(30)
+      );
+      onSnapshot(qRolagens, (snapshot) => {
+        const lista = [];
+        snapshot.forEach(d => lista.push({ id: d.id, ...d.data() }));
+        renderizarFeedRolagens(lista);
+      }, (err) => {
+        // Fallback caso o índice composto ainda não esteja criado no Firestore
+        console.warn("Aguardando índice para ordenação de rolagens:", err.message);
+      });
+    }
+
+    function renderizarCabecalhoMesa() {
+      document.getElementById('mesa-nome').textContent = mesaDados.nome || 'Mesa sem nome';
+      document.getElementById('mesa-codigo').textContent = mesaDados.codigoConvite || mesaId.slice(0, 6).toUpperCase();
+
+      const badge = document.getElementById('badge-papel');
+      if (souMestre) {
+        badge.textContent = "👑 Mestre da Mesa";
+        badge.className = "px-2 py-0.5 rounded font-cinzel text-[10px] uppercase border border-gold-500 text-gold-300 bg-gold-950/60";
+        document.getElementById('btn-abrir-editor').hidden = false;
+        document.getElementById('btn-abrir-editor').href = `editor.html?mesaId=${mesaId}`;
+        document.getElementById('painel-mestre').hidden = false;
+        document.getElementById('btn-limpar-log').hidden = false;
+      } else {
+        badge.textContent = "⚔️ Jogador";
+        badge.className = "px-2 py-0.5 rounded font-cinzel text-[10px] uppercase border border-sky-600 text-sky-300 bg-sky-950/50";
+        document.getElementById('btn-abrir-editor').hidden = true;
+        document.getElementById('painel-mestre').hidden = true;
+        document.getElementById('btn-limpar-log').hidden = true;
+      }
     }
 
     document.getElementById('btn-copiar-codigo').onclick = () => {
-      navigator.clipboard.writeText(mesaDados.codigoConvite);
-      alert("Código copiado: " + mesaDados.codigoConvite);
+      navigator.clipboard.writeText(document.getElementById('mesa-codigo').textContent);
+      alert("Código copiado para a área de transferência!");
     };
 
-    // Escuta em Tempo Real das Fichas (Mestre vê todas; Jogador vê apenas as suas)
-    let unsubscribeFichas = null;
-    function iniciarEscutaFichas() {
-      if (unsubscribeFichas) unsubscribeFichas();
+    /* ========================================================= */
+    /* PAINEL DO MESTRE: CONFIGURAÇÕES & RAÍZES                  */
+    /* ========================================================= */
+    let formPreenchido = false;
+    function renderizarPainelMestre() {
+      if (!souMestre) return;
 
-      const fichasRef = collection(db, "fichas");
-      const q = souMestre
-        ? query(fichasRef, where("mesaId", "==", mesaId))
-        : query(fichasRef, where("mesaId", "==", mesaId), where("donoId", "==", usuarioAtual.uid));
+      if (!formPreenchido) {
+        document.getElementById('cfg-pontos-attr').value = regrasAtuais.pontosAtributoIniciais;
+        document.getElementById('cfg-estagio-inicial').value = regrasAtuais.estagioInicial;
+        document.getElementById('cfg-pontos-evo').value = regrasAtuais.pontosEvolucaoIniciais;
+        document.getElementById('cfg-slots-extra').value = regrasAtuais.slotsRaizExtraCriacao;
 
-      unsubscribeFichas = onSnapshot(q, (snapshot) => {
-        const grid = document.getElementById('grid-fichas');
-        if (snapshot.empty) {
-          grid.innerHTML = `<p class="text-stone-400 text-sm col-span-3">Nenhuma ficha encontrada. Clique em <strong>+ Nova Ficha</strong> para criar a primeira!</p>`;
-          return;
-        }
+        document.getElementById('cfg-teto-1').value = regrasAtuais.tetosPorEstagio[1];
+        document.getElementById('cfg-teto-2').value = regrasAtuais.tetosPorEstagio[2];
+        document.getElementById('cfg-teto-3').value = regrasAtuais.tetosPorEstagio[3];
+        document.getElementById('cfg-teto-4').value = regrasAtuais.tetosPorEstagio[4];
 
-        grid.innerHTML = '';
-        snapshot.forEach((docSnap) => {
-          const f = docSnap.data();
-          const fId = docSnap.id;
+        document.getElementById('cfg-pass-focado').value = regrasAtuais.passatemposFocados;
+        document.getElementById('cfg-pass-misto').value = regrasAtuais.passatemposMistos;
+        document.getElementById('cfg-trava-ascendente').checked = regrasAtuais.travaAscendenteCarga !== false;
+        formPreenchido = true;
+      }
 
-          const card = document.createElement('div');
-          card.className = "bg-parchment gold-border rounded-xl p-5 flex flex-col justify-between space-y-4";
+      // Renderiza chips das raízes cadastradas
+      const raizes = mesaDados.raizesDisponiveis || {};
+      const container = document.getElementById('lista-raizes-mesa');
+      const nomes = Object.keys(raizes);
+      if (!nomes.length) {
+        container.innerHTML = `<span class="text-xs text-stone-500 italic">Nenhuma raiz cadastrada. Clique em "Importar 10 Raízes + Órfão do Livro" acima.</span>`;
+        return;
+      }
 
-          const raizesTexto = [
-            f.raizesHeranca?.tipo === 'auto' ? 'Órfão' : f.raizesHeranca?.r1,
-            f.raizesHeranca?.r2,
-            ...(f.raizesExtras || [])
-          ].filter(Boolean).join(' · ') || 'Sem raiz definida';
+      container.innerHTML = nomes.map(nome => {
+        const b = raizes[nome];
+        const temArvore = (mesaDados.arvores || []).some(a => a.raizAssociada === nome);
+        return `
+          <div class="flex items-center gap-2 px-2.5 py-1 rounded bg-stone-950 border ${temArvore ? 'border-emerald-700/70' : 'border-stone-800'} text-xs">
+            <strong class="font-cinzel text-gold-300">${nome}</strong>
+            <span class="font-mono text-[10px] text-stone-400">[${b.map(v => (v >= 0 ? '+' + v : v)).join(', ')}]</span>
+            ${temArvore ? '<span class="text-[10px] text-emerald-400" title="Árvore vinculada">🌳</span>' : ''}
+            <button data-del-raiz="${nome}" class="text-stone-500 hover:text-red-400 ml-1">✕</button>
+          </div>
+        `;
+      }).join('');
 
-          card.innerHTML = `
-            <div>
-              <div class="flex justify-between items-start gap-2 mb-2">
-                <div>
-                  <h3 class="font-cinzel text-lg font-bold text-gold-400">${f.nome || 'Sem Nome'}</h3>
-                  <span class="text-[11px] text-stone-400 block">Jogador: ${f.donoNome || 'Jogador'}</span>
-                </div>
-                <span class="font-mono text-xs px-2 py-1 rounded bg-stone-950 border border-gold-600/50 text-gold-300 font-bold" title="Pontos de Evolução disponíveis">
-                  ${f.pontosEvolucao || 0} PTS
-                </span>
-              </div>
-
-              <div class="text-xs text-stone-300 bg-stone-950/80 px-2.5 py-1.5 rounded border border-stone-800 mb-3">
-                <i class="fa-solid fa-seedling text-gold-500 mr-1"></i> ${raizesTexto}
-              </div>
-
-              <!-- Status Rápido em Tempo Real -->
-              <div class="grid grid-cols-4 gap-1.5 text-center font-mono text-[11px]">
-                <div class="bg-stone-950 p-1.5 rounded border border-red-900/50">
-                  <span class="text-red-400 block text-[9px]">HP</span>
-                  <strong>${f.cur?.hp ?? '--'}</strong>
-                </div>
-                <div class="bg-stone-950 p-1.5 rounded border border-purple-900/50">
-                  <span class="text-purple-400 block text-[9px]">SAN</span>
-                  <strong>${f.cur?.san ?? '--'}</strong>
-                </div>
-                <div class="bg-stone-950 p-1.5 rounded border border-amber-900/50">
-                  <span class="text-amber-400 block text-[9px]">PE-F</span>
-                  <strong>${f.cur?.pef ?? '--'}</strong>
-                </div>
-                <div class="bg-stone-950 p-1.5 rounded border border-sky-900/50">
-                  <span class="text-sky-400 block text-[9px]">PE-M</span>
-                  <strong>${f.cur?.pem ?? '--'}</strong>
-                </div>
-              </div>
-            </div>
-
-            <div class="space-y-2 pt-2 border-t border-stone-800">
-              ${souMestre ? `
-                <div class="flex items-center justify-between gap-1 bg-stone-950 p-1.5 rounded border border-stone-800">
-                  <span class="text-[10px] font-cinzel text-stone-400 pl-1">Pontos:</span>
-                  <div class="flex gap-1">
-                    <button data-pts="-1" class="btn-pts px-2 py-0.5 rounded bg-red-950 text-red-300 border border-red-800 text-xs font-mono">-1</button>
-                    <button data-pts="1" class="btn-pts px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-xs font-mono">+1</button>
-                    <button data-pts="3" class="btn-pts px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-xs font-mono">+3</button>
-                    <button class="btn-liberar-raiz px-2 py-0.5 rounded bg-amber-950 text-gold-300 border border-gold-700 text-[10px] font-cinzel" title="Liberar nova raiz para este personagem">
-                      + Raiz
-                    </button>
-                  </div>
-                </div>
-              ` : ''}
-
-              <a href="ficha.html?mesaId=${mesaId}&fichaId=${fId}" class="w-full py-2 bg-gold-700/80 hover:bg-gold-600 text-stone-950 font-cinzel font-bold text-xs rounded text-center block transition-all">
-                Abrir Ficha Completa
-              </a>
-            </div>
-          `;
-
-          if (souMestre) {
-            card.querySelectorAll('.btn-pts').forEach(btn => {
-              btn.onclick = async () => {
-                const delta = parseInt(btn.dataset.pts);
-                await updateDoc(doc(db, "fichas", fId), {
-                  pontosEvolucao: increment(delta)
-                });
-              };
-            });
-
-            card.querySelector('.btn-liberar-raiz').onclick = () => abrirModalRaizExtra(fId, f.nome);
-          }
-
-          grid.appendChild(card);
-        });
+      container.querySelectorAll('[data-del-raiz]').forEach(btn => {
+        btn.onclick = async () => {
+          const alvo = btn.dataset.delRaiz;
+          if (!confirm(`Remover a raiz "${alvo}" da mesa?`)) return;
+          const copia = { ...(mesaDados.raizesDisponiveis || {}) };
+          delete copia[alvo];
+          await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: copia });
+        };
       });
     }
 
-    // Criar Nova Ficha na Mesa
+    document.getElementById('btn-salvar-regras').onclick = async () => {
+      const novasRegras = {
+        pontosAtributoIniciais: Math.max(0, parseInt(document.getElementById('cfg-pontos-attr').value) || 0),
+        estagioInicial: parseInt(document.getElementById('cfg-estagio-inicial').value) || 1,
+        tetosPorEstagio: {
+          1: Math.max(1, parseInt(document.getElementById('cfg-teto-1').value) || 2),
+          2: Math.max(1, parseInt(document.getElementById('cfg-teto-2').value) || 3),
+          3: Math.max(1, parseInt(document.getElementById('cfg-teto-3').value) || 4),
+          4: Math.max(1, parseInt(document.getElementById('cfg-teto-4').value) || 5)
+        },
+        pontosEvolucaoIniciais: Math.max(0, parseInt(document.getElementById('cfg-pontos-evo').value) || 0),
+        slotsRaizExtraCriacao: Math.max(0, parseInt(document.getElementById('cfg-slots-extra').value) || 0),
+        passatemposFocados: Math.max(0, parseInt(document.getElementById('cfg-pass-focado').value) || 0),
+        passatemposMistos: Math.max(0, parseInt(document.getElementById('cfg-pass-misto').value) || 0),
+        travaAscendenteCarga: document.getElementById('cfg-trava-ascendente').checked
+      };
+      await updateDoc(doc(db, "mesas", mesaId), { regras: novasRegras });
+      alert("Regras da campanha atualizadas com sucesso!");
+    };
+
+    document.getElementById('btn-importar-raizes-livro').onclick = async () => {
+      const atuais = { ...(mesaDados.raizesDisponiveis || {}), ...RAIZES_DO_LIVRO };
+      await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: atuais });
+      alert("As 10 profissões do livro + Órfão foram importadas!");
+    };
+
+    document.getElementById('btn-add-raiz').onclick = async () => {
+      const nome = document.getElementById('nova-raiz-nome').value.trim();
+      if (!nome) return alert("Informe o nome da raiz.");
+      const vals = [
+        parseInt(document.getElementById('nova-raiz-hp').value) || 0,
+        parseInt(document.getElementById('nova-raiz-san').value) || 0,
+        parseInt(document.getElementById('nova-raiz-pef').value) || 0,
+        parseInt(document.getElementById('nova-raiz-pem').value) || 0
+      ];
+      const atuais = { ...(mesaDados.raizesDisponiveis || {}), [nome]: vals };
+      await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: atuais });
+      document.getElementById('nova-raiz-nome').value = '';
+      ['hp', 'san', 'pef', 'pem'].forEach(k => document.getElementById(`nova-raiz-${k}`).value = '');
+    };
+
+    function renderizarResumoRegrasJogadores() {
+      const r = regrasAtuais;
+      document.getElementById('resumo-regras-jogadores').innerHTML = `
+        <div>• <strong>Pontos de Atributo:</strong> ${r.pontosAtributoIniciais} pts (+1 se Órfão)</div>
+        <div>• <strong>Estágio Inicial:</strong> ${NOMES_ESTAGIOS[r.estagioInicial]} (Teto: ${r.tetosPorEstagio[r.estagioInicial]})</div>
+        <div>• <strong>Pontos de Evolução Iniciais:</strong> ${r.pontosEvolucaoIniciais} PT</div>
+        <div>• <strong>Raízes Extras na Criação:</strong> ${r.slotsRaizExtraCriacao}</div>
+        <div>• <strong>Passatempos:</strong> ${r.passatemposFocados} Focado(s) + ${r.passatemposMistos} Misto(s)</div>
+        <div>• <strong>Trava Ascendente de Carga:</strong> ${r.travaAscendenteCarga ? 'Ativa (Padrão)' : 'Desativada pelo Mestre'}</div>
+      `;
+    }
+
+    /* ========================================================= */
+    /* CRIAÇÃO E LISTAGEM DE FICHAS                              */
+    /* ========================================================= */
     document.getElementById('btn-nova-ficha').onclick = async () => {
       const nome = prompt("Nome do novo personagem:");
       if (!nome || !nome.trim()) return;
 
+      const primeiraRaiz = Object.keys(mesaDados.raizesDisponiveis || {}).find(r => r !== 'Órfão') || '';
+
       const novaFicha = {
-        mesaId: mesaId,
+        mesaId,
         donoId: usuarioAtual.uid,
-        donoNome: usuarioAtual.displayName,
+        donoNome: usuarioAtual.displayName || usuarioAtual.email || 'Jogador',
         nome: nome.trim(),
         criacaoFinalizada: false,
-        pontosEvolucao: 0,
-        raizesHeranca: { tipo: 'heranca', r1: '', r2: '' },
+        estagioBiologico: regrasAtuais.estagioInicial || 1,
+        tetoIndividualOverride: null,
+        pontosEvolucao: regrasAtuais.pontosEvolucaoIniciais || 0,
+        raizesHeranca: { tipo: 'heranca', r1: primeiraRaiz, r2: '' },
         raizesExtras: [],
+        passatempos: { focados: [], mistos: [], extrasOrfao: [] },
         atributosBase: {
           potencia: 0, vigor: 0, destreza: 0,
-          percepcao: 0, erudicao: 0, autoridade: 0, impeto: 0
+          percepcao: 0, erudicao: 0,
+          autoridade: 0, impeto: 0
         },
+        conversoesMaestria: [],
         nosDesbloqueados: {},
         escolhasAmbiguas: {},
-        cur: { hp: 10, san: 10, pef: 5, pem: 5 },
-        macros: []
+        inventario: [],
+        macros: [],
+        criadoEm: serverTimestamp()
       };
 
       const docRef = await addDoc(collection(db, "fichas"), novaFicha);
       window.location.href = `ficha.html?mesaId=${mesaId}&fichaId=${docRef.id}`;
     };
 
-    // Gerenciamento de Raízes e Árvores da Mesa
-    function renderizarRaizesEArvores() {
-      const raizes = mesaDados.raizesDisponiveis || {};
-      const listaRaizesEl = document.getElementById('lista-raizes-mesa');
-      if (listaRaizesEl) {
-        const chaves = Object.keys(raizes);
-        listaRaizesEl.innerHTML = chaves.length
-          ? chaves.map(r => `
-              <span class="px-2.5 py-1 rounded bg-stone-950 border border-gold-600/40 text-xs font-mono text-gold-300">
-                ${r} [${raizes[r].join('/')}]
-              </span>
-            `).join('')
-          : '<span class="text-xs text-stone-500 italic">Nenhuma raiz cadastrada na mesa.</span>';
+    function renderizarListaFichas(fichas) {
+      const grid = document.getElementById('grid-fichas');
+      document.getElementById('contador-fichas').textContent = `${fichas.length} ficha(s)`;
+
+      const visiveis = souMestre ? fichas : fichas.filter(f => f.donoId === usuarioAtual.uid);
+      if (!visiveis.length) {
+        grid.innerHTML = `<p class="text-xs text-stone-400 italic col-span-2">Nenhuma ficha encontrada. Clique em "+ Nova Ficha" para criar seu personagem.</p>`;
+        return;
       }
 
-      const arvores = mesaDados.arvores || [];
-      const listaArvoresEl = document.getElementById('lista-arvores-mesa');
-      listaArvoresEl.innerHTML = arvores.length
-        ? arvores.map((arv, idx) => `
-            <div class="bg-parchment gold-border rounded-xl p-4 flex flex-col justify-between">
-              <div>
-                <span class="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-stone-950 border border-gold-600/40 text-gold-400">
-                  Raiz: ${arv.raizAssociada || 'Geral'}
+      grid.innerHTML = visiveis.map(f => {
+        const h = f.raizesHeranca || {};
+        const origemTxt = h.tipo === 'auto'
+          ? 'Autodidata (Órfão)'
+          : h.tipo === 'singular'
+            ? `Singular: ${h.r1 || '?'} + ${h.r2 || '?'}`
+            : h.tipo === 'dupla'
+              ? `Raiz Dupla: ${h.r1 || '?'}`
+              : `Herança: ${h.r1 || '?'}`;
+
+        const estagio = f.estagioBiologico || 1;
+        const tetoEfetivo = f.tetoIndividualOverride || regrasAtuais.tetosPorEstagio[estagio] || 2;
+
+        return `
+          <div class="bg-stone-950/90 border border-stone-800 hover:border-gold-600/60 rounded-lg p-4 flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex justify-between items-start gap-2">
+                <div>
+                  <h3 class="font-cinzel font-bold text-base text-gold-300">${f.nome}</h3>
+                  <p class="text-[11px] text-stone-400">Jogador: ${f.donoNome || '—'}</p>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono ${f.criacaoFinalizada ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : 'bg-sky-950 text-sky-300 border border-sky-700'}">
+                  ${f.criacaoFinalizada ? '🔒 Finalizada' : '✏️ Em Criação'}
                 </span>
-                <h4 class="font-cinzel text-base font-bold text-stone-200 mt-2">${arv.nome}</h4>
-                <p class="text-xs text-stone-400 mt-1">${arv.descricao || ''}</p>
               </div>
-              <div class="mt-4 pt-2 border-t border-stone-800 flex justify-between items-center text-xs">
-                <span class="font-mono text-stone-500">${(arv.nos || []).length} nós</span>
-                ${souMestre ? `<button data-idx="${idx}" class="btn-del-arvore text-red-400 hover:text-red-300 font-cinzel">Remover</button>` : ''}
+
+              <div class="mt-2 text-xs text-stone-300 space-y-1">
+                <div><strong>Origem:</strong> ${origemTxt}</div>
+                <div><strong>Estágio:</strong> ${NOMES_ESTAGIOS[estagio]} <span class="text-gold-400 font-mono">(Teto Attr: ${tetoEfetivo})</span></div>
+                <div><strong>Pontos de Evolução:</strong> <span class="text-emerald-400 font-mono font-bold">${f.pontosEvolucao || 0} PT</span></div>
+                ${(f.raizesExtras || []).length ? `<div class="text-emerald-400 text-[11px]">+ Raízes Extras: ${f.raizesExtras.join(', ')}</div>` : ''}
               </div>
             </div>
-          `).join('')
-        : '<p class="text-stone-500 italic text-sm col-span-3">Nenhuma árvore cadastrada nesta mesa.</p>';
 
+            <!-- Ações -->
+            <div class="pt-2 border-t border-stone-900 flex flex-wrap gap-2 items-center">
+              <a href="ficha.html?mesaId=${mesaId}&fichaId=${f.id}" class="flex-1 text-center px-3 py-1.5 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
+                Abrir Ficha
+              </a>
+
+              ${souMestre ? `
+                <button data-pts="${f.id}" data-cur="${f.pontosEvolucao || 0}" class="px-2.5 py-1.5 rounded bg-emerald-950 border border-emerald-700 text-emerald-300 text-xs font-mono" title="Dar Pontos de Evolução">+PT</button>
+                <button data-extra="${f.id}" class="px-2.5 py-1.5 rounded bg-sky-950 border border-sky-700 text-sky-300 text-xs" title="Conceder Raiz Extra">+Raiz</button>
+                <button data-estagio="${f.id}" data-cur-est="${estagio}" class="px-2.5 py-1.5 rounded bg-amber-950 border border-amber-700 text-amber-300 text-xs" title="Avançar Estágio Biológico">Estágio</button>
+                <button data-trava="${f.id}" data-locked="${f.criacaoFinalizada ? '1' : '0'}" class="px-2.5 py-1.5 rounded bg-stone-900 border border-stone-700 text-stone-300 text-xs" title="Travar / Reabrir Criação">
+                  ${f.criacaoFinalizada ? '🔓' : '🔒'}
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Eventos dos botões rápidos do Mestre
       if (souMestre) {
-        document.querySelectorAll('.btn-del-arvore').forEach(btn => {
-          btn.onclick = async () => {
-            const idx = parseInt(btn.dataset.idx);
-            const novasArvores = [...mesaDados.arvores];
-            novasArvores.splice(idx, 1);
-            await updateDoc(doc(db, "mesas", mesaId), { arvores: novasArvores });
+        grid.querySelectorAll('[data-pts]').forEach(b => {
+          b.onclick = async () => {
+            const qtd = parseInt(prompt("Quantos Pontos de Evolução deseja adicionar? (Use negativo para remover)", "1"));
+            if (isNaN(qtd) || qtd === 0) return;
+            const novoTotal = Math.max(0, (parseInt(b.dataset.cur) || 0) + qtd);
+            await updateDoc(doc(db, "fichas", b.dataset.pts), { pontosEvolucao: novoTotal });
+          };
+        });
+
+        grid.querySelectorAll('[data-extra]').forEach(b => {
+          b.onclick = async () => {
+            const disponiveis = Object.keys(mesaDados.raizesDisponiveis || {});
+            const escolhida = prompt(`Digite o nome da Raiz Extra para liberar:\nDisponíveis: ${disponiveis.join(', ')}`);
+            if (!escolhida || !escolhida.trim()) return;
+            const ficha = fichas.find(x => x.id === b.dataset.extra);
+            const atuais = ficha?.raizesExtras || [];
+            if (!atuais.includes(escolhida.trim())) {
+              await updateDoc(doc(db, "fichas", b.dataset.extra), { raizesExtras: [...atuais, escolhida.trim()] });
+            }
+          };
+        });
+
+        grid.querySelectorAll('[data-estagio]').forEach(b => {
+          b.onclick = async () => {
+            const novoEst = parseInt(prompt(
+              "Escolha o novo Estágio Biológico:\n1 - Criação (Infância)\n2 - Evolução da Raiz\n3 - Fase Adulta (Vocação)\n4 - Transgressão Mística",
+              b.dataset.curEst
+            ));
+            if (![1, 2, 3, 4].includes(novoEst)) return;
+            await updateDoc(doc(db, "fichas", b.dataset.estagio), { estagioBiologico: novoEst });
+          };
+        });
+
+        grid.querySelectorAll('[data-trava]').forEach(b => {
+          b.onclick = async () => {
+            const estavaTravada = b.dataset.locked === '1';
+            await updateDoc(doc(db, "fichas", b.dataset.trava), { criacaoFinalizada: !estavaTravada });
           };
         });
       }
     }
 
-    // Mestre: Importar Raízes Base do arquivo dados/raizes.json
-    document.getElementById('btn-importar-raizes-padrao')?.addEventListener('click', async () => {
-      try {
-        const res = await fetch('../dados/raizes.json');
-        const base = await res.json();
-        const mescladas = { ...(mesaDados.raizesDisponiveis || {}), ...base };
-        await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: mescladas });
-        alert("Raízes base importadas para a mesa!");
-      } catch (e) {
-        alert("Erro ao ler ../dados/raizes.json: " + e.message);
+    /* ========================================================= */
+    /* FEED DE ROLAGENS AO VIVO                                  */
+    /* ========================================================= */
+    function renderizarFeedRolagens(lista) {
+      const feed = document.getElementById('feed-rolagens');
+      if (!lista.length) {
+        feed.innerHTML = `<p class="text-stone-500 italic text-center mt-8">Nenhuma rolagem registrada ainda.</p>`;
+        return;
       }
-    });
 
-    // Mestre: Adicionar Raiz Customizada
-    document.getElementById('btn-add-raiz')?.addEventListener('click', async () => {
-      const nome = document.getElementById('nova-raiz-nome').value.trim();
-      if (!nome) return alert("Digite o nome da raiz.");
-      const bonus = [
-        parseInt(document.getElementById('nova-raiz-hp').value) || 0,
-        parseInt(document.getElementById('nova-raiz-san').value) || 0,
-        parseInt(document.getElementById('nova-raiz-pef').value) || 0,
-        parseInt(document.getElementById('nova-raiz-pem').value) || 0
-      ];
-      const atualizadas = { ...(mesaDados.raizesDisponiveis || {}), [nome]: bonus };
-      await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: atualizadas });
-      document.getElementById('nova-raiz-nome').value = '';
-    });
-
-    // Mestre: Importar Árvore via JSON
-    document.getElementById('btn-importar-arvore-json')?.addEventListener('click', async () => {
-      const raw = document.getElementById('import-arvore-json').value.trim();
-      if (!raw) return;
-      try {
-        const arvore = JSON.parse(raw);
-        if (!arvore.nos || !Array.isArray(arvore.nos)) throw new Error("JSON inválido (falta 'nos').");
-        if (!arvore.id) arvore.id = `arvore_${Date.now()}`;
-        const novasArvores = [...(mesaDados.arvores || []), arvore];
-        await updateDoc(doc(db, "mesas", mesaId), { arvores: novasArvores });
-        document.getElementById('import-arvore-json').value = '';
-        alert("Árvore adicionada à mesa!");
-      } catch (e) {
-        alert("Erro no JSON: " + e.message);
-      }
-    });
-
-    // Modal Liberar Raiz Extra
-    function abrirModalRaizExtra(fichaId, nomePersonagem) {
-      fichaAlvoRaizExtra = fichaId;
-      document.getElementById('modal-ficha-nome').textContent = nomePersonagem || 'Personagem';
-      const select = document.getElementById('select-raiz-extra');
-      const raizes = Object.keys(mesaDados.raizesDisponiveis || {});
-      select.innerHTML = raizes.map(r => `<option value="${r}">${r}</option>`).join('');
-      document.getElementById('modal-raiz-extra').classList.remove('hidden');
+      feed.innerHTML = lista.map(r => `
+        <div class="bg-stone-950 border border-stone-800 rounded p-2.5 space-y-1">
+          <div class="flex justify-between items-baseline">
+            <strong class="font-cinzel text-gold-300">${r.personagemNome || 'Personagem'}</strong>
+            <span class="font-cinzel font-bold text-lg text-gold-400">${r.total}</span>
+          </div>
+          <div class="text-[11px] text-stone-300">${r.descricao || ''}</div>
+          <div class="font-mono text-[10px] text-stone-500">${r.detalhes || ''}</div>
+        </div>
+      `).join('');
     }
 
-    document.getElementById('btn-fechar-modal-raiz').onclick = () => {
-      document.getElementById('modal-raiz-extra').classList.add('hidden');
-    };
-
-    document.getElementById('btn-confirmar-raiz-extra').onclick = async () => {
-      const raizEscolhida = document.getElementById('select-raiz-extra').value;
-      if (!raizEscolhida || !fichaAlvoRaizExtra) return;
-      await updateDoc(doc(db, "fichas", fichaAlvoRaizExtra), {
-        raizesExtras: arrayUnion(raizEscolhida)
-      });
-      document.getElementById('modal-raiz-extra').classList.add('hidden');
-      alert(`Raiz "${raizEscolhida}" liberada na ficha!`);
+    document.getElementById('btn-limpar-log').onclick = async () => {
+      if (!confirm("Deseja apagar todas as rolagens recentes do histórico?")) return;
+      const q = query(collection(db, "rolagens"), where("mesaId", "==", mesaId));
+      const snap = await import('../js/firebase-config.js').then(m => m.getDocs(q));
+      snap.forEach(d => deleteDoc(doc(db, "rolagens", d.id)));
     };
   </script>
 </body>
+
 </html>

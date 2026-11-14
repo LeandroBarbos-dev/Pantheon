@@ -18,6 +18,9 @@ import {
   deleteDoc,
   query,
   where,
+  orderBy,        // <-- ADICIONAR
+  limit,          // <-- ADICIONAR
+  serverTimestamp,// <-- ADICIONAR
   onSnapshot,
   arrayUnion,
   increment
@@ -64,7 +67,11 @@ export {
   deleteDoc,
   query,
   where,
+  orderBy,        // <-- ADICIONAR
+  limit,          // <-- ADICIONAR
+  serverTimestamp,// <-- ADICIONAR
   onSnapshot,
   arrayUnion,
   increment
 };
+
