@@ -1,925 +1,1369 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark" data-pal="ouro">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PANTHEON - Ficha Digital Tática</title>
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700&family=Faustina:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            gold: { 300: '#f6e05e', 400: '#ecc94b', 500: '#d69e2e', 600: '#b7791f', 700: '#975a16', 800: '#744210' },
-            parchment: { DEFAULT: '#1c1917', dark: '#12100e', border: '#3d3326' }
-          },
-          fontFamily: {
-            cinzel: ['Cinzel', 'serif'],
-            decorative: ['Cinzel Decorative', 'serif'],
-            body: ['Faustina', 'serif']
-          }
-        }
-      }
-    }
-  </script>
+  <title>PANTHEON · Ficha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Faustina:wght@400;600&display=swap"
+    rel="stylesheet">
 
   <style>
-    body { background-color: #090807; color: #e2d8c3; font-family: 'Faustina', serif; overflow-x: hidden; }
-    .gold-border { border: 1px solid #b7791f; box-shadow: inset 0 0 12px rgba(0,0,0,0.8), 0 0 8px rgba(183,121,31,0.2); }
-    .glow-gold { text-shadow: 0 0 8px rgba(214, 158, 46, 0.6); }
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #090807; }
-    ::-webkit-scrollbar-thumb { background: #3d3326; border-radius: 3px; border: 1px solid #b7791f; }
+    /* Variáveis Globais de Cores e Temas */
+    :root {
+      --h: 40;
+      --acc: hsl(var(--h) 70% 50%);
+      --on: #140f08;
+      --bg: hsl(var(--h) 10% 2%);
+      --card: hsl(var(--h) 15% 4%);
+      --card2: hsl(var(--h) 20% 14%);
+      --line: hsl(var(--h) 35% 30%);
+      --txt: hsl(var(--h) 30% 85%);
+      --mut: hsl(var(--h) 12% 58%);
+    }
 
-    /* Roda de Atributos SVG/DOM Overlay */
-    .wheel-container { position: relative; width: 280px; height: 280px; margin: 0 auto; }
-    .attr-node {
+    [data-theme="light"] {
+      --acc: hsl(var(--h) 65% 36%);
+      --on: #fff;
+      --bg: hsl(var(--h) 35% 91%);
+      --card: hsl(var(--h) 40% 97%);
+      --card2: hsl(var(--h) 30% 90%);
+      --line: hsl(var(--h) 25% 76%);
+      --txt: hsl(var(--h) 30% 12%);
+      --mut: hsl(var(--h) 15% 38%);
+    }
+
+    /* Paletas de Cor Primária */
+    [data-pal="carmesim"] {
+      --h: 355;
+    }
+
+    [data-pal="esmeralda"] {
+      --h: 150;
+    }
+
+    [data-pal="safira"] {
+      --h: 210;
+    }
+
+    [data-pal="violeta"] {
+      --h: 270;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 12px;
+      background: var(--bg);
+      color: var(--txt);
+      font-family: Faustina, Georgia, serif;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .cz,
+    h2,
+    .btn,
+    .nome-personagem {
+      font-family: Cinzel, Georgia, serif;
+    }
+
+    /* Cartões e Blocos Layout */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--acc);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .grip {
+      cursor: grab;
+      color: var(--mut);
+      user-select: none;
+      font-size: 15px;
+    }
+
+    .r {
+      margin-left: auto;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    /* Formulários e Controles */
+    button,
+    input,
+    select {
+      font: inherit;
+      color: inherit;
+    }
+
+    .btn {
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 3px 9px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .btn:hover,
+    .btn.on {
+      border-color: var(--acc);
+      color: var(--acc);
+    }
+
+    .btn.pri {
+      background: var(--acc) !important;
+      color: var(--on) !important;
+      border-color: var(--acc) !important;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 3px 6px;
+      min-width: 0;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--acc);
+    }
+
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    input::-webkit-inner-spin-button,
+    input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Cabeçalho */
+    .head {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nome-personagem {
+      font-size: 22px;
+      font-weight: 700;
+      width: 100%;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      color: var(--acc);
+      padding: 2px 0;
+    }
+
+    .rz {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .rz label {
+      color: var(--mut);
+    }
+
+    .chip {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 99px;
+      border: 1px solid var(--line);
+      background: var(--card2);
+      font: 600 11px monospace;
+    }
+
+    /* Grid de Colunas Arrastáveis */
+    .cols {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+
+    .col {
+      min-height: 80px;
+    }
+
+    @media (max-width: 900px) {
+      .cols {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dragging {
+      opacity: 0.4;
+    }
+
+    .col.over {
+      outline: 1px dashed var(--acc);
+      outline-offset: 4px;
+    }
+
+    /* Barras de Recursos */
+    .res {
+      margin-bottom: 10px;
+    }
+
+    .rt {
+      display: flex;
+      justify-content: space-between;
+      font: 700 12px monospace;
+    }
+
+    .bar {
+      height: 9px;
+      border-radius: 5px;
+      background: var(--card2);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      margin-top: 2px;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      transition: width 0.25s;
+    }
+
+    .ctl {
+      display: flex;
+      gap: 4px;
+      margin-top: 5px;
+    }
+
+    .ctl input {
+      width: 64px;
+      text-align: center;
+    }
+
+    .sg {
+      width: 28px;
+      font-weight: 700;
+      padding: 0;
+    }
+
+    .sg.add {
+      color: #4cc36f;
+    }
+
+    .sg.sub {
+      color: #e05555;
+    }
+
+    /* Sigilo / Roda de Atributos */
+    .wheel {
+      position: relative;
+      width: min(100%, 300px);
+      aspect-ratio: 1;
+      margin: 4px auto;
+    }
+
+    .wheel svg {
       position: absolute;
-      width: 52px;
-      height: 52px;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .ctr {
+      position: absolute;
+      left: 50%;
+      top: 51.7%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: var(--mut);
+      font-size: 10px;
+      line-height: 1.1;
+    }
+
+    .ctr b {
+      display: block;
+      font: 700 20px Cinzel, serif;
+      color: var(--acc);
+    }
+
+    .node {
+      position: absolute;
+      width: 19%;
+      aspect-ratio: 1;
       border-radius: 50%;
-      background: #12100e;
-      border: 2px solid #b7791f;
-      box-shadow: 0 0 10px rgba(0,0,0,0.9), 0 0 8px rgba(183,121,31,0.3);
+      transform: translate(-50%, -50%);
+      background: var(--card);
+      border: 2px solid var(--acc);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      transform: translate(-50%, -50%);
-      transition: all 0.2s ease;
-      z-index: 10;
+      gap: 1px;
+      box-shadow: 0 2px 8px #0006;
+    }
+
+    .node b {
+      font: 700 9px Cinzel, serif;
+      letter-spacing: 0.04em;
+    }
+
+    .node input {
+      width: 70%;
+      text-align: center;
+      background: transparent;
+      border: 0;
+      font: 700 17px Cinzel, serif;
+      padding: 0;
+      color: var(--txt);
+    }
+
+    .c-r {
+      color: #e06a5a;
+    }
+
+    .c-b {
+      color: #4fb0e0;
+    }
+
+    .c-p {
+      color: #b480e6;
+    }
+
+    .node.on {
+      background: var(--acc);
+    }
+
+    .node.on b,
+    .node.on input {
+      color: var(--on);
+    }
+
+    /* Perícias, Habilidades e Macros */
+    .prow,
+    .hcard,
+    .mrow {
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 5px 8px;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .prow,
+    .mrow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: space-between;
+    }
+
+    .prow input {
+      width: 42px;
+      text-align: center;
+    }
+
+    .prow.on,
+    .hcard.on {
+      border-color: var(--acc);
+      box-shadow: 0 0 0 1px var(--acc);
+    }
+
+    .hcard p {
+      margin: 2px 0;
+      font-size: 12px;
+      color: var(--mut);
+    }
+
+    .hcard .t {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      font-family: Cinzel, serif;
+      font-weight: 700;
+      color: var(--acc);
+      font-size: 12px;
+    }
+
+    .tag {
+      font: 700 9px monospace;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--mut);
+    }
+
+    .x {
+      background: none;
+      border: 0;
+      color: var(--mut);
       cursor: pointer;
     }
-    .attr-node:hover { scale: 1.1; border-color: #f6e05e; box-shadow: 0 0 12px rgba(246,224,94,0.5); }
-    .attr-node input {
-      background: transparent;
-      border: none;
-      color: #f6e05e;
-      font-weight: bold;
-      text-align: center;
+
+    .x:hover {
+      color: #e05555;
+    }
+
+    /* Motor de Teste */
+    .sl {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+      min-height: 28px;
+    }
+
+    .sl>span.k {
+      width: 62px;
+      font-size: 11px;
+      color: var(--mut);
+      font-family: Cinzel, serif;
+    }
+
+    .hint {
+      display: none;
+      margin: 4px 0;
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: var(--card2);
+      border: 1px dashed var(--acc);
+      font-size: 12px;
+    }
+
+    [data-arm] .hint {
+      display: block;
+    }
+
+    [data-arm=attr] .node,
+    [data-arm=per] .prow,
+    [data-arm=hab] .hcard.el {
+      cursor: crosshair;
+      animation: pulsarm 1.2s infinite;
+    }
+
+    [data-arm] .node input,
+    [data-arm] .prow input {
+      pointer-events: none;
+    }
+
+    @keyframes pulsarm {
+      50% {
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 35%, transparent);
+      }
+    }
+
+    .pool {
+      display: flex;
+      justify-content: space-between;
+      font: 600 12px monospace;
+      background: var(--card2);
+      padding: 5px 8px;
+      border-radius: 6px;
+      margin: 6px 0;
+    }
+
+    .out {
+      margin-top: 8px;
+      padding: 8px;
+      border: 1px solid var(--acc);
+      border-radius: 8px;
+      background: var(--card2);
+    }
+
+    .tot {
+      font: 700 30px Cinzel, serif;
+      color: var(--acc);
+    }
+
+    .die {
+      display: inline-flex;
       width: 24px;
-      font-size: 13px;
-      outline: none;
+      height: 24px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      font: 700 11px monospace;
+      margin: 2px 2px 0 0;
+      opacity: 0.55;
+    }
+
+    .die.pk {
+      opacity: 1;
+      border-color: var(--acc);
+      color: var(--acc);
+    }
+
+    /* Modal e Toasts */
+    .ov {
+      position: fixed;
+      inset: 0;
+      background: #000a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      z-index: 9;
+    }
+
+    .ov[hidden] {
+      display: none;
+    }
+
+    .mod {
+      width: min(440px, 100%);
+      max-height: 85vh;
+      overflow: auto;
+      margin: 0;
+    }
+
+    .sw {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid var(--line);
+      cursor: pointer;
+    }
+
+    .sw.on {
+      border-color: var(--txt);
+    }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translate(-50%, 20px);
+      background: var(--acc);
+      color: var(--on);
+      padding: 6px 14px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: 0.2s;
+      pointer-events: none;
+      z-index: 10;
+      font-weight: 600;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .mut {
+      color: var(--mut);
+      font-size: 12px;
+      font-style: italic;
     }
   </style>
 </head>
-<body class="min-h-screen p-3 lg:p-5">
 
-  <!-- HEADER COMPACTO -->
-  <header class="border-b border-gold-600/50 pb-3 mb-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-    <div class="flex items-center space-x-3">
-      <i class="fa-solid fa-ankh text-gold-500 text-2xl glow-gold"></i>
-      <div>
-        <h1 class="font-decorative text-lg sm:text-xl text-gold-400 tracking-wider leading-none">PANTHEON DIGITAL</h1>
-        <span class="text-[10px] text-stone-400 font-cinzel">Ficha de Personagem & Motor Tático</span>
-      </div>
+<body>
+
+  <!-- Cabeçalho Principal -->
+  <header class="card head">
+    <div style="display:flex; gap:8px; align-items:center">
+      <input class="nome-personagem" id="nome" placeholder="Nome do personagem">
+      <button class="btn" onclick="abrirConfiguracaoAparencia()" title="Aparência">⚙ Aparência</button>
     </div>
-    
-    <!-- Seletor de Raiz -->
-    <div class="flex items-center gap-2 bg-stone-950 px-2.5 py-1 rounded border border-gold-600/40 text-xs">
-      <label class="font-cinzel text-gold-300 font-bold text-[11px]">Raiz:</label>
-      <select id="raiz-select" onchange="atualizarFicha()" class="bg-stone-900 border border-stone-700 text-gold-400 px-1.5 py-0.5 rounded font-mono text-xs">
-        <option value="Lenhador">Lenhador (+6 HP, +2 PE-F)</option>
-        <option value="Ferreiro">Ferreiro (+4 HP, +2 PE-F, +2 PE-M)</option>
-        <option value="Guarda">Guarda (+4 HP, +2 SAN, +2 PE-F)</option>
-        <option value="Caçador">Caçador (+2 HP, +4 PE-F, +2 PE-M)</option>
-        <option value="Carpinteiro">Carpinteiro (+2 HP, +4 PE-F, +2 PE-M)</option>
-        <option value="Curandeiro">Curandeiro (+4 SAN, +4 PE-M)</option>
-        <option value="Escriba">Escriba (+6 SAN, +2 PE-M)</option>
-        <option value="Órfão">Órfão (+2 HP, +2 PE-F, +2 PE-M, -2 SAN)</option>
+    <div class="rz">
+      <label for="tipo">Tipo</label>
+      <select id="tipo">
+        <option value="singular">Raiz Singular (misto)</option>
+        <option value="heranca">Herança Singular</option>
+        <option value="dupla">Raiz Dupla</option>
+        <option value="auto">Autodidata (Órfão)</option>
       </select>
+      <label id="lbl-raiz1" for="raiz1">Raiz principal</label>
+      <select id="raiz1"></select>
+      <label id="lbl-raiz2" for="raiz2">Secundária</label>
+      <select id="raiz2"></select>
+      <span class="chip" id="bonus-raiz"></span>
     </div>
   </header>
 
-  <!-- DASHBOARD PRINCIPAL EM 3 COLUNAS -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-
-    <!-- ================= COLUNA 1: RODA DE ATRIBUTOS & ESTATÍSTICAS (4 COLS) ================= -->
-    <div class="lg:col-span-4 space-y-4">
-      
-      <!-- CARD RODA DE ATRIBUTOS -->
-      <div class="bg-stone-950 gold-border p-3 rounded-lg relative overflow-hidden flex flex-col items-center">
-        <h2 class="font-cinzel font-bold text-gold-400 text-xs tracking-wider uppercase mb-1">
-          <i class="fa-solid fa-circle-nodes mr-1 text-gold-500"></i> Sigilo de Atributos
-        </h2>
-
-        <!-- RODA HEPTAGONAL INTERACTIVA -->
-        <div class="wheel-container my-2" id="wheel-box">
-          <!-- SVG LINHAS DE CONEXÃO -->
-          <svg width="280" height="280" class="absolute inset-0 pointer-events-none z-0">
-            <!-- Linhas externas heptagonais e internas geradas dinamicamente via JS -->
-            <g id="svg-lines" stroke="#b7791f" stroke-width="1.5" opacity="0.6"></g>
-          </svg>
-          <!-- NÓS DOS ATRIBUTOS -->
-          <div id="nodes-container"></div>
-        </div>
-
-        <span class="text-[10px] text-stone-500 italic text-center">Clique no valor do atributo no nó para editar (0 a 4).</span>
-      </div>
-
-      <!-- BARRAS DE ESTATÍSTICAS COMPACTAS -->
-      <div class="bg-stone-950 gold-border p-3 rounded-lg space-y-2.5">
-        <h2 class="font-cinzel font-bold text-gold-400 text-xs border-b border-stone-800 pb-1.5 flex justify-between">
-          <span><i class="fa-solid fa-heart-pulse text-red-500 mr-1.5"></i>Recursos de Vida</span>
-          <span class="text-[9px] text-stone-500 font-mono">Automático</span>
-        </h2>
-
-        <!-- HP -->
-        <div class="space-y-0.5">
-          <div class="flex justify-between text-[11px] font-mono">
-            <span class="text-red-400 font-bold">HP</span>
-            <span id="hp-display" class="text-stone-300">16 / 16</span>
-          </div>
-          <div class="w-full bg-stone-900 rounded-full h-2.5 border border-red-950 overflow-hidden flex">
-            <div id="hp-bar" class="bg-red-600 h-full transition-all" style="width: 100%;"></div>
-          </div>
-          <div class="flex gap-1 pt-0.5">
-            <button onclick="alterarRecurso('hp', -1)" class="bg-stone-900 border border-stone-800 px-1.5 py-0.5 text-[9px] rounded hover:bg-stone-800">-1</button>
-            <button onclick="alterarRecurso('hp', 1)" class="bg-stone-900 border border-stone-800 px-1.5 py-0.5 text-[9px] rounded hover:bg-stone-800">+1</button>
-            <button onclick="resetarRecurso('hp')" class="bg-stone-900 border border-stone-800 px-1.5 py-0.5 text-[9px] text-gold-400 rounded ml-auto">Max</button>
-          </div>
-        </div>
-
-        <!-- SAN -->
-        <div class="space-y-0.5">
-          <div class="flex justify-between text-[11px] font-mono">
-            <span class="text-purple-400 font-bold">SAN</span>
-            <span id="san-display" class="text-stone-300">13 / 13</span>
-          </div>
-          <div class="w-full bg-stone-900 rounded-full h-2.5 border border-purple-950 overflow-hidden flex">
-            <div id="san-bar" class="bg-purple-600 h-full transition-all" style="width: 100%;"></div>
-          </div>
-          <div class="flex gap-1 pt-0.5">
-            <button onclick="alterarRecurso('san', -1)" class="bg-stone-900 border border-stone-800 px-1.5 py-0.5 text-[9px] rounded hover:bg-stone-800">-1</button>
-            <button onclick="alterarRecurso('san', 1)" class="bg-stone-900 border border-stone-800 px-1.5 py-0.5 text-[9px] rounded hover:bg-stone-800">+1</button>
-            <button onclick="resetarRecurso('san')" class="bg-stone-900 border border-stone-800 px-1.5 py-0.5 text-[9px] text-gold-400 rounded ml-auto">Max</button>
-          </div>
-        </div>
-
-        <!-- PE-F -->
-        <div class="space-y-0.5">
-          <div class="flex justify-between text-[11px] font-mono">
-            <span class="text-amber-400 font-bold">PE-F (Físico)</span>
-            <span id="pef-display" class="text-stone-300">10 / 10</span>
-          </div>
-          <div class="w-full bg-stone-900 rounded-full h-2.5 border border-amber-950 overflow-hidden flex">
-            <div id="pef-bar" class="bg-amber-600 h-full transition-all" style="width: 100%;"></div>
-          </div>
-          <div class="flex gap-1 pt-0.5">
-            <button onclick="alterarRecurso('pef', -1)" class="bg-stone-900 border border-stone-800 px-1.5 py-0.5 text-[9px] rounded hover:bg-stone-800">-1 PE</button>
-            <button onclick="alterarRecurso('pef', 1)" class="bg-stone-900 border border-stone-800 px-1.5 py-0.5 text-[9px] rounded hover:bg-stone-800">+1 PE</button>
-            <button onclick="resetarRecurso('pef')" class="bg-stone-900 border border-stone-800 px-1.5 py-0.5 text-[9px] text-gold-400 rounded ml-auto">Max</button>
-          </div>
-        </div>
-
-        <!-- PE-M -->
-        <div class="space-y-0.5">
-          <div class="flex justify-between text-[11px] font-mono">
-            <span class="text-sky-400 font-bold">PE-M (Mental)</span>
-            <span id="pem-display" class="text-stone-300">6 / 6</span>
-          </div>
-          <div class="w-full bg-stone-900 rounded-full h-2.5 border border-sky-950 overflow-hidden flex">
-            <div id="pem-bar" class="bg-sky-600 h-full transition-all" style="width: 100%;"></div>
-          </div>
-          <div class="flex gap-1 pt-0.5">
-            <button onclick="alterarRecurso('pem', -1)" class="bg-stone-900 border border-stone-800 px-1.5 py-0.5 text-[9px] rounded hover:bg-stone-800">-1 PE</button>
-            <button onclick="alterarRecurso('pem', 1)" class="bg-stone-900 border border-stone-800 px-1.5 py-0.5 text-[9px] rounded hover:bg-stone-800">+1 PE</button>
-            <button onclick="resetarRecurso('pem')" class="bg-stone-900 border border-stone-800 px-1.5 py-0.5 text-[9px] text-gold-400 rounded ml-auto">Max</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ================= COLUNA 2: MOTOR DE TESTES & MACROS (4 COLS) ================= -->
-    <div class="lg:col-span-4 space-y-4">
-      
-      <!-- CONSTRUTOR DE ROLAGEM -->
-      <div class="bg-stone-950 gold-border p-3.5 rounded-lg space-y-3">
-        <div class="border-b border-gold-600/40 pb-1.5 flex justify-between items-center">
-          <h2 class="font-cinzel font-bold text-gold-400 text-xs flex items-center gap-1.5">
-            <i class="fa-solid fa-dice-d20 text-gold-500"></i> Motor de Teste
-          </h2>
-          <span class="text-[10px] text-stone-400 font-mono">Regra d20s</span>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div>
-            <label class="block text-stone-400 text-[10px] font-cinzel">Atributo A:</label>
-            <select id="roll-attr1" onchange="atualizarPreviewPool()" class="w-full bg-stone-900 border border-stone-700 text-stone-200 p-1.5 rounded focus:border-gold-500">
-              <option value="potencia">Potência</option>
-              <option value="vigor">Vigor</option>
-              <option value="destreza">Destreza</option>
-              <option value="percepcao">Percepção</option>
-              <option value="erudicao">Erudição</option>
-              <option value="autoridade">Autoridade</option>
-              <option value="impeto">Ímpeto</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-stone-400 text-[10px] font-cinzel">Atributo B:</label>
-            <select id="roll-attr2" onchange="atualizarPreviewPool()" class="w-full bg-stone-900 border border-stone-700 text-stone-200 p-1.5 rounded focus:border-gold-500">
-              <option value="destreza">Destreza</option>
-              <option value="potencia">Potência</option>
-              <option value="vigor">Vigor</option>
-              <option value="percepcao">Percepção</option>
-              <option value="erudicao">Erudição</option>
-              <option value="autoridade">Autoridade</option>
-              <option value="impeto">Ímpeto</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div>
-            <label class="block text-stone-400 text-[10px] font-cinzel">Perícia Usada:</label>
-            <select id="roll-pericia" onchange="atualizarPreviewPool()" class="w-full bg-stone-900 border border-stone-700 text-gold-400 p-1.5 rounded focus:border-gold-500">
-              <option value="">Nenhuma (0)</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-stone-400 text-[10px] font-cinzel">Habilidade Ativa/Reativa:</label>
-            <select id="roll-habilidade" onchange="atualizarPreviewPool()" class="w-full bg-stone-900 border border-stone-700 text-amber-400 p-1.5 rounded focus:border-gold-500">
-              <option value="">Nenhuma Habilidade</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Pool Preview -->
-        <div id="pool-preview" class="bg-stone-900 p-2 rounded border border-stone-800 text-[11px] text-stone-300 font-mono flex justify-between">
-          <span>Pool: <strong id="pool-count" class="text-gold-400">3d20</strong></span>
-          <span id="pe-cost-preview" class="text-amber-400 font-bold">Custo: 0 PE</span>
-        </div>
-
-        <div class="flex gap-2">
-          <button onclick="executarRolagem()" class="flex-1 bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel font-bold py-1.5 px-3 rounded text-xs transition-all shadow flex items-center justify-center gap-1.5">
-            <i class="fa-solid fa-dice"></i> Girar Teste
-          </button>
-          <button onclick="salvarTesteRapido()" class="bg-stone-900 hover:bg-stone-800 text-gold-300 font-cinzel text-xs py-1.5 px-2.5 rounded border border-gold-600/40" title="Salvar Macro">
-            <i class="fa-solid fa-bookmark"></i>
-          </button>
-        </div>
-
-        <!-- EXIBIÇÃO DE RESULTADO DO TESTE -->
-        <div id="resultado-rolagem" class="hidden bg-stone-900 p-3 rounded border border-gold-600/50 space-y-1.5">
-          <div class="flex justify-between items-center">
-            <span class="font-cinzel text-[10px] font-bold text-stone-400">Resultado Líquido</span>
-            <span id="badge-critico" class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase font-mono"></span>
-          </div>
-
-          <div class="flex items-baseline gap-2">
-            <span id="resultado-total" class="font-cinzel text-3xl font-bold text-gold-400 glow-gold">22</span>
-            <span id="resultado-detalhes" class="text-[10px] text-stone-300 font-mono"></span>
-          </div>
-
-          <div class="border-t border-stone-800 pt-1">
-            <span class="text-[9px] text-stone-500 font-cinzel block mb-1">Dados Sorteados:</span>
-            <div id="dados-sorteados" class="flex flex-wrap gap-1"></div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- MACROS & TESTES SALVOS -->
-      <div class="bg-stone-950 gold-border p-3.5 rounded-lg space-y-2">
-        <h2 class="font-cinzel font-bold text-gold-400 text-xs border-b border-stone-800 pb-1.5 flex justify-between">
-          <span><i class="fa-solid fa-bolt text-amber-500 mr-1.5"></i>Macros Rápidas</span>
-          <span class="text-[9px] text-stone-500">1-Clique</span>
-        </h2>
-        <div id="macros-container" class="space-y-1.5 text-xs max-h-48 overflow-y-auto pr-1">
-          <!-- Renderizado via JS -->
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ================= COLUNA 3: PERÍCIAS & HABILIDADES (4 COLS) ================= -->
-    <div class="lg:col-span-4 space-y-4">
-      
-      <!-- PERÍCIAS -->
-      <div class="bg-stone-950 gold-border p-3.5 rounded-lg space-y-2.5">
-        <div class="flex justify-between items-center border-b border-stone-800 pb-1.5">
-          <h2 class="font-cinzel font-bold text-gold-400 text-xs"><i class="fa-solid fa-shield-halved mr-1.5"></i>Perícias Adquiridas</h2>
-          <button onclick="abrirModalAddPericia()" class="bg-stone-900 border border-gold-600/40 text-gold-300 hover:bg-gold-700/30 text-[10px] px-2 py-0.5 rounded font-cinzel">
-            + Adicionar
-          </button>
-        </div>
-
-        <div id="pericias-ativas-list" class="space-y-1 text-xs max-h-48 overflow-y-auto pr-1">
-          <!-- Renderizado via JS -->
-        </div>
-      </div>
-
-      <!-- HABILIDADES -->
-      <div class="bg-stone-950 gold-border p-3.5 rounded-lg space-y-2.5">
-        <div class="flex justify-between items-center border-b border-stone-800 pb-1.5">
-          <h2 class="font-cinzel font-bold text-gold-400 text-xs"><i class="fa-solid fa-book-bookmark mr-1.5"></i>Habilidades do Personagem</h2>
-          <button onclick="abrirModalAddHabilidade()" class="bg-stone-900 border border-gold-600/40 text-gold-300 hover:bg-gold-700/30 text-[10px] px-2 py-0.5 rounded font-cinzel">
-            + Aprender
-          </button>
-        </div>
-
-        <div id="habilidades-ativas-list" class="space-y-1.5 text-xs max-h-60 overflow-y-auto pr-1">
-          <!-- Renderizado via JS -->
-        </div>
-      </div>
-
-    </div>
-
+  <!-- Container de Colunas Layout -->
+  <div class="cols" id="cols">
+    <div class="col"></div>
+    <div class="col"></div>
+    <div class="col"></div>
   </div>
 
-  <!-- MODAIS (PERÍCIA E HABILIDADE) -->
-  <div id="modal-pericia" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-stone-950 gold-border p-4 rounded-lg max-w-sm w-full space-y-3 text-xs">
-      <h3 class="font-cinzel font-bold text-gold-400 text-xs border-b border-stone-800 pb-1.5">Adicionar Perícia</h3>
-      <div>
-        <label class="block text-stone-400 mb-1">Perícia:</label>
-        <select id="modal-select-pericia" class="w-full bg-stone-900 border border-stone-700 text-stone-200 p-1.5 rounded"></select>
+  <!-- Blocos de Conteúdo (Gerenciados via JS) -->
+  <div id="store" hidden>
+    <section class="card blk" id="b-recursos">
+      <h2><span class="grip">⠿</span>Recursos de Vida</h2>
+      <div id="res"></div>
+    </section>
+
+    <section class="card blk" id="b-atributos">
+      <h2><span class="grip">⠿</span>Sigilo de Atributos</h2>
+      <div class="wheel" id="wheel"></div>
+    </section>
+
+    <section class="card blk" id="b-teste">
+      <h2><span class="grip">⠿</span>Motor de Teste<span class="r mut">d20s</span></h2>
+      <div class="sl">
+        <span class="k">Atributos</span>
+        <span id="s-attr"></span>
+        <button class="btn" data-add="attr">+ Atributo</button>
       </div>
-      <div>
-        <label class="block text-stone-400 mb-1">Bônus (+1 a +10):</label>
-        <input type="number" id="modal-valor-pericia" min="1" max="10" value="2" class="w-full bg-stone-900 border border-stone-700 text-gold-400 font-bold p-1.5 rounded">
+      <div class="sl">
+        <span class="k">Perícia</span>
+        <span id="s-per"></span>
+        <button class="btn" data-add="per">+ Perícia</button>
       </div>
-      <div class="flex justify-end gap-2 border-t border-stone-800 pt-2">
-        <button onclick="fecharModalPericia()" class="px-2.5 py-1 rounded bg-stone-900 text-stone-400">Cancelar</button>
-        <button onclick="confirmarAddPericia()" class="px-2.5 py-1 rounded bg-gold-600 text-stone-950 font-bold font-cinzel">Salvar</button>
+      <div class="sl">
+        <span class="k">Habilidade</span>
+        <span id="s-hab"></span>
+        <button class="btn" data-add="hab">+ Habilidade</button>
+      </div>
+      <div class="hint" id="hint"></div>
+      <div class="pool">
+        <span id="pool"></span>
+        <span id="cost"></span>
+      </div>
+      <div style="display:flex; gap:6px">
+        <button class="btn pri" style="flex:1; padding:6px" onclick="executarRolarDado()">🎲 Girar Teste</button>
+        <button class="btn" onclick="salvarSelecaoComoMacro()" title="Salvar como macro">🔖</button>
+        <button class="btn" onclick="limparSelecao()" title="Limpar">✕</button>
+      </div>
+      <div class="out" id="out" hidden></div>
+    </section>
+
+    <section class="card blk" id="b-macros">
+      <h2><span class="grip">⠿</span>Macros<span class="r mut">1 clique</span></h2>
+      <div id="macros"></div>
+    </section>
+
+    <section class="card blk" id="b-pericias">
+      <h2>
+        <span class="grip">⠿</span>Perícias
+        <span class="r"><button class="btn" onclick="abrirModalAdicionarPericia()">+ Nova</button></span>
+      </h2>
+      <div id="pericias"></div>
+    </section>
+
+    <section class="card blk" id="b-habilidades">
+      <h2>
+        <span class="grip">⠿</span>Habilidades
+        <span class="r"><button class="btn" onclick="abrirModalAprenderHabilidade()">+ Aprender</button></span>
+      </h2>
+      <div id="habs"></div>
+    </section>
+  </div>
+
+  <!-- Modal Genérico -->
+  <div class="ov" id="modal" hidden>
+    <div class="card mod">
+      <h2 id="modal-titulo"></h2>
+      <div id="modal-conteudo"></div>
+      <div style="text-align:right; margin-top:8px">
+        <button class="btn" onclick="fecharModal()">Fechar</button>
       </div>
     </div>
   </div>
 
-  <div id="modal-habilidade" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-stone-950 gold-border p-4 rounded-lg max-w-md w-full space-y-3 text-xs">
-      <h3 class="font-cinzel font-bold text-gold-400 text-xs border-b border-stone-800 pb-1.5">Catálogo de Habilidades (habilidades.json)</h3>
-      <div id="modal-lista-habilidades" class="space-y-2 max-h-72 overflow-y-auto pr-1"></div>
-      <div class="flex justify-end border-t border-stone-800 pt-2">
-        <button onclick="fecharModalHabilidade()" class="px-2.5 py-1 rounded bg-stone-900 text-stone-400">Fechar</button>
-      </div>
-    </div>
-  </div>
+  <!-- Toast Notificação -->
+  <div id="toast"></div>
 
-  <!-- JAVASCRIPT LOGIC -->
   <script>
-    // CONFIGURAÇÃO E DADOS DOS 7 ATRIBUTOS NA RODA DE SIGILO
-    const listaAtributosRoda = [
-      { key: "potencia", label: "POT", icon: "fa-dumbbell", color: "text-red-400" },
-      { key: "vigor", label: "VIG", icon: "fa-shield", color: "text-red-400" },
-      { key: "destreza", label: "DES", icon: "fa-person-running", color: "text-red-400" },
-      { key: "percepcao", label: "PER", icon: "fa-eye", color: "text-sky-400" },
-      { key: "erudicao", label: "ERU", icon: "fa-book", color: "text-sky-400" },
-      { key: "autoridade", label: "AUT", icon: "fa-crown", color: "text-purple-400" },
-      { key: "impeto", label: "ÍMP", icon: "fa-fire", color: "text-purple-400" }
+    // Atalho para Selecionar Elementos
+    const getEl = selector => document.querySelector(selector);
+
+    // Atributos e Estrutura de Recursos permanecem fixos na lógica do motor
+const ATRIBUTOS = [
+  ['potencia', 'POT', 'r'],
+  ['vigor', 'VIG', 'r'],
+  ['destreza', 'DES', 'r'],
+  ['percepcao', 'PER', 'b'],
+  ['erudicao', 'ERU', 'b'],
+  ['autoridade', 'AUT', 'p'],
+  ['impeto', 'ÍMP', 'p']
+];
+
+const ESTRUTURA_RECURSOS = [
+  ['hp', 'HP', '#d64545'],
+  ['san', 'SAN', '#9b59d0'],
+  ['pef', 'PE-F (Físico)', '#e0a030'],
+  ['pem', 'PE-M (Mental)', '#3da5d9']
+];
+
+const BONUS_ORFAO = [2, -2, 2, 2];
+const QTD_SLOTS_RAIZ = { singular: 2, heranca: 1, dupla: 1, auto: 0 };
+
+// Agora são mutáveis e iniciam vazias
+let RAIZES = {};
+let LISTA_PERICIAS = [];
+let CATALOGO_HABILIDADES = [];
+
+// Função assíncrona para buscar os arquivos JSON externos
+async function carregarDadosExternos() {
+  try {
+    const [resRaizes, resPericias, resHabilidades] = await Promise.all([
+      fetch('../dados/raizes.json'),
+      fetch('../dados/pericias.json'),
+      fetch('../dados/habilidades.json')
+    ]);
+
+    RAIZES = await resRaizes.json();
+    LISTA_PERICIAS = await resPericias.json();
+    CATALOGO_HABILIDADES = await resHabilidades.json();
+
+    // Inicia o sistema somente APÓS os JSONs estarem carregados
+    inicializarFicha();
+  } catch (erro) {
+    console.error('Erro ao carregar dados JSON:', erro);
+    mostrarToast('Erro ao carregar arquivos JSON!');
+  }
+}
+
+function inicializarFicha() {
+  aplicarVisual();
+  construirCabecalho();
+  construirInterfaceRecursos();
+  construirRodaAtributos();
+  renderizarPericias();
+  renderizarHabilidades();
+  renderizarMacros();
+  montarColunasLayout();
+  inicializarDragAndDrop();
+  recalcularTudo();
+}
+
+// Substitua a chamada antiga de inicialização no final do script por essa:
+carregarDadosExternos();
+    const LAYOUT_PADRAO = [
+      ['recursos', 'atributos'],
+      ['teste', 'macros'],
+      ['pericias', 'habilidades']
     ];
 
-    const bancoHabilidadesJSON = [
-      {
-        id: "hab_tronco_calejado",
-        nome: "Tronco Calejado",
-        categoria: "estatistico",
-        custo_pe: { pe_f: 0, pe_m: 0 },
-        descricao: "Anos de labuta calejaram seus músculos. Soma +6 nos Pontos de Vida (HP) Máximos.",
-        efeito: { alvo: "hp_maximo", valor: 6 },
-        teste_associado: null
-      },
-      {
-        id: "hab_folego_inabalavel",
-        nome: "Fôlego Inabalável",
-        categoria: "estatistico",
-        custo_pe: { pe_f: 0, pe_m: 0 },
-        descricao: "Expande a estamina física corporal. Soma +3 no PE-Físico Máximo.",
-        efeito: { alvo: "pe_f_maximo", valor: 3 },
-        teste_associado: null
-      },
-      {
-        id: "hab_corte_profundo",
-        nome: "Corte Profundo",
-        categoria: "ativo",
-        custo_pe: { pe_f: 1, pe_m: 0 },
-        descricao: "Um golpe rasgante. Concede +2 no teste de Luta.",
-        efeito: { alvo: "teste_luta", valor: 2 },
-        teste_associado: null
-      },
-      {
-        id: "hab_mira_focada",
-        nome: "Mira Focada",
-        categoria: "ativo",
-        custo_pe: { pe_f: 0, pe_m: 1 },
-        descricao: "Regula o fôlego antes de disparar. Concede +3 no teste de Pontaria.",
-        efeito: { alvo: "teste_pontaria", valor: 3 },
-        teste_associado: null
-      },
-      {
-        id: "hab_aparo_com_cabo",
-        nome: "Aparo com Cabo",
-        categoria: "reativo",
-        custo_pe: { pe_f: 1, pe_m: 0 },
-        descricao: "Interpõe a ferramenta para absorver golpe. Concede +2 na Defesa.",
-        efeito: { alvo: "teste_defesa", valor: 2 },
-        teste_associado: null
-      },
-      {
-        id: "hab_sutura_emergencia",
-        nome: "Sutura de Emergência",
-        categoria: "tecnico",
-        custo_pe: { pe_f: 0, pe_m: 0 },
-        descricao: "Permite suturas cirúrgicas de emergência.",
-        efeito: null,
-        teste_associado: {
-          nome: "Sutura de Emergência",
-          attr1: "erudicao",
-          attr2: "destreza",
-          pericia: "Medicina",
-          habilidadeId: "hab_sutura_emergencia"
+    const FICHA_PADRAO = () => ({
+      nome: '',
+      tipo: 'heranca',
+      r1: '',
+      r2: '',
+      attr: {potencia: 0, vigor: 0, destreza: 0, percepcao: 0, erudicao: 0, autoridade: 0, impeto: 0},
+      cur: {},
+      per: {},
+      habs: [],
+      macros: []
+    });
+
+    // Estado da Aplicação
+    let Personagem = FICHA_PADRAO();
+    let layoutAtual = LAYOUT_PADRAO;
+    let temaAtual = 'dark';
+    let paletaAtual = 'ouro';
+    let modoArmado = null;
+    let selecaoTeste = {attrs: [], per: null, hab: null};
+    let sinalRecursos = {hp: -1, san: -1, pef: -1, pem: -1};
+    let maximosRecursos = {};
+
+    // Carregar Estado Salvo
+    try {
+      const dadosSalvos = JSON.parse(localStorage.getItem('pantheon_ficha_v2'));
+      if (dadosSalvos) {
+        Personagem = Object.assign(FICHA_PADRAO(), dadosSalvos.P);
+        layoutAtual = dadosSalvos.layout || layoutAtual;
+        temaAtual = dadosSalvos.theme || temaAtual;
+        paletaAtual = dadosSalvos.pal || paletaAtual;
+      }
+    } catch (err) { }
+
+    function salvarEstado() {
+      try {
+        localStorage.setItem('pantheon_ficha_v2', JSON.stringify({
+          P: Personagem,
+          layout: layoutAtual,
+          theme: temaAtual,
+          pal: paletaAtual
+        }));
+      } catch (err) { }
+    }
+
+    function mostrarToast(mensagem) {
+      const toast = getEl('#toast');
+      toast.textContent = mensagem;
+      toast.classList.add('show');
+      clearTimeout(mostrarToast.timer);
+      mostrarToast.timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    const obterSiglaAtributo = chave => ATRIBUTOS.find(a => a[0] === chave)[1];
+
+    /* ---------- Aparência ---------- */
+    const PALETAS_CORES = {ouro: 40, carmesim: 355, esmeralda: 150, safira: 210, violeta: 270};
+
+    function aplicarVisual() {
+      document.documentElement.dataset.theme = temaAtual;
+      document.documentElement.dataset.pal = paletaAtual;
+    }
+
+    function abrirConfiguracaoAparencia() {
+      const botoesTema = ['dark', 'light'].map(t =>
+        `<button class="btn ${temaAtual === t ? 'on' : ''}" onclick="temaAtual='${t}'; aplicarVisual(); salvarEstado(); abrirConfiguracaoAparencia();">${t === 'dark' ? '🌙 Escuro' : '☀ Claro'}</button>`
+      ).join('');
+
+      const bolotasPaleta = Object.entries(PALETAS_CORES).map(([nome, hue]) =>
+        `<div class="sw ${paletaAtual === nome ? 'on' : ''}" title="${nome}" style="background:hsl(${hue} 62% 50%)" onclick="paletaAtual='${nome}'; aplicarVisual(); salvarEstado(); abrirConfiguracaoAparencia();"></div>`
+      ).join('');
+
+      abrirModal('Aparência', `
+        <p class="mut" style="margin:0 0 4px">Tema</p>
+        <div style="display:flex; gap:6px; margin-bottom:12px">${botoesTema}</div>
+        <p class="mut" style="margin:0 0 4px">Paleta</p>
+        <div style="display:flex; gap:8px; margin-bottom:12px">${bolotasPaleta}</div>
+        <button class="btn" onclick="layoutAtual=LAYOUT_PADRAO; montarColunasLayout(); salvarEstado(); fecharModal();">↺ Restaurar layout dos blocos</button>
+      `);
+    }
+
+    function abrirModal(titulo, htmlConteudo) {
+      getEl('#modal-titulo').textContent = titulo;
+      getEl('#modal-conteudo').innerHTML = htmlConteudo;
+      getEl('#modal').hidden = false;
+    }
+
+    function fecharModal() {
+      getEl('#modal').hidden = true;
+    }
+
+    getEl('#modal').onclick = e => {if (e.target.id === 'modal') fecharModal();};
+
+    /* ---------- Drag & Drop do Layout ---------- */
+    function montarColunasLayout() {
+      const colunas = [...document.querySelectorAll('.col')];
+      const blocos = [...document.querySelectorAll('.blk')];
+      const usados = new Set();
+
+      layoutAtual.forEach((idsBloco, i) => {
+        idsBloco.forEach(id => {
+          const bloco = getEl('#b-' + id);
+          if (bloco && colunas[i]) {
+            colunas[i].appendChild(bloco);
+            usados.add(bloco);
+          }
+        });
+      });
+
+      blocos.forEach(bloco => {
+        if (!usados.has(bloco)) colunas[0].appendChild(bloco);
+      });
+    }
+
+    function salvarLayoutAtual() {
+      layoutAtual = [...document.querySelectorAll('.col')].map(col =>
+        [...col.querySelectorAll('.blk')].map(bloco => bloco.id.replace('b-', ''))
+      );
+      salvarEstado();
+    }
+
+    function inicializarDragAndDrop() {
+      document.querySelectorAll('.blk').forEach(bloco => {
+        const alça = bloco.querySelector('.grip');
+        alça.onmousedown = () => bloco.draggable = true;
+        bloco.ondragstart = e => {
+          bloco.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        };
+        bloco.ondragend = () => {
+          bloco.classList.remove('dragging');
+          bloco.draggable = false;
+          document.querySelectorAll('.col').forEach(c => c.classList.remove('over'));
+          salvarLayoutAtual();
+        };
+      });
+
+      document.querySelectorAll('.col').forEach(col => {
+        col.ondragover = e => {
+          e.preventDefault();
+          const blocoArrastando = document.querySelector('.dragging');
+          if (!blocoArrastando) return;
+
+          document.querySelectorAll('.col').forEach(c => c.classList.toggle('over', c === col));
+          const proximoBloco = [...col.querySelectorAll('.blk:not(.dragging)')].find(b => {
+            const rect = b.getBoundingClientRect();
+            return e.clientY < rect.top + rect.height / 2;
+          });
+          col.insertBefore(blocoArrastando, proximoBloco || null);
+        };
+      });
+    }
+
+    /* ---------- Cabeçalho e Raízes ---------- */
+    function obterBonusRaiz() {
+      return Personagem.tipo === 'auto' ? BONUS_ORFAO : (RAIZES[Personagem.r1] || [0, 0, 0, 0]);
+    }
+
+    function construirCabecalho() {
+      const gerarOpcoes = (selecionada, permitirVazio) =>
+        (permitirVazio ? '<option value="">—</option>' : '') +
+        Object.keys(RAIZES).map(r => `<option ${r === selecionada ? 'selected' : ''}>${r}</option>`).join('');
+
+      getEl('#raiz1').innerHTML = gerarOpcoes(Personagem.r1, false);
+      getEl('#raiz2').innerHTML = gerarOpcoes(Personagem.r2, true);
+      getEl('#tipo').value = Personagem.tipo;
+      getEl('#nome').value = Personagem.nome;
+
+      const qtdSlots = QTD_SLOTS_RAIZ[Personagem.tipo];
+      getEl('#raiz1').hidden = getEl('#lbl-raiz1').hidden = qtdSlots < 1;
+      getEl('#raiz2').hidden = getEl('#lbl-raiz2').hidden = qtdSlots < 2;
+      getEl('#lbl-raiz1').textContent = qtdSlots > 1 ? 'Raiz principal' : 'Raiz';
+
+      const bonus = obterBonusRaiz();
+      const nomesStatus = ['HP', 'SAN', 'PE-F', 'PE-M'];
+      getEl('#bonus-raiz').textContent = (Personagem.tipo === 'auto' ? 'Órfão: ' : 'Bônus: ') +
+        nomesStatus.map((nome, i) => `${nome} ${bonus[i] >= 0 ? '+' : ''}${bonus[i]}`).join(' · ');
+    }
+
+    getEl('#nome').oninput = e => {Personagem.nome = e.target.value; salvarEstado();};
+    getEl('#tipo').onchange = e => {
+      Personagem.tipo = e.target.value;
+      if (QTD_SLOTS_RAIZ[Personagem.tipo] < 2) Personagem.r2 = '';
+      construirCabecalho();
+      recalcularTudo();
+    };
+    getEl('#raiz1').onchange = e => {Personagem.r1 = e.target.value; construirCabecalho(); recalcularTudo();};
+    getEl('#raiz2').onchange = e => {Personagem.r2 = e.target.value; salvarEstado();};
+
+    /* ---------- Recursos ---------- */
+    function calcularMaximosRecursos() {
+      const attr = Personagem.attr;
+      const b = obterBonusRaiz();
+      const max = {
+        hp: 10 + attr.vigor * 3 + b[0],
+        san: 10 + attr.impeto * 3 + b[1],
+        pef: 5 + attr.destreza + attr.vigor + b[2],
+        pem: 5 + attr.impeto + attr.erudicao + b[3]
+      };
+      Personagem.habs.forEach(id => {
+        const hab = CATALOGO_HABILIDADES.find(x => x.id === id);
+        if (hab && hab.cat === 'estatistico' && max[hab.ef.k] != null) {
+          max[hab.ef.k] += hab.ef.v;
         }
-      }
-    ];
-
-    const todasPericiasDisp = [
-      "Sobrevivência", "Furtividade", "Encontrar", "Atletismo", "Tenacidade",
-      "Luta", "Pontaria", "Defesa", "Reflexo", "Investigação", "Erudição",
-      "Doutrina", "Sigilos", "Ferramentas", "Medicina", "Culinária", "Improviso",
-      "Persuasão", "Enganação", "Intimidação", "Intuição", "Vontade"
-    ];
-
-    let personagem = {
-      raiz: "Lenhador",
-      atributos: { potencia: 2, vigor: 2, destreza: 1, percepcao: 2, erudicao: 0, autoridade: 1, impeto: 1 },
-      recursosAtuais: { hp: 16, san: 13, pef: 10, pem: 6 },
-      pericias: { "Luta": 2, "Atletismo": 2, "Tenacidade": 1 },
-      habilidadesAprendidas: ["hab_tronco_calejado", "hab_corte_profundo"],
-      testesSalvos: [
-        { id: "macro_luta", nome: "Ataque Machado (Luta)", attr1: "potencia", attr2: "destreza", pericia: "Luta", habilidadeId: "hab_corte_profundo" },
-        { id: "macro_atletismo", nome: "Escalar (Atletismo)", attr1: "potencia", attr2: "vigor", pericia: "Atletismo", habilidadeId: null }
-      ]
-    };
-
-    const bonusRaizes = {
-      "Lenhador": { hp: 6, san: 0, pef: 2, pem: 0 },
-      "Ferreiro": { hp: 4, san: 0, pef: 2, pem: 2 },
-      "Guarda": { hp: 4, san: 2, pef: 2, pem: 0 },
-      "Caçador": { hp: 2, san: 0, pef: 4, pem: 2 },
-      "Carpinteiro": { hp: 2, san: 0, pef: 4, pem: 2 },
-      "Curandeiro": { hp: 0, san: 4, pef: 0, pem: 4 },
-      "Escriba": { hp: 0, san: 6, pef: 0, pem: 2 },
-      "Órfão": { hp: 2, san: -2, pef: 2, pem: 2 }
-    };
-
-    window.onload = function() {
-      gerarRodaHeptagonal();
-      atualizarFicha();
-    };
-
-    // GERAR A RODA DE ATRIBUTOS VIA GEOMETRIA TRIGONOMÉTRICA
-    function gerarRodaHeptagonal() {
-      const container = document.getElementById('nodes-container');
-      const svgLines = document.getElementById('svg-lines');
-      container.innerHTML = '';
-      svgLines.innerHTML = '';
-
-      const totalNodes = 7;
-      const radius = 105; // Raio em pixels
-      const centerX = 140;
-      const centerY = 140;
-      const points = [];
-
-      for (let i = 0; i < totalNodes; i++) {
-        // Ângulo inicial para o topo
-        const angle = (i * 2 * Math.PI / totalNodes) - (Math.PI / 2);
-        const x = centerX + radius * Math.cos(angle);
-        const y = centerY + radius * Math.sin(angle);
-        points.push({ x, y, attr: listaAtributosRoda[i] });
-      }
-
-      // Desenhar Linhas do Heptágono Externa e Estrela Interna
-      for (let i = 0; i < totalNodes; i++) {
-        const next = points[(i + 1) % totalNodes];
-        const skip = points[(i + 2) % totalNodes];
-
-        // Linha Perimetral
-        const lineExt = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        lineExt.setAttribute("x1", points[i].x);
-        lineExt.setAttribute("y1", points[i].y);
-        lineExt.setAttribute("x2", next.x);
-        lineExt.setAttribute("y2", next.y);
-        svgLines.appendChild(lineExt);
-
-        // Linha Interna (Estrela Heptagonal)
-        const lineInt = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        lineInt.setAttribute("x1", points[i].x);
-        lineInt.setAttribute("y1", points[i].y);
-        lineInt.setAttribute("x2", skip.x);
-        lineInt.setAttribute("y2", skip.y);
-        lineInt.setAttribute("opacity", "0.3");
-        svgLines.appendChild(lineInt);
-      }
-
-      // Renderizar Nós (Nodes DOM)
-      points.forEach((p, idx) => {
-        const node = document.createElement('div');
-        node.className = "attr-node";
-        node.style.left = `${p.x}px`;
-        node.style.top = `${p.y}px`;
-
-        node.innerHTML = `
-          <span class="text-[8px] font-cinzel text-stone-400 leading-none pt-1">${p.attr.label}</span>
-          <input type="number" min="0" max="4" value="${personagem.atributos[p.attr.key]}" id="attr-${p.attr.key}" onchange="atualizarFicha()">
-        `;
-        container.appendChild(node);
       });
+      return max;
     }
 
-    // ATUALIZAR RECURSOS DA FICHA
-    function atualizarFicha() {
-      listaAtributosRoda.forEach(a => {
-        const el = document.getElementById(`attr-${a.key}`);
-        if (el) personagem.atributos[a.key] = parseInt(el.value) || 0;
-      });
-
-      personagem.raiz = document.getElementById('raiz-select').value;
-      const rBonus = bonusRaizes[personagem.raiz];
-
-      let maxHP = 10 + (personagem.atributos.vigor * 3) + rBonus.hp;
-      let maxSAN = 10 + (personagem.atributos.impeto * 3) + rBonus.san;
-      let maxPEF = 5 + personagem.atributos.destreza + personagem.atributos.vigor + rBonus.pef;
-      let maxPEM = 5 + personagem.atributos.impeto + personagem.atributos.erudicao + rBonus.pem;
-
-      personagem.habilidadesAprendidas.forEach(habId => {
-        const hab = bancoHabilidadesJSON.find(h => h.id === habId);
-        if (hab && hab.categoria === 'estatistico') {
-          if (hab.efeito.alvo === 'hp_maximo') maxHP += hab.efeito.valor;
-          if (hab.efeito.alvo === 'san_maxima') maxSAN += hab.efeito.valor;
-          if (hab.efeito.alvo === 'pe_f_maximo') maxPEF += hab.efeito.valor;
-          if (hab.efeito.alvo === 'pe_m_maximo') maxPEM += hab.efeito.valor;
-        }
-      });
-
-      personagem.recursosAtuais.maxHP = maxHP;
-      personagem.recursosAtuais.maxSAN = maxSAN;
-      personagem.recursosAtuais.maxPEF = maxPEF;
-      personagem.recursosAtuais.maxPEM = maxPEM;
-
-      if (personagem.recursosAtuais.hp > maxHP) personagem.recursosAtuais.hp = maxHP;
-      if (personagem.recursosAtuais.san > maxSAN) personagem.recursosAtuais.san = maxSAN;
-      if (personagem.recursosAtuais.pef > maxPEF) personagem.recursosAtuais.pef = maxPEF;
-      if (personagem.recursosAtuais.pem > maxPEM) personagem.recursosAtuais.pem = maxPEM;
-
-      renderizarBarras();
-      renderizarPericias();
-      renderizarHabilidades();
-      renderizarMacros();
-      atualizarSelectsRolador();
-      atualizarPreviewPool();
-    }
-
-    function renderizarBarras() {
-      const r = personagem.recursosAtuais;
-      document.getElementById('hp-display').textContent = `${r.hp} / ${r.maxHP}`;
-      document.getElementById('hp-bar').style.width = `${Math.max(0, (r.hp / r.maxHP) * 100)}%`;
-
-      document.getElementById('san-display').textContent = `${r.san} / ${r.maxSAN}`;
-      document.getElementById('san-bar').style.width = `${Math.max(0, (r.san / r.maxSAN) * 100)}%`;
-
-      document.getElementById('pef-display').textContent = `${r.pef} / ${r.maxPEF}`;
-      document.getElementById('pef-bar').style.width = `${Math.max(0, (r.pef / r.maxPEF) * 100)}%`;
-
-      document.getElementById('pem-display').textContent = `${r.pem} / ${r.maxPEM}`;
-      document.getElementById('pem-bar').style.width = `${Math.max(0, (r.pem / r.maxPEM) * 100)}%`;
-    }
-
-    function alterarRecurso(tipo, val) {
-      if (tipo === 'hp') personagem.recursosAtuais.hp = Math.min(personagem.recursosAtuais.maxHP, Math.max(0, personagem.recursosAtuais.hp + val));
-      if (tipo === 'san') personagem.recursosAtuais.san = Math.min(personagem.recursosAtuais.maxSAN, Math.max(0, personagem.recursosAtuais.san + val));
-      if (tipo === 'pef') personagem.recursosAtuais.pef = Math.min(personagem.recursosAtuais.maxPEF, Math.max(0, personagem.recursosAtuais.pef + val));
-      if (tipo === 'pem') personagem.recursosAtuais.pem = Math.min(personagem.recursosAtuais.maxPEM, Math.max(0, personagem.recursosAtuais.pem + val));
-      renderizarBarras();
-    }
-
-    function resetarRecurso(tipo) {
-      if (tipo === 'hp') personagem.recursosAtuais.hp = personagem.recursosAtuais.maxHP;
-      if (tipo === 'san') personagem.recursosAtuais.san = personagem.recursosAtuais.maxSAN;
-      if (tipo === 'pef') personagem.recursosAtuais.pef = personagem.recursosAtuais.maxPEF;
-      if (tipo === 'pem') personagem.recursosAtuais.pem = personagem.recursosAtuais.maxPEM;
-      renderizarBarras();
-    }
-
-    function renderizarPericias() {
-      const container = document.getElementById('pericias-ativas-list');
-      container.innerHTML = '';
-      const keys = Object.keys(personagem.pericias);
-      if (keys.length === 0) {
-        container.innerHTML = `<span class="text-stone-500 italic text-[11px]">Nenhuma perícia adicionada.</span>`;
-        return;
-      }
-      keys.forEach(p => {
-        const bonus = personagem.pericias[p];
-        const div = document.createElement('div');
-        div.className = "flex justify-between items-center bg-stone-900 px-2 py-1 rounded border border-stone-800 font-mono text-[11px]";
-        div.innerHTML = `
-          <span class="text-stone-300 font-body">${p}</span>
-          <div class="flex items-center gap-2">
-            <span class="text-gold-400 font-bold">+${bonus}</span>
-            <button onclick="removerPericia('${p}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-xmark"></i></button>
+    function construirInterfaceRecursos() {
+      getEl('#res').innerHTML = ESTRUTURA_RECURSOS.map(([chave, nome, cor]) => `
+        <div class="res">
+          <div class="rt"><span style="color:${cor}">${nome}</span><span id="v-${chave}"></span></div>
+          <div class="bar"><i id="b-${chave}" style="background:${cor}"></i></div>
+          <div class="ctl">
+            <button class="btn sg sub" id="sg-${chave}" onclick="alternarSinalRecurso('${chave}')" title="Alternar subtrair / somar">−</button>
+            <input type="number" min="0" id="in-${chave}" placeholder="0" onkeydown="if(event.key==='Enter') aplicarAlteracaoRecurso('${chave}')">
+            <button class="btn pri" onclick="aplicarAlteracaoRecurso('${chave}')">Aplicar</button>
+            <button class="btn" style="margin-left:auto" onclick="Personagem.cur.${chave}=maximosRecursos.${chave}; atualizarValoresRecursos(); salvarEstado();">Máx</button>
           </div>
-        `;
-        container.appendChild(div);
+        </div>
+      `).join('');
+    }
+
+    function alternarSinalRecurso(chave) {
+      sinalRecursos[chave] *= -1;
+      const btn = getEl('#sg-' + chave);
+      btn.textContent = sinalRecursos[chave] < 0 ? '−' : '+';
+      btn.className = 'btn sg ' + (sinalRecursos[chave] < 0 ? 'sub' : 'add');
+    }
+
+    function aplicarAlteracaoRecurso(chave) {
+      const input = getEl('#in-' + chave);
+      const valor = Math.abs(parseInt(input.value) || 0);
+      if (!valor) return;
+
+      Personagem.cur[chave] = Math.min(maximosRecursos[chave], Math.max(0, Personagem.cur[chave] + sinalRecursos[chave] * valor));
+      input.value = '';
+      atualizarValoresRecursos();
+      salvarEstado();
+    }
+
+    function atualizarValoresRecursos() {
+      ESTRUTURA_RECURSOS.forEach(([chave]) => {
+        getEl('#v-' + chave).textContent = `${Personagem.cur[chave]} / ${maximosRecursos[chave]}`;
+        getEl('#b-' + chave).style.width = Math.max(0, (Personagem.cur[chave] / maximosRecursos[chave]) * 100) + '%';
+      });
+    }
+
+    function recalcularTudo() {
+      maximosRecursos = calcularMaximosRecursos();
+      ESTRUTURA_RECURSOS.forEach(([chave]) => {
+        if (Personagem.cur[chave] == null || Personagem.cur[chave] > maximosRecursos[chave]) {
+          Personagem.cur[chave] = maximosRecursos[chave];
+        }
+      });
+      atualizarValoresRecursos();
+      getEl('#wsum').textContent = Object.values(Personagem.attr).reduce((a, b) => a + b, 0);
+      renderizarSelecaoTeste();
+      salvarEstado();
+    }
+
+    /* ---------- Sigilo / Roda de Atributos ---------- */
+    function construirRodaAtributos() {
+      const raio = 35, centroX = 50, centroY = 51.7;
+      const pontos = ATRIBUTOS.map((_, i) => {
+        const angulo = i * 2 * Math.PI / 7 - Math.PI / 2;
+        return [centroX + raio * Math.cos(angulo), centroY + raio * Math.sin(angulo)];
+      });
+
+      let linhasConexao = '';
+      pontos.forEach((p, i) => {
+        const proximo = pontos[(i + 1) % 7];
+        const salto = pontos[(i + 2) % 7];
+        linhasConexao += `<line x1="${p[0]}" y1="${p[1]}" x2="${proximo[0]}" y2="${proximo[1]}" stroke-width="1.2"/>
+                         <line x1="${p[0]}" y1="${p[1]}" x2="${salto[0]}" y2="${salto[1]}" stroke-width=".6" opacity=".4"/>`;
+      });
+
+      const nosHtml = ATRIBUTOS.map((attr, i) => `
+        <div class="node" data-k="${attr[0]}" style="left:${pontos[i][0]}%; top:${pontos[i][1]}%" title="${attr[0]}">
+          <b class="c-${attr[2]}">${attr[1]}</b>
+          <input type="number" min="0" max="9" value="${Personagem.attr[attr[0]]}">
+        </div>
+      `).join('');
+
+      getEl('#wheel').innerHTML = `
+        <svg viewBox="0 0 100 100" stroke="var(--acc)" fill="none">
+          <circle cx="${centroX}" cy="${centroY}" r="${raio}" stroke-width=".4" opacity=".3"/>
+          ${linhasConexao}
+        </svg>
+        <div class="ctr"><b id="wsum"></b>total</div>
+        ${nosHtml}      
+      `;
+
+      document.querySelectorAll('.node').forEach(no => {
+        no.onclick = () => {if (modoArmado === 'attr') selecionarAtributo(no.dataset.k);};
+        no.querySelector('input').onchange = e => {
+          Personagem.attr[no.dataset.k] = Math.max(0, parseInt(e.target.value) || 0);
+          e.target.value = Personagem.attr[no.dataset.k];
+          recalcularTudo();
+        };
+      });
+    }
+
+    /* ---------- Perícias e Habilidades ---------- */
+    function renderizarPericias() {
+      const chaves = Object.keys(Personagem.per);
+      getEl('#pericias').innerHTML = chaves.length ? '' : '<span class="mut">Nenhuma perícia.</span>';
+
+      chaves.forEach(nome => {
+        const div = document.createElement('div');
+        div.className = 'prow';
+        div.dataset.n = nome;
+        div.innerHTML = `<span>${nome}</span><span>+<input type="number" min="0" max="10" value="${Personagem.per[nome]}"> <button class="x" title="Remover">✕</button></span>`;
+        div.onclick = () => {if (modoArmado === 'per') selecionarPericia(nome);};
+        div.querySelector('input').onchange = e => {
+          Personagem.per[nome] = Math.max(0, parseInt(e.target.value) || 0);
+          salvarEstado();
+          renderizarSelecaoTeste();
+        };
+        div.querySelector('.x').onclick = e => {
+          e.stopPropagation();
+          delete Personagem.per[nome];
+          if (selecaoTeste.per === nome) selecaoTeste.per = null;
+          renderizarPericias();
+          renderizarSelecaoTeste();
+          salvarEstado();
+        };
+        getEl('#pericias').appendChild(div);
       });
     }
 
     function renderizarHabilidades() {
-      const container = document.getElementById('habilidades-ativas-list');
-      container.innerHTML = '';
-      if (personagem.habilidadesAprendidas.length === 0) {
-        container.innerHTML = `<span class="text-stone-500 italic text-[11px]">Nenhuma habilidade aprendida.</span>`;
-        return;
-      }
-      personagem.habilidadesAprendidas.forEach(habId => {
-        const hab = bancoHabilidadesJSON.find(h => h.id === habId);
+      getEl('#habs').innerHTML = Personagem.habs.length ? '' : '<span class="mut">Nenhuma habilidade.</span>';
+
+      Personagem.habs.forEach(id => {
+        const hab = CATALOGO_HABILIDADES.find(x => x.id === id);
         if (!hab) return;
-        let badgeCor = 'bg-stone-800 text-stone-300';
-        if (hab.categoria === 'estatistico') badgeCor = 'bg-emerald-950 text-emerald-300 border-emerald-800';
-        if (hab.categoria === 'ativo') badgeCor = 'bg-amber-950 text-amber-300 border-amber-800';
-        if (hab.categoria === 'reativo') badgeCor = 'bg-purple-950 text-purple-300 border-purple-800';
-        if (hab.categoria === 'tecnico') badgeCor = 'bg-sky-950 text-sky-300 border-sky-800';
 
         const div = document.createElement('div');
-        div.className = "bg-stone-900 p-2 rounded border border-stone-800 space-y-0.5 text-[11px]";
+        div.className = 'hcard' + (hab.cat === 'ativo' || hab.cat === 'reativo' ? ' el' : '');
+        div.dataset.id = id;
         div.innerHTML = `
-          <div class="flex justify-between items-center">
-            <strong class="text-gold-300 font-cinzel">${hab.nome}</strong>
-            <span class="px-1 py-0.2 rounded text-[8px] font-mono uppercase border ${badgeCor}">${hab.categoria}</span>
-          </div>
-          <p class="text-[10px] text-stone-400 leading-tight">${hab.descricao}</p>
-          <div class="flex justify-between items-center pt-0.5 text-[9px] text-stone-500 border-t border-stone-950">
-            <span>PE: F:${hab.custo_pe.pe_f} / M:${hab.custo_pe.pe_m}</span>
-            <button onclick="esquecerHabilidade('${hab.id}')" class="text-red-400 hover:underline">Esquecer</button>
+          <div class="t"><span>${hab.nome}</span><span class="tag">${hab.cat}</span></div>
+          <p>${hab.desc}</p>
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--mut)">
+            <span>PE F:${hab.f} / M:${hab.m}</span>
+            <button class="x" style="font-size:11px">Esquecer</button>
           </div>
         `;
-        container.appendChild(div);
+        div.onclick = () => {
+          if (modoArmado === 'hab') {
+            hab.cat === 'ativo' || hab.cat === 'reativo' ? selecionarHabilidade(id) : mostrarToast('Só habilidades ativas ou reativas entram no teste.');
+          }
+        };
+        div.querySelector('.x').onclick = e => {
+          e.stopPropagation();
+          Personagem.habs = Personagem.habs.filter(x => x !== id);
+          if (selecaoTeste.hab === id) selecaoTeste.hab = null;
+          renderizarHabilidades();
+          recalcularTudo();
+        };
+        getEl('#habs').appendChild(div);
       });
+    }
+
+    function abrirModalAdicionarPericia() {
+      const naoPossuidas = LISTA_PERICIAS.filter(p => !(p in Personagem.per));
+      abrirModal('Adicionar perícia', naoPossuidas.length ? `
+        <div style="display:flex; flex-wrap:wrap; gap:6px">
+          ${naoPossuidas.map(p => `<button class="btn" onclick="Personagem.per['${p}']=1; renderizarPericias(); renderizarSelecaoTeste(); salvarEstado(); abrirModalAdicionarPericia();">${p}</button>`).join('')}
+        </div>
+      ` : '<span class="mut">Você já tem todas.</span>');
+    }
+
+    function abrirModalAprenderHabilidade() {
+      abrirModal('Catálogo de Habilidades', CATALOGO_HABILIDADES.map(hab => {
+        const possui = Personagem.habs.includes(hab.id);
+        return `
+          <div class="hcard">
+            <div class="t"><span>${hab.nome}</span><span class="tag">${hab.cat}</span></div>
+            <p>${hab.desc}</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--mut)">
+              <span>PE F:${hab.f} / M:${hab.m}</span>
+              ${possui ? '<b style="color:#4cc36f">✓ Adquirida</b>' : `<button class="btn pri" onclick="aprenderHabilidade('${hab.id}')">Aprender</button>`}
+            </div>
+          </div>
+        `;
+      }).join(''));
+    }
+
+    function aprenderHabilidade(id) {
+      const hab = CATALOGO_HABILIDADES.find(x => x.id === id);
+      Personagem.habs.push(id);
+      if (hab.teste && !Personagem.macros.some(m => m.hab === id)) {
+        Personagem.macros.push({nome: hab.teste.nome, attrs: hab.teste.attrs, per: hab.teste.per, hab: id});
+      }
+      renderizarHabilidades();
+      renderizarMacros();
+      recalcularTudo();
+      abrirModalAprenderHabilidade();
+    }
+
+    /* ---------- Seleção para Testes (Modo "Armar") ---------- */
+    const TEXTOS_AJUDA = {
+      attr: 'Clique em até 2 atributos na roda.',
+      per: 'Clique em uma perícia da lista.',
+      hab: 'Clique em uma habilidade ativa ou reativa.'
+    };
+
+    function alternarModoArmado(tipo) {
+      modoArmado = modoArmado === tipo ? null : tipo;
+      if (modoArmado === 'attr' && selecaoTeste.attrs.length >= 2) {
+        modoArmado = null;
+        mostrarToast('Já são 2 atributos. Remova um primeiro.');
+      }
+
+      if (modoArmado) document.body.dataset.arm = modoArmado;
+      else delete document.body.dataset.arm;
+
+      getEl('#hint').textContent = modoArmado ? TEXTOS_AJUDA[modoArmado] + ' (Esc cancela)' : '';
+      document.querySelectorAll('[data-add]').forEach(b => b.classList.toggle('on', b.dataset.add === modoArmado));
+    }
+
+    document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => alternarModoArmado(b.dataset.add));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (modoArmado) alternarModoArmado(modoArmado);
+        fecharModal();
+      }
+    });
+
+    function selecionarAtributo(chave) {
+      const index = selecaoTeste.attrs.indexOf(chave);
+      if (index >= 0) selecaoTeste.attrs.splice(index, 1);
+      else selecaoTeste.attrs.push(chave);
+
+      renderizarSelecaoTeste();
+      if (selecaoTeste.attrs.length >= 2) alternarModoArmado('attr');
+    }
+
+    function selecionarPericia(nome) {
+      selecaoTeste.per = selecaoTeste.per === nome ? null : nome;
+      renderizarSelecaoTeste();
+      alternarModoArmado('per');
+    }
+
+    function selecionarHabilidade(id) {
+      selecaoTeste.hab = selecaoTeste.hab === id ? null : id;
+      renderizarSelecaoTeste();
+      alternarModoArmado('hab');
+    }
+
+    function limparSelecao() {
+      selecaoTeste = {attrs: [], per: null, hab: null};
+      if (modoArmado) alternarModoArmado(modoArmado);
+      renderizarSelecaoTeste();
+    }
+
+    function criarChip(texto, eventoRemover) {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.innerHTML = `${texto} <button class="x">✕</button>`;
+      chip.querySelector('button').onclick = eventoRemover;
+      return chip;
+    }
+
+    function renderizarSelecaoTeste() {
+      const elAttr = getEl('#s-attr'), elPer = getEl('#s-per'), elHab = getEl('#s-hab');
+      elAttr.innerHTML = elPer.innerHTML = elHab.innerHTML = '';
+
+      selecaoTeste.attrs = selecaoTeste.attrs.filter(k => Personagem.attr[k] != null);
+      selecaoTeste.attrs.forEach(k => elAttr.appendChild(criarChip(`${obterSiglaAtributo(k)} <b>${Personagem.attr[k]}</b>`, () => selecionarAtributo(k))));
+
+      if (selecaoTeste.per && !(selecaoTeste.per in Personagem.per)) selecaoTeste.per = null;
+      if (selecaoTeste.hab && !Personagem.habs.includes(selecaoTeste.hab)) selecaoTeste.hab = null;
+
+      if (selecaoTeste.per) {
+        elPer.appendChild(criarChip(`${selecaoTeste.per} <b>+${Personagem.per[selecaoTeste.per]}</b>`, () => {selecaoTeste.per = null; renderizarSelecaoTeste();}));
+      }
+
+      const habObj = selecaoTeste.hab && CATALOGO_HABILIDADES.find(x => x.id === selecaoTeste.hab);
+      if (habObj) {
+        elHab.appendChild(criarChip(`${habObj.nome} <b>+${habObj.ef ? habObj.ef.v : 0}</b>`, () => {selecaoTeste.hab = null; renderizarSelecaoTeste();}));
+      }
+
+      document.querySelectorAll('.node').forEach(n => n.classList.toggle('on', selecaoTeste.attrs.includes(n.dataset.k)));
+      document.querySelectorAll('.prow').forEach(n => n.classList.toggle('on', n.dataset.n === selecaoTeste.per));
+      document.querySelectorAll('.hcard[data-id]').forEach(n => n.classList.toggle('on', n.dataset.id === selecaoTeste.hab));
+
+      const somaAtributos = selecaoTeste.attrs.reduce((t, k) => t + Personagem.attr[k], 0);
+      getEl('#pool').innerHTML = !selecaoTeste.attrs.length ? 'Escolha um atributo' :
+        somaAtributos === 0 ? '<span style="color:#e05555">DEFICIÊNCIA 2d20 (menor)</span>' : `${somaAtributos}d20 (maior)`;
+
+      getEl('#cost').textContent = habObj ? `Custo: ${habObj.f} PE-F / ${habObj.m} PE-M` : 'Custo: 0 PE';
+    }
+
+    /* ---------- Rolagens e Macros ---------- */
+    function executarRolarDado() {
+      if (!selecaoTeste.attrs.length) return mostrarToast('Adicione ao menos um atributo.');
+
+      const habObj = selecaoTeste.hab && CATALOGO_HABILIDADES.find(x => x.id === selecaoTeste.hab);
+      if (habObj) {
+        if (Personagem.cur.pef < habObj.f || Personagem.cur.pem < habObj.m) return mostrarToast('PE insuficiente!');
+        Personagem.cur.pef -= habObj.f;
+        Personagem.cur.pem -= habObj.m;
+        atualizarValoresRecursos();
+        salvarEstado();
+      }
+
+      const qtdDados = selecaoTeste.attrs.reduce((t, k) => t + Personagem.attr[k], 0);
+      const rolard20 = () => 1 + Math.floor(Math.random() * 20);
+      const ehDeficiencia = qtdDados === 0;
+      const dadosRolados = ehDeficiencia ? [rolard20(), rolard20()] : Array.from({length: qtdDados}, rolard20);
+
+      const dadoEscolhido = ehDeficiencia ? Math.min(...dadosRolados) : Math.max(...dadosRolados);
+      const critico = (dadosRolados.filter(d => d === 20).length - dadosRolados.filter(d => d === 1).length) * 2;
+
+      const bonusPericia = selecaoTeste.per ? Personagem.per[selecaoTeste.per] || 0 : 0;
+      const bonusHabilidade = habObj && habObj.ef ? habObj.ef.v : 0;
+      const total = dadoEscolhido + bonusPericia + bonusHabilidade + critico;
+      const indiceEscolhido = dadosRolados.indexOf(dadoEscolhido);
+
+      const elOutput = getEl('#out');
+      elOutput.hidden = false;
+      elOutput.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:baseline">
+          <span class="tot">${total}</span>
+          <span class="tag" style="${critico > 0 ? 'color:#4cc36f' : critico < 0 ? 'color:#e05555' : ''}">
+            ${critico > 0 ? 'Crítico +' + critico : critico < 0 ? 'Desastre ' + critico : 'Padrão'}
+          </span>
+        </div>
+        <div class="mut" style="font-style:normal; font-family:monospace">
+          [${selecaoTeste.attrs.map(obterSiglaAtributo).join('+')}] d20:${dadoEscolhido} + Per:${bonusPericia} + Hab:${bonusHabilidade} + Crít:${critico}
+        </div>
+        <div>
+          ${dadosRolados.map((d, i) => `<span class="die ${i === indiceEscolhido ? 'pk' : ''}">${d}</span>`).join('')}
+        </div>
+      `;
+    }
+
+    function salvarSelecaoComoMacro() {
+      if (!selecaoTeste.attrs.length) return mostrarToast('Adicione ao menos um atributo.');
+      const nomeMacro = prompt('Nome da macro:', `${selecaoTeste.attrs.map(obterSiglaAtributo).join(' + ')} (${selecaoTeste.per || 'Geral'})`);
+      if (!nomeMacro) return;
+
+      Personagem.macros.push({nome: nomeMacro, attrs: [...selecaoTeste.attrs], per: selecaoTeste.per, hab: selecaoTeste.hab});
+      renderizarMacros();
+      salvarEstado();
     }
 
     function renderizarMacros() {
-      const container = document.getElementById('macros-container');
-      container.innerHTML = '';
-      if (personagem.testesSalvos.length === 0) {
-        container.innerHTML = `<span class="text-stone-500 italic text-[11px]">Nenhum teste salvo.</span>`;
-        return;
-      }
-      personagem.testesSalvos.forEach((macro, idx) => {
+      getEl('#macros').innerHTML = Personagem.macros.length ? '' : '<span class="mut">Nenhuma macro salva.</span>';
+
+      Personagem.macros.forEach((macro, i) => {
         const div = document.createElement('div');
-        div.className = "flex justify-between items-center bg-stone-900 p-1.5 rounded border border-stone-800 text-[11px]";
+        div.className = 'mrow';
         div.innerHTML = `
-          <div>
-            <strong class="text-stone-200 font-cinzel block leading-tight">${macro.nome}</strong>
-            <span class="text-[9px] text-stone-400 font-mono">${macro.attr1.toUpperCase()}+${macro.attr2.toUpperCase()} ${macro.pericia ? '| '+macro.pericia : ''}</span>
+          <div style="min-width:0">
+            <div class="cz" style="font-size:12px; font-weight:700">${macro.nome}</div>
+            <div class="mut" style="font-style:normal; font-family:monospace; font-size:10px">
+              ${macro.attrs.map(obterSiglaAtributo).join('+')}${macro.per ? ' | ' + macro.per : ''}
+            </div>
           </div>
-          <div class="flex items-center gap-1.5">
-            <button onclick="executarMacro(${idx})" class="bg-stone-950 hover:bg-gold-600 hover:text-stone-950 border border-gold-600/40 text-gold-300 text-[10px] font-bold px-2 py-0.5 rounded font-cinzel">
-              Rolar
-            </button>
-            <button onclick="excluirMacro(${idx})" class="text-stone-600 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
-          </div>
+          <span style="display:flex; gap:6px; align-items:center">
+            <button class="btn pri">Rolar</button>
+            <button class="x" title="Excluir">🗑</button>
+          </span>
         `;
-        container.appendChild(div);
+        div.querySelector('.pri').onclick = () => {
+          selecaoTeste = {
+            attrs: [...macro.attrs],
+            per: macro.per && macro.per in Personagem.per ? macro.per : null,
+            hab: macro.hab && Personagem.habs.includes(macro.hab) ? macro.hab : null
+          };
+          renderizarSelecaoTeste();
+          executarRolarDado();
+        };
+        div.querySelector('.x').onclick = () => {
+          Personagem.macros.splice(i, 1);
+          renderizarMacros();
+          salvarEstado();
+        };
+        getEl('#macros').appendChild(div);
       });
     }
 
-    function atualizarSelectsRolador() {
-      const pSelect = document.getElementById('roll-pericia');
-      pSelect.innerHTML = `<option value="">Nenhuma (0)</option>`;
-      Object.keys(personagem.pericias).forEach(p => {
-        pSelect.innerHTML += `<option value="${p}">${p} (+${personagem.pericias[p]})</option>`;
-      });
-
-      const hSelect = document.getElementById('roll-habilidade');
-      hSelect.innerHTML = `<option value="">Nenhuma Habilidade</option>`;
-      personagem.habilidadesAprendidas.forEach(habId => {
-        const hab = bancoHabilidadesJSON.find(h => h.id === habId);
-        if (hab && (hab.categoria === 'ativo' || hab.categoria === 'reativo')) {
-          hSelect.innerHTML += `<option value="${hab.id}">${hab.nome} (+${hab.efeito ? hab.efeito.valor : 0})</option>`;
-        }
-      });
-    }
-
-    function atualizarPreviewPool() {
-      const a1Key = document.getElementById('roll-attr1').value;
-      const a2Key = document.getElementById('roll-attr2').value;
-      const soma = (personagem.atributos[a1Key] || 0) + (personagem.atributos[a2Key] || 0);
-
-      const poolCountEl = document.getElementById('pool-count');
-      const peCostEl = document.getElementById('pe-cost-preview');
-
-      if (soma === 0) {
-        poolCountEl.textContent = "DEFICIÊNCIA (2d20 - Menor)";
-        poolCountEl.className = "text-red-400 font-bold";
-      } else {
-        poolCountEl.textContent = `${soma}d20 (Maior)`;
-        poolCountEl.className = "text-gold-400 font-bold";
-      }
-
-      const habId = document.getElementById('roll-habilidade').value;
-      const hab = habId ? bancoHabilidadesJSON.find(h => h.id === habId) : null;
-      peCostEl.textContent = hab ? `Custo: ${hab.custo_pe.pe_f} PE-F / ${hab.custo_pe.pe_m} PE-M` : `Custo: 0 PE`;
-    }
-
-    function executarRolagem() {
-      const a1Key = document.getElementById('roll-attr1').value;
-      const a2Key = document.getElementById('roll-attr2').value;
-      const periciaNome = document.getElementById('roll-pericia').value;
-      const habId = document.getElementById('roll-habilidade').value;
-
-      const a1 = personagem.atributos[a1Key] || 0;
-      const a2 = personagem.atributos[a2Key] || 0;
-      const periciaVal = periciaNome ? (personagem.pericias[periciaNome] || 0) : 0;
-      const hab = habId ? bancoHabilidadesJSON.find(h => h.id === habId) : null;
-
-      if (hab) {
-        if (personagem.recursosAtuais.pef < hab.custo_pe.pe_f || personagem.recursosAtuais.pem < hab.custo_pe.pe_m) {
-          alert("PE insuficiente!");
-          return;
-        }
-        personagem.recursosAtuais.pef -= hab.custo_pe.pe_f;
-        personagem.recursosAtuais.pem -= hab.custo_pe.pe_m;
-        renderizarBarras();
-      }
-
-      const somaAttrs = a1 + a2;
-      let dados = [];
-      let dadoEscolhido = 0;
-      let isDeficiencia = (somaAttrs === 0);
-
-      if (isDeficiencia) {
-        dados.push(Math.floor(Math.random() * 20) + 1);
-        dados.push(Math.floor(Math.random() * 20) + 1);
-        dadoEscolhido = Math.min(...dados);
-      } else {
-        for (let i = 0; i < somaAttrs; i++) dados.push(Math.floor(Math.random() * 20) + 1);
-        dadoEscolhido = Math.max(...dados);
-      }
-
-      let c20 = dados.filter(d => d === 20).length;
-      let c1 = dados.filter(d => d === 1).length;
-      let modCritico = (c20 * 2) - (c1 * 2);
-
-      let habBonus = (hab && hab.efeito) ? hab.efeito.valor : 0;
-      let total = dadoEscolhido + periciaVal + habBonus + modCritico;
-
-      const resContainer = document.getElementById('resultado-rolagem');
-      resContainer.classList.remove('hidden');
-
-      document.getElementById('resultado-total').textContent = total;
-      document.getElementById('resultado-detalhes').textContent = 
-        `[d20: ${dadoEscolhido}] + [Per: ${periciaVal}] + [Hab: ${habBonus}] + [Crítico: ${modCritico >= 0 ? '+'+modCritico : modCritico}]`;
-
-      const badgeCrit = document.getElementById('badge-critico');
-      if (modCritico > 0) {
-        badgeCrit.textContent = `Crítico (+${modCritico})`;
-        badgeCrit.className = "px-1.5 py-0.5 rounded text-[9px] font-bold uppercase font-mono bg-emerald-950 border border-emerald-500 text-emerald-300";
-      } else if (modCritico < 0) {
-        badgeCrit.textContent = `Desastre (${modCritico})`;
-        badgeCrit.className = "px-1.5 py-0.5 rounded text-[9px] font-bold uppercase font-mono bg-red-950 border border-red-600 text-red-300";
-      } else {
-        badgeCrit.textContent = "Padrão";
-        badgeCrit.className = "px-1.5 py-0.5 rounded text-[9px] font-bold uppercase font-mono bg-stone-800 text-stone-400";
-      }
-
-      const dadosDiv = document.getElementById('dados-sorteados');
-      dadosDiv.innerHTML = '';
-      dados.forEach(d => {
-        const isChosen = (d === dadoEscolhido);
-        const span = document.createElement('span');
-        span.className = `w-6 h-6 rounded flex items-center justify-center font-mono font-bold text-[11px] border ${
-          isChosen ? 'bg-gold-900 border-gold-400 text-gold-300 scale-105' : 'bg-stone-950 border-stone-800 text-stone-500 opacity-60'
-        }`;
-        span.textContent = d;
-        dadosDiv.appendChild(span);
-      });
-    }
-
-    function salvarTesteRapido() {
-      const a1Key = document.getElementById('roll-attr1').value;
-      const a2Key = document.getElementById('roll-attr2').value;
-      const periciaNome = document.getElementById('roll-pericia').value;
-      const habId = document.getElementById('roll-habilidade').value;
-
-      const nomeDefault = `${a1Key.toUpperCase()} + ${a2Key.toUpperCase()} (${periciaNome || 'Geral'})`;
-      const nomeInput = prompt("Digite o nome da Macro:", nomeDefault);
-      if (!nomeInput) return;
-
-      personagem.testesSalvos.push({
-        id: `macro_${Date.now()}`,
-        nome: nomeInput,
-        attr1: a1Key,
-        attr2: a2Key,
-        pericia: periciaNome || null,
-        habilidadeId: habId || null
-      });
-      renderizarMacros();
-    }
-
-    function executarMacro(index) {
-      const macro = personagem.testesSalvos[index];
-      if (!macro) return;
-      document.getElementById('roll-attr1').value = macro.attr1;
-      document.getElementById('roll-attr2').value = macro.attr2;
-      document.getElementById('roll-pericia').value = macro.pericia || "";
-      document.getElementById('roll-habilidade').value = macro.habilidadeId || "";
-      atualizarPreviewPool();
-      executarRolagem();
-    }
-
-    function excluirMacro(index) {
-      personagem.testesSalvos.splice(index, 1);
-      renderizarMacros();
-    }
-
-    function abrirModalAddPericia() {
-      const select = document.getElementById('modal-select-pericia');
-      select.innerHTML = '';
-      todasPericiasDisp.forEach(p => select.innerHTML += `<option value="${p}">${p}</option>`);
-      document.getElementById('modal-pericia').classList.remove('hidden');
-    }
-
-    function fecharModalPericia() {
-      document.getElementById('modal-pericia').classList.add('hidden');
-    }
-
-    function confirmarAddPericia() {
-      const p = document.getElementById('modal-select-pericia').value;
-      const v = parseInt(document.getElementById('modal-valor-pericia').value) || 1;
-      personagem.pericias[p] = v;
-      fecharModalPericia();
-      atualizarFicha();
-    }
-
-    function removerPericia(p) {
-      delete personagem.pericias[p];
-      atualizarFicha();
-    }
-
-    function abrirModalAddHabilidade() {
-      const container = document.getElementById('modal-lista-habilidades');
-      container.innerHTML = '';
-      bancoHabilidadesJSON.forEach(hab => {
-        const jaPossui = personagem.habilidadesAprendidas.includes(hab.id);
-        const div = document.createElement('div');
-        div.className = `p-2.5 rounded border ${jaPossui ? 'bg-stone-900/40 border-stone-800' : 'bg-stone-900 border-gold-600/40'} space-y-1 text-xs`;
-        div.innerHTML = `
-          <div class="flex justify-between items-center">
-            <strong class="text-gold-300 font-cinzel">${hab.nome}</strong>
-            <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-stone-950 text-stone-400 uppercase">${hab.categoria}</span>
-          </div>
-          <p class="text-stone-400 text-[10px]">${hab.descricao}</p>
-          <div class="flex justify-between items-center pt-1 border-t border-stone-800">
-            <span class="text-[9px] text-stone-500">Custo: F:${hab.custo_pe.pe_f} / M:${hab.custo_pe.pe_m}</span>
-            ${jaPossui 
-              ? `<span class="text-emerald-400 text-[11px] font-bold font-mono">✓ Adquirida</span>`
-              : `<button onclick="aprenderHabilidade('${hab.id}')" class="bg-gold-600 hover:bg-gold-500 text-stone-950 text-xs font-bold px-2 py-0.5 rounded font-cinzel">Aprender</button>`
-            }
-          </div>
-        `;
-        container.appendChild(div);
-      });
-      document.getElementById('modal-habilidade').classList.remove('hidden');
-    }
-
-    function fecharModalHabilidade() {
-      document.getElementById('modal-habilidade').classList.add('hidden');
-    }
-
-    function aprenderHabilidade(habId) {
-      if (!personagem.habilidadesAprendidas.includes(habId)) {
-        personagem.habilidadesAprendidas.push(habId);
-        const hab = bancoHabilidadesJSON.find(h => h.id === habId);
-        if (hab && hab.categoria === 'tecnico' && hab.teste_associado) {
-          personagem.testesSalvos.push({
-            id: `macro_${hab.id}`,
-            nome: hab.teste_associado.nome,
-            attr1: hab.teste_associado.attr1,
-            attr2: hab.teste_associado.attr2,
-            pericia: hab.teste_associado.pericia,
-            habilidadeId: hab.id
-          });
-        }
-      }
-      fecharModalHabilidade();
-      atualizarFicha();
-    }
-
-    function esquecerHabilidade(habId) {
-      personagem.habilidadesAprendidas = personagem.habilidadesAprendidas.filter(id => id !== habId);
-      atualizarFicha();
-    }
+    /* ---------- Inicialização ---------- */
+    aplicarVisual();
+    construirCabecalho();
+    construirInterfaceRecursos();
+    construirRodaAtributos();
+    renderizarPericias();
+    renderizarHabilidades();
+    renderizarMacros();
+    montarColunasLayout();
+    inicializarDragAndDrop();
+    recalcularTudo();
   </script>
 </body>
+
 </html>
