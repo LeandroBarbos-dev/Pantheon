@@ -644,15 +644,14 @@
 
       const qRolagens = query(
         collection(db, "rolagens"),
-        where("mesaId", "==", mesaId),
-        orderBy("criadoEm", "desc"),
-        limit(30)
+        where("mesaId", "==", mesaId)
       );
       onSnapshot(qRolagens, (snapshot) => {
         const lista = [];
         snapshot.forEach(d => lista.push({ id: d.id, ...d.data() }));
-        renderizarFeedRolagens(lista);
-      }, (err) => console.warn("Aguardando índice de rolagens:", err.message));
+        lista.sort((a, b) => (b.criadoEm?.toMillis?.() || Date.now()) - (a.criadoEm?.toMillis?.() || Date.now()));
+        renderizarFeedRolagens(lista.slice(0, 30));
+      });
     }
 
     function renderizarCabecalhoMesa() {
