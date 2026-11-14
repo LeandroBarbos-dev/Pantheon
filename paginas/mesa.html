@@ -50,17 +50,17 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <!-- Botões exclusivos do Mestre (gavetas recolhíveis) -->
-        <button id="btn-toggle-regras" hidden class="px-3 py-2 rounded bg-stone-900 border border-gold-600/60 hover:border-gold-400 text-gold-300 font-cinzel text-xs font-bold flex items-center gap-2">
+        <!-- Botões exclusivos do Mestre (usando classe 'hidden' do Tailwind) -->
+        <button id="btn-toggle-regras" class="hidden items-center gap-2 px-3 py-2 rounded bg-stone-900 border border-gold-600/60 hover:border-gold-400 text-gold-300 font-cinzel text-xs font-bold">
           <i class="fa-solid fa-sliders"></i> Regras da Mesa
         </button>
-        <button id="btn-toggle-itens" hidden class="px-3 py-2 rounded bg-stone-900 border border-emerald-600/60 hover:border-emerald-400 text-emerald-300 font-cinzel text-xs font-bold flex items-center gap-2">
+        <button id="btn-toggle-itens" class="hidden items-center gap-2 px-3 py-2 rounded bg-stone-900 border border-emerald-600/60 hover:border-emerald-400 text-emerald-300 font-cinzel text-xs font-bold">
           <i class="fa-solid fa-suitcase"></i> Catálogo de Itens
         </button>
-        <a id="btn-abrir-editor" href="#" hidden class="px-3 py-2 rounded bg-amber-950/80 border border-amber-600 hover:bg-amber-800/60 text-amber-300 font-cinzel text-xs font-bold flex items-center gap-2">
+        <a id="btn-abrir-editor" href="#" class="hidden items-center gap-2 px-3 py-2 rounded bg-amber-950/80 border border-amber-600 hover:bg-amber-800/60 text-amber-300 font-cinzel text-xs font-bold">
           <i class="fa-solid fa-diagram-project"></i> Editor de Árvores
         </a>
-        <button id="btn-nova-ficha" class="px-4 py-2 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold flex items-center gap-2">
+        <button id="btn-nova-ficha" class="flex items-center gap-2 px-4 py-2 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
           <i class="fa-solid fa-plus"></i> Nova Ficha
         </button>
       </div>
@@ -75,8 +75,8 @@
     <!-- ========================================================= -->
     <div class="lg:col-span-8 space-y-6">
 
-      <!-- GAVETA 1: CONFIGURAÇÕES DA CAMPANHA (FECHADA POR PADRÃO) -->
-      <section id="gaveta-regras" hidden class="bg-parchment gold-border rounded-xl p-5 space-y-5">
+      <!-- GAVETA 1: CONFIGURAÇÕES DA CAMPANHA (EXCLUSIVA DO MESTRE) -->
+      <section id="gaveta-regras" class="hidden bg-parchment gold-border rounded-xl p-5 space-y-5">
         <div class="border-b border-gold-600/40 pb-3 flex flex-wrap justify-between items-center gap-2">
           <div>
             <h2 class="font-cinzel text-lg font-bold text-gold-400 flex items-center gap-2">
@@ -197,8 +197,8 @@
         </div>
       </section>
 
-      <!-- GAVETA 2: CATÁLOGO DE ITENS DA MESA (FECHADA POR PADRÃO) -->
-      <section id="gaveta-itens" hidden class="bg-parchment gold-border rounded-xl p-5 space-y-5">
+      <!-- GAVETA 2: CATÁLOGO OFICIAL DE ITENS DA MESA (EXCLUSIVA DO MESTRE) -->
+      <section id="gaveta-itens" class="hidden bg-parchment gold-border rounded-xl p-5 space-y-5">
         <div class="border-b border-gold-600/40 pb-3 flex flex-wrap justify-between items-center gap-2">
           <div>
             <h2 class="font-cinzel text-lg font-bold text-emerald-400 flex items-center gap-2">
@@ -207,15 +207,14 @@
             <p class="text-xs text-stone-400">Cadastre ou importe itens do livro e arquivos JSON para distribuir nas fichas.</p>
           </div>
 
-          <!-- Botões de Importar / Exportar JSON & Padrões -->
           <div class="flex flex-wrap items-center gap-2">
-            <button id="btn-importar-itens-livro" class="px-2.5 py-1.5 rounded bg-stone-900 border border-gold-600/60 hover:border-gold-400 text-gold-300 font-cinzel text-[11px]" title="Importa Armaduras, Escudos e Itens Médicos do Livro">
+            <button id="btn-importar-itens-livro" class="px-2.5 py-1.5 rounded bg-stone-900 border border-gold-600/60 hover:border-gold-400 text-gold-300 font-cinzel text-[11px]">
               <i class="fa-solid fa-book-open"></i> Itens do Livro
             </button>
-            <button id="btn-importar-itens-json" class="px-2.5 py-1.5 rounded bg-stone-900 border border-sky-600/60 hover:border-sky-400 text-sky-300 font-cinzel text-[11px]" title="Importar catálogo de um arquivo JSON">
+            <button id="btn-importar-itens-json" class="px-2.5 py-1.5 rounded bg-stone-900 border border-sky-600/60 hover:border-sky-400 text-sky-300 font-cinzel text-[11px]">
               <i class="fa-solid fa-file-import"></i> Importar JSON
             </button>
-            <button id="btn-exportar-itens-json" class="px-2.5 py-1.5 rounded bg-stone-900 border border-emerald-600/60 hover:border-emerald-400 text-emerald-300 font-cinzel text-[11px]" title="Baixar catálogo atual em JSON">
+            <button id="btn-exportar-itens-json" class="px-2.5 py-1.5 rounded bg-stone-900 border border-emerald-600/60 hover:border-emerald-400 text-emerald-300 font-cinzel text-[11px]">
               <i class="fa-solid fa-file-export"></i> Exportar JSON
             </button>
             <input type="file" id="input-arquivo-json-itens" accept=".json,application/json" hidden>
@@ -346,6 +345,9 @@
         <div id="lista-catalogo-itens" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
       </section>
 
+      <!-- Barra discreta de regras ativas (visível para jogadores) -->
+      <div id="banner-regras-jogador" class="hidden bg-stone-950/90 border border-stone-800 rounded-lg px-4 py-2.5 text-[11px] text-stone-300 flex flex-wrap items-center justify-between gap-2"></div>
+
       <!-- ========================================================= -->
       <!-- LISTA DE FICHAS DA MESA (VISÃO PRINCIPAL LIMPA)           -->
       <!-- ========================================================= -->
@@ -375,7 +377,7 @@
           <h3 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
             <i class="fa-solid fa-dice-d20 text-gold-500"></i> Histórico de Rolagens
           </h3>
-          <button id="btn-limpar-log" hidden class="text-[11px] text-stone-400 hover:text-red-400">Limpar</button>
+          <button id="btn-limpar-log" class="hidden text-[11px] text-stone-400 hover:text-red-400">Limpar</button>
         </div>
 
         <div id="feed-rolagens" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
@@ -383,8 +385,8 @@
         </div>
       </section>
 
-      <!-- Rolador Livre do Mestre (Embaixo do Histórico) -->
-      <section id="box-rolador-mestre" hidden class="bg-parchment gold-border rounded-xl p-4 space-y-3 text-xs">
+      <!-- Rolador Livre do Mestre (Exclusivo do Mestre) -->
+      <section id="box-rolador-mestre" class="hidden bg-parchment gold-border rounded-xl p-4 space-y-3 text-xs">
         <div class="border-b border-gold-600/40 pb-2 flex justify-between items-center">
           <h3 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
             <i class="fa-solid fa-dice text-gold-500"></i> Rolador Livre do Mestre
@@ -439,8 +441,8 @@
           </button>
         </div>
 
-        <!-- Resultado Local (destaca rolagens secretas) -->
-        <div id="mestre-resultado-local" hidden class="bg-stone-950 border border-gold-600/50 rounded p-2.5 space-y-1">
+        <!-- Resultado Local -->
+        <div id="mestre-resultado-local" class="hidden bg-stone-950 border border-gold-600/50 rounded p-2.5 space-y-1">
           <div class="flex justify-between items-center">
             <span id="mestre-res-tag" class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded"></span>
             <span id="mestre-res-total" class="font-cinzel text-xl font-bold text-gold-400">0</span>
@@ -457,7 +459,7 @@
     import {
       auth, db, onAuthStateChanged,
       doc, updateDoc, addDoc, deleteDoc, getDocs,
-      collection, query, where, orderBy, limit, onSnapshot, serverTimestamp
+      collection, query, where, onSnapshot, serverTimestamp
     } from '../js/firebase-config.js';
 
     const params = new URLSearchParams(window.location.search);
@@ -489,110 +491,19 @@
       "Escriba / Devoto": [0, 6, 0, 2]
     };
 
-    // Itens oficiais descritos no pantheon_rulebook_2.html
     const ITENS_DO_LIVRO = [
-      {
-        id: 'livro_armadura_leve',
-        nome: 'Armadura Leve',
-        categoria: 'armadura',
-        peso: 'leve',
-        rd: 2,
-        penalidadeDesl: 0,
-        descricao: 'Couro acolchoado, gibões de pano grosso ou peles simples. Sem penalidades de movimento ou furtividade.'
-      },
-      {
-        id: 'livro_armadura_media',
-        nome: 'Armadura Média',
-        categoria: 'armadura',
-        peso: 'medio',
-        rd: 4,
-        penalidadeDesl: 0,
-        descricao: 'Couro batido reforçado, brigandina ou cota de malha leve. Equilíbrio entre defesa e agilidade.'
-      },
-      {
-        id: 'livro_armadura_pesada',
-        nome: 'Armadura Pesada',
-        categoria: 'armadura',
-        peso: 'pesado',
-        rd: 6,
-        penalidadeDesl: -2,
-        descricao: 'Cota de malha pesada ou placas de aço. Impõe -2m no Deslocamento e -2 em rolagens que envolvam Destreza.'
-      },
-      {
-        id: 'livro_escudo_leve',
-        nome: 'Escudo Leve (Broquel)',
-        categoria: 'escudo',
-        peso: 'leve',
-        gd: 2,
-        descricao: 'Broquel preso ao antebraço. Concede GD 2 (+4 no teste de Bloqueio) e deixa a mão livre para itens leves.'
-      },
-      {
-        id: 'livro_escudo_medio',
-        nome: 'Escudo Médio (Gota / Redondo)',
-        categoria: 'escudo',
-        peso: 'medio',
-        gd: 3,
-        descricao: 'Escudo de madeira reforçada com bordo de metal. Concede GD 3 (+6 no teste de Bloqueio).'
-      },
-      {
-        id: 'livro_escudo_pesado',
-        nome: 'Escudo Pesado (Pavês / Torre)',
-        categoria: 'escudo',
-        peso: 'pesado',
-        gd: 4,
-        descricao: 'Muralha de madeira e aço. Concede GD 4 (+8 Bloqueio), Cobertura Parcial (+2 Defesa vs projéteis) e -1m Deslocamento.'
-      },
-      {
-        id: 'livro_kit_medico',
-        nome: 'Kit Médico',
-        categoria: 'cura',
-        peso: 'leve',
-        curaFormula: '2d8',
-        curaBonus: 2,
-        usosMax: 3,
-        descricao: 'Exige Habilidade Medicina. Concede +2 no teste de cura (+4 em estabilização) e cura 2d8 HP.'
-      },
-      {
-        id: 'livro_bandagem',
-        nome: 'Bandagem',
-        categoria: 'cura',
-        peso: 'miudeza',
-        curaFormula: '2d4',
-        curaBonus: 0,
-        usosMax: 3,
-        descricao: 'Não exige habilidade. Cura 2d4 HP e concede +2 no teste de estabilização.'
-      },
-      {
-        id: 'livro_item_improvisado',
-        nome: 'Curativo Improvisado',
-        categoria: 'cura',
-        peso: 'miudeza',
-        curaFormula: '1d4',
-        curaBonus: 0,
-        usosMax: 1,
-        descricao: 'Cura 1d4 HP apenas se possuir Habilidade Medicina; leigos usam apenas para estabilizar sem bônus.'
-      },
-      {
-        id: 'livro_racao',
-        nome: 'Ração de Viagem & Água',
-        categoria: 'utilitario',
-        peso: 'leve',
-        descricao: 'Permite recuperar 1d6 + Vigor (PE-F) e 1d6 + Ímpeto (PE-M) durante uma Pausa Curta (15-30 min).'
-      },
-      {
-        id: 'livro_corda',
-        nome: 'Corda de Cânhamo (15m)',
-        categoria: 'utilitario',
-        peso: 'medio',
-        descricao: 'Corda resistente para escalada, amarração e travessias.'
-      },
-      {
-        id: 'livro_tocha',
-        nome: 'Tocha',
-        categoria: 'utilitario',
-        peso: 'leve',
-        descricao: 'Ilumina uma área de 9 metros por até 1 hora.'
-      }
+      { id: 'livro_armadura_leve', nome: 'Armadura Leve', categoria: 'armadura', peso: 'leve', rd: 2, penalidadeDesl: 0, descricao: 'Couro acolchoado, gibões de pano grosso ou peles simples. Sem penalidades.' },
+      { id: 'livro_armadura_media', nome: 'Armadura Média', categoria: 'armadura', peso: 'medio', rd: 4, penalidadeDesl: 0, descricao: 'Couro batido reforçado, brigandina ou cota de malha leve.' },
+      { id: 'livro_armadura_pesada', nome: 'Armadura Pesada', categoria: 'armadura', peso: 'pesado', rd: 6, penalidadeDesl: -2, descricao: 'Cota de malha pesada ou placas de aço. Impõe -2m no Deslocamento e -2 em rolagens com Destreza.' },
+      { id: 'livro_escudo_leve', nome: 'Escudo Leve (Broquel)', categoria: 'escudo', peso: 'leve', gd: 2, descricao: 'Concede GD 2 (+4 no teste de Bloqueio) e deixa a mão livre para itens leves.' },
+      { id: 'livro_escudo_medio', nome: 'Escudo Médio (Gota / Redondo)', categoria: 'escudo', peso: 'medio', gd: 3, descricao: 'Concede GD 3 (+6 no teste de Bloqueio).' },
+      { id: 'livro_escudo_pesado', nome: 'Escudo Pesado (Pavês / Torre)', categoria: 'escudo', peso: 'pesado', gd: 4, descricao: 'Concede GD 4 (+8 Bloqueio), Cobertura Parcial (+2 Defesa vs projéteis) e -1m Deslocamento.' },
+      { id: 'livro_kit_medico', nome: 'Kit Médico', categoria: 'cura', peso: 'leve', curaFormula: '2d8', curaBonus: 2, usosMax: 3, descricao: 'Exige Habilidade Medicina. Concede +2 no teste de cura (+4 em estabilização) e cura 2d8 HP.' },
+      { id: 'livro_bandagem', nome: 'Bandagem', categoria: 'cura', peso: 'miudeza', curaFormula: '2d4', curaBonus: 0, usosMax: 3, descricao: 'Não exige habilidade. Cura 2d4 HP e concede +2 no teste de estabilização.' },
+      { id: 'livro_item_improvisado', nome: 'Curativo Improvisado', categoria: 'cura', peso: 'miudeza', curaFormula: '1d4', curaBonus: 0, usosMax: 1, descricao: 'Cura 1d4 HP apenas com Habilidade Medicina; leigos usam apenas para estabilizar.' },
+      { id: 'livro_racao', nome: 'Ração de Viagem & Água', categoria: 'utilitario', peso: 'leve', descricao: 'Recupera 1d6 + Vigor (PE-F) e 1d6 + Ímpeto (PE-M) durante uma Pausa Curta.' },
+      { id: 'livro_corda', nome: 'Corda de Cânhamo (15m)', categoria: 'utilitario', peso: 'medio', descricao: 'Corda resistente para escalada, amarração e travessias.' },
+      { id: 'livro_tocha', nome: 'Tocha', categoria: 'utilitario', peso: 'leve', descricao: 'Ilumina uma área de 9 metros por até 1 hora.' }
     ];
 
     const NOMES_ESTAGIOS = {
@@ -609,6 +520,15 @@
     let souMestre = false;
     let regrasAtuais = { ...REGRAS_PADRAO };
     let formRegrasPreenchido = false;
+
+    function mostrar(el, flex = false) {
+      el.classList.remove('hidden');
+      if (flex) el.classList.add('flex');
+    }
+    function esconder(el) {
+      el.classList.add('hidden');
+      el.classList.remove('flex');
+    }
 
     onAuthStateChanged(auth, (user) => {
       if (!user) return window.location.href = '../index.html';
@@ -631,8 +551,10 @@
         };
 
         renderizarCabecalhoMesa();
-        renderizarGavetaRegras();
-        renderizarCatalogoItens();
+        if (souMestre) {
+          renderizarGavetaRegras();
+          renderizarCatalogoItens();
+        }
       });
 
       const qFichas = query(collection(db, "fichas"), where("mesaId", "==", mesaId));
@@ -642,10 +564,7 @@
         renderizarListaFichas(fichas);
       });
 
-      const qRolagens = query(
-        collection(db, "rolagens"),
-        where("mesaId", "==", mesaId)
-      );
+      const qRolagens = query(collection(db, "rolagens"), where("mesaId", "==", mesaId));
       onSnapshot(qRolagens, (snapshot) => {
         const lista = [];
         snapshot.forEach(d => lista.push({ id: d.id, ...d.data() }));
@@ -659,23 +578,41 @@
       document.getElementById('mesa-codigo').textContent = mesaDados.codigoConvite || mesaId.slice(0, 6).toUpperCase();
 
       const badge = document.getElementById('badge-papel');
+      const btnRegras = document.getElementById('btn-toggle-regras');
+      const btnItens = document.getElementById('btn-toggle-itens');
+      const btnEditor = document.getElementById('btn-abrir-editor');
+      const btnLimpar = document.getElementById('btn-limpar-log');
+      const boxRolador = document.getElementById('box-rolador-mestre');
+      const bannerJogador = document.getElementById('banner-regras-jogador');
+
       if (souMestre) {
         badge.textContent = "👑 Mestre da Mesa";
         badge.className = "px-2 py-0.5 rounded font-cinzel text-[10px] uppercase border border-gold-500 text-gold-300 bg-gold-950/60";
-        document.getElementById('btn-toggle-regras').hidden = false;
-        document.getElementById('btn-toggle-itens').hidden = false;
-        document.getElementById('btn-abrir-editor').hidden = false;
-        document.getElementById('btn-abrir-editor').href = `editor.html?mesaId=${mesaId}`;
-        document.getElementById('btn-limpar-log').hidden = false;
-        document.getElementById('box-rolador-mestre').hidden = false;
+        mostrar(btnRegras, true);
+        mostrar(btnItens, true);
+        mostrar(btnEditor, true);
+        btnEditor.href = `editor.html?mesaId=${mesaId}`;
+        mostrar(btnLimpar);
+        mostrar(boxRolador);
+        esconder(bannerJogador);
       } else {
         badge.textContent = "⚔️ Jogador";
         badge.className = "px-2 py-0.5 rounded font-cinzel text-[10px] uppercase border border-sky-600 text-sky-300 bg-sky-950/50";
-        document.getElementById('btn-toggle-regras').hidden = true;
-        document.getElementById('btn-toggle-itens').hidden = true;
-        document.getElementById('btn-abrir-editor').hidden = true;
-        document.getElementById('btn-limpar-log').hidden = true;
-        document.getElementById('box-rolador-mestre').hidden = true;
+        esconder(btnRegras);
+        esconder(btnItens);
+        esconder(btnEditor);
+        esconder(btnLimpar);
+        esconder(boxRolador);
+        esconder(document.getElementById('gaveta-regras'));
+        esconder(document.getElementById('gaveta-itens'));
+
+        mostrar(bannerJogador, true);
+        const r = regrasAtuais;
+        bannerJogador.innerHTML = `
+          <span><strong class="text-gold-400">Regras da Mesa:</strong> ${r.pontosAtributoIniciais} pts de Atributo (+1 Órfão)</span>
+          <span>• Estágio Inicial: <strong class="text-stone-200">${NOMES_ESTAGIOS[r.estagioInicial]}</strong> (Teto ${r.tetosPorEstagio[r.estagioInicial]})</span>
+          <span>• Carga Ascendente: <strong class="text-stone-200">${r.travaAscendenteCarga ? 'Travada' : 'Livre'}</strong></span>
+        `;
       }
     }
 
@@ -685,24 +622,34 @@
     };
 
     /* ========================================================= */
-    /* CONTROLE DAS GAVETAS RECOLHÍVEIS                          */
+    /* CONTROLE DAS GAVETAS RECOLHÍVEIS (MESTRE)                 */
     /* ========================================================= */
     const gavetaRegras = document.getElementById('gaveta-regras');
     const gavetaItens = document.getElementById('gaveta-itens');
 
     document.getElementById('btn-toggle-regras').onclick = () => {
-      const abrindo = gavetaRegras.hidden;
-      gavetaRegras.hidden = !abrindo;
-      if (abrindo) gavetaItens.hidden = true;
+      if (!souMestre) return;
+      const estaFechada = gavetaRegras.classList.contains('hidden');
+      if (estaFechada) {
+        mostrar(gavetaRegras);
+        esconder(gavetaItens);
+      } else {
+        esconder(gavetaRegras);
+      }
     };
-    document.getElementById('btn-fechar-regras').onclick = () => gavetaRegras.hidden = true;
+    document.getElementById('btn-fechar-regras').onclick = () => esconder(gavetaRegras);
 
     document.getElementById('btn-toggle-itens').onclick = () => {
-      const abrindo = gavetaItens.hidden;
-      gavetaItens.hidden = !abrindo;
-      if (abrindo) gavetaRegras.hidden = true;
+      if (!souMestre) return;
+      const estaFechada = gavetaItens.classList.contains('hidden');
+      if (estaFechada) {
+        mostrar(gavetaItens);
+        esconder(gavetaRegras);
+      } else {
+        esconder(gavetaItens);
+      }
     };
-    document.getElementById('btn-fechar-itens').onclick = () => gavetaItens.hidden = true;
+    document.getElementById('btn-fechar-itens').onclick = () => esconder(gavetaItens);
 
     /* ========================================================= */
     /* GAVETA 1: REGRAS DA MESA & RAÍZES                         */
@@ -760,6 +707,7 @@
     }
 
     document.getElementById('btn-salvar-regras').onclick = async () => {
+      if (!souMestre) return;
       const novasRegras = {
         pontosAtributoIniciais: Math.max(0, parseInt(document.getElementById('cfg-pontos-attr').value) || 0),
         estagioInicial: parseInt(document.getElementById('cfg-estagio-inicial').value) || 1,
@@ -776,17 +724,19 @@
         travaAscendenteCarga: document.getElementById('cfg-trava-ascendente').checked
       };
       await updateDoc(doc(db, "mesas", mesaId), { regras: novasRegras });
-      gavetaRegras.hidden = true;
+      esconder(gavetaRegras);
       alert("Regras da campanha salvas!");
     };
 
     document.getElementById('btn-importar-raizes-livro').onclick = async () => {
+      if (!souMestre) return;
       const atuais = { ...(mesaDados.raizesDisponiveis || {}), ...RAIZES_DO_LIVRO };
       await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: atuais });
       alert("As 10 profissões do livro + Órfão foram importadas!");
     };
 
     document.getElementById('btn-add-raiz').onclick = async () => {
+      if (!souMestre) return;
       const nome = document.getElementById('nova-raiz-nome').value.trim();
       if (!nome) return alert("Informe o nome da raiz.");
       const vals = [
@@ -813,8 +763,8 @@
       document.getElementById('campos-item-cura').hidden = cat !== 'cura';
     };
 
-    // Importar Itens Padrões do Livro
     document.getElementById('btn-importar-itens-livro').onclick = async () => {
+      if (!souMestre) return;
       const atuais = [...(mesaDados.catalogoItens || [])];
       const idsExistentes = new Set(atuais.map(i => i.id));
       let adicionados = 0;
@@ -826,17 +776,15 @@
         }
       });
 
-      if (adicionados === 0) {
-        return alert("Todos os itens padrões do livro já estão no catálogo desta mesa.");
-      }
+      if (adicionados === 0) return alert("Todos os itens padrões do livro já estão no catálogo.");
       await updateDoc(doc(db, "mesas", mesaId), { catalogoItens: atuais });
       alert(`${adicionados} item(ns) padrão(ões) do livro importado(s)!`);
     };
 
-    // Exportar Catálogo em JSON
     document.getElementById('btn-exportar-itens-json').onclick = () => {
+      if (!souMestre) return;
       const lista = mesaDados.catalogoItens || [];
-      if (!lista.length) return alert("O catálogo está vazio. Adicione ou importe itens antes de exportar.");
+      if (!lista.length) return alert("O catálogo está vazio.");
 
       const blob = new Blob([JSON.stringify(lista, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -847,14 +795,15 @@
       URL.revokeObjectURL(url);
     };
 
-    // Importar Catálogo de Arquivo JSON
     const inputArquivoJson = document.getElementById('input-arquivo-json-itens');
     document.getElementById('btn-importar-itens-json').onclick = () => {
+      if (!souMestre) return;
       inputArquivoJson.value = '';
       inputArquivoJson.click();
     };
 
     inputArquivoJson.onchange = async (e) => {
+      if (!souMestre) return;
       const file = e.target.files?.[0];
       if (!file) return;
 
@@ -862,10 +811,7 @@
         const texto = await file.text();
         const dados = JSON.parse(texto);
         const listaImportada = Array.isArray(dados) ? dados : (Array.isArray(dados.itens) ? dados.itens : null);
-
-        if (!listaImportada) {
-          return alert("JSON inválido: o arquivo deve conter uma lista [ ... ] de itens.");
-        }
+        if (!listaImportada) return alert("JSON inválido: deve conter uma lista [ ... ] de itens.");
 
         const atuais = [...(mesaDados.catalogoItens || [])];
         const idsExistentes = new Set(atuais.map(i => i.id));
@@ -919,13 +865,14 @@
         });
 
         await updateDoc(doc(db, "mesas", mesaId), { catalogoItens: atuais });
-        alert(`${count} item(ns) importado(s) com sucesso do JSON!`);
+        alert(`${count} item(ns) importado(s) do JSON!`);
       } catch (err) {
         alert("Erro ao ler o arquivo JSON: " + err.message);
       }
     };
 
     document.getElementById('btn-salvar-item-catalogo').onclick = async () => {
+      if (!souMestre) return;
       const nome = document.getElementById('item-nome').value.trim();
       if (!nome) return alert("Informe o nome do item.");
 
@@ -1028,7 +975,7 @@
     }
 
     /* ========================================================= */
-    /* FICHAS DA MESA (COM VIDA E RECURSOS ATUAIS)               */
+    /* FICHAS DA MESA                                            */
     /* ========================================================= */
     function calcularResumoRecursos(ficha) {
       const h = ficha.raizesHeranca || {};
@@ -1102,9 +1049,9 @@
 
     function renderizarListaFichas(fichas) {
       const grid = document.getElementById('grid-fichas');
-      document.getElementById('contador-fichas').textContent = `${fichas.length} ficha(s)`;
-
       const visiveis = souMestre ? fichas : fichas.filter(f => f.donoId === usuarioAtual.uid);
+      document.getElementById('contador-fichas').textContent = `${visiveis.length} ficha(s)`;
+
       if (!visiveis.length) {
         grid.innerHTML = `<p class="text-xs text-stone-400 italic col-span-2">Nenhuma ficha encontrada. Clique em "+ Nova Ficha" para começar.</p>`;
         return;
@@ -1124,6 +1071,7 @@
         const tetoEfetivo = f.tetoIndividualOverride || regrasAtuais.tetosPorEstagio[estagio] || 2;
         const rec = calcularResumoRecursos(f);
         const pctHp = Math.max(0, Math.min(100, Math.round((rec.hp.cur / Math.max(1, rec.hp.max)) * 100)));
+        const podeExcluir = souMestre || (!f.criacaoFinalizada && f.donoId === usuarioAtual.uid);
 
         return `
           <div class="bg-stone-950/90 border border-stone-800 hover:border-gold-600/60 rounded-lg p-4 flex flex-col justify-between gap-3">
@@ -1174,10 +1122,22 @@
                   ${f.criacaoFinalizada ? '🔓' : '🔒'}
                 </button>
               ` : ''}
+
+              ${podeExcluir ? `
+                <button data-del-ficha="${f.id}" data-nome-ficha="${f.nome}" class="px-2 py-1.5 rounded bg-red-950/60 border border-red-900 hover:border-red-500 text-red-400 text-xs" title="Excluir Ficha">🗑️</button>
+              ` : ''}
             </div>
           </div>
         `;
       }).join('');
+
+      // Excluir Ficha
+      grid.querySelectorAll('[data-del-ficha]').forEach(b => {
+        b.onclick = async () => {
+          if (!confirm(`Tem certeza que deseja excluir permanentemente a ficha "${b.dataset.nomeFicha}"?`)) return;
+          await deleteDoc(doc(db, "fichas", b.dataset.delFicha));
+        };
+      });
 
       if (souMestre) {
         grid.querySelectorAll('[data-pts]').forEach(b => {
@@ -1258,6 +1218,7 @@
     }
 
     document.getElementById('btn-rolar-mestre').onclick = async () => {
+      if (!souMestre) return;
       const qtd = Math.max(1, Math.min(20, parseInt(document.getElementById('mestre-dado-qtd').value) || 1));
       const faces = parseInt(document.getElementById('mestre-dado-faces').value) || 20;
       const mod = parseInt(document.getElementById('mestre-dado-mod').value) || 0;
@@ -1290,7 +1251,7 @@
 
       const boxRes = document.getElementById('mestre-resultado-local');
       const tagRes = document.getElementById('mestre-res-tag');
-      boxRes.hidden = false;
+      mostrar(boxRes);
       document.getElementById('mestre-res-total').textContent = total;
       document.getElementById('mestre-res-detalhes').textContent = `${descricao} → ${detalhes}`;
 
@@ -1314,6 +1275,7 @@
     };
 
     document.getElementById('btn-limpar-log').onclick = async () => {
+      if (!souMestre) return;
       if (!confirm("Deseja apagar todas as rolagens do histórico público?")) return;
       const q = query(collection(db, "rolagens"), where("mesaId", "==", mesaId));
       const snap = await getDocs(q);
