@@ -69,7 +69,7 @@
     }
 
     .hub-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-3px);
       border-color: #f6e05e;
       box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9), 0 8px 25px rgba(214, 158, 46, 0.25);
     }
@@ -82,8 +82,21 @@
 
 <body class="min-h-screen flex flex-col justify-between selection:bg-gold-700 selection:text-white">
 
+  <!-- Barra Superior de Autenticação -->
+  <nav class="border-b border-gold-900/40 bg-stone-950/90 px-6 py-3 flex justify-between items-center backdrop-blur-md">
+    <div class="flex items-center gap-2">
+      <i class="fa-solid fa-ankh text-gold-400 text-lg glow-gold"></i>
+      <span class="font-decorative text-gold-400 tracking-widest text-sm">PANTHEON</span>
+    </div>
+
+    <!-- Área de Login / Perfil -->
+    <div id="auth-area" class="flex items-center gap-3">
+      <span class="text-xs text-stone-500 font-mono">Carregando...</span>
+    </div>
+  </nav>
+
   <!-- Cabeçalho -->
-  <header class="pt-12 pb-6 px-4 text-center">
+  <header class="pt-10 pb-6 px-4 text-center">
     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-stone-950 border border-gold-500/60 mb-4 shadow-lg">
       <i class="fa-solid fa-ankh text-gold-400 text-3xl glow-gold"></i>
     </div>
@@ -91,94 +104,260 @@
       PANTHEON
     </h1>
     <p class="font-cinzel text-xs md:text-sm text-stone-400 uppercase tracking-[0.25em] mt-2">
-      Sistema de RPG &bull; Ferramentas & Compêndio
+      Sistema de RPG &bull; Mesas, Fichas & Compêndio
     </p>
     <div class="w-40 h-px bg-gradient-to-r from-transparent via-gold-500/60 to-transparent mx-auto mt-5"></div>
   </header>
 
-  <!-- Cards de Navegação -->
-  <main class="max-w-5xl mx-auto px-4 py-6 w-full flex-1 flex items-center">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+  <!-- Conteúdo Principal -->
+  <main class="max-w-5xl mx-auto px-4 py-4 w-full flex-1 space-y-10">
 
-      <!-- Card 1: Ficha de Personagem -->
-      <a href="paginas/ficha.html" class="hub-card bg-parchment gold-border rounded-xl p-6 flex flex-col justify-between group">
-        <div>
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-lg bg-stone-950 border border-gold-600/50 flex items-center justify-center text-gold-400 text-xl group-hover:text-gold-300">
-              <i class="fa-solid fa-scroll"></i>
-            </div>
-            <span class="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-stone-950 border border-stone-800 text-stone-400">
-              Jogador
-            </span>
+    <!-- SEÇÃO 1: LOBBY DE MESAS (Aparece quando logado) -->
+    <section id="lobby-deslogado" class="bg-parchment gold-border rounded-xl p-8 text-center max-w-xl mx-auto">
+      <i class="fa-solid fa-dungeon text-gold-500 text-3xl mb-3"></i>
+      <h2 class="font-cinzel text-xl font-bold text-gold-400 mb-2">Acesse suas Campanhas e Fichas</h2>
+      <p class="text-stone-300 text-sm mb-6">
+        Entre com sua conta Google para criar mesas como Mestre, gerenciar árvores de evolução ou acessar as fichas dos seus personagens na nuvem.
+      </p>
+      <button id="btn-login-hero" class="px-6 py-3 bg-gradient-to-r from-gold-600 to-gold-700 hover:from-gold-500 hover:to-gold-600 text-stone-950 font-cinzel font-bold text-sm rounded-lg shadow-lg transition-all inline-flex items-center gap-2.5">
+        <i class="fa-brands fa-google"></i> Entrar com Google
+      </button>
+    </section>
+
+    <section id="lobby-logado" class="hidden space-y-6">
+      <!-- Ações Rápidas: Criar Mesa ou Entrar por Código -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Criar Nova Mesa -->
+        <div class="bg-parchment gold-border rounded-xl p-5 space-y-3">
+          <h3 class="font-cinzel text-sm font-bold text-gold-400 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-crown text-gold-500"></i> Criar Nova Mesa (Mestre)
+          </h3>
+          <div class="flex gap-2">
+            <input type="text" id="input-nome-mesa" placeholder="Nome da campanha..." class="flex-1 bg-stone-950 border border-stone-800 rounded-lg px-3 py-2 text-sm text-stone-200 focus:outline-none focus:border-gold-500">
+            <button id="btn-criar-mesa" class="px-4 py-2 bg-gold-700 hover:bg-gold-600 text-stone-950 font-cinzel font-bold text-xs rounded-lg transition-all">
+              Criar
+            </button>
           </div>
-          <h2 class="font-cinzel text-xl font-bold text-gold-400 group-hover:text-gold-300 mb-2">
-            Ficha Interativa
-          </h2>
-          <p class="text-stone-300 text-sm leading-relaxed">
-            Gerencie recursos de vida, sigilo de atributos, perícias, habilidades e utilize o motor de rolagem com macros rápidas.
-          </p>
         </div>
-        <div class="mt-6 pt-3 border-t border-stone-800/80 flex items-center justify-between font-cinzel text-xs font-bold text-gold-500 group-hover:text-gold-300">
-          <span>Abrir Ficha</span>
-          <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
-        </div>
-      </a>
 
-      <!-- Card 2: Livro de Regras -->
-      <a href="paginas/livro.html" class="hub-card bg-parchment gold-border rounded-xl p-6 flex flex-col justify-between group">
-        <div>
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-lg bg-stone-950 border border-gold-600/50 flex items-center justify-center text-gold-400 text-xl group-hover:text-gold-300">
+        <!-- Entrar com Código -->
+        <div class="bg-parchment gold-border rounded-xl p-5 space-y-3">
+          <h3 class="font-cinzel text-sm font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-key text-sky-400"></i> Entrar em uma Mesa (Jogador)
+          </h3>
+          <div class="flex gap-2">
+            <input type="text" id="input-codigo-mesa" placeholder="Código (Ex: PANT-1234)" class="flex-1 bg-stone-950 border border-stone-800 rounded-lg px-3 py-2 text-sm text-stone-200 uppercase font-mono focus:outline-none focus:border-sky-500">
+            <button id="btn-entrar-mesa" class="px-4 py-2 bg-sky-700 hover:bg-sky-600 text-stone-950 font-cinzel font-bold text-xs rounded-lg transition-all">
+              Entrar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de Mesas do Usuário -->
+      <div>
+        <h2 class="font-cinzel text-lg font-bold text-gold-400 mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-scroll text-gold-500"></i> Minhas Mesas
+        </h2>
+        <div id="lista-mesas" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <p class="text-stone-500 text-sm italic">Buscando mesas...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 2: FERRAMENTAS GERAIS DO SISTEMA -->
+    <section class="pt-4 border-t border-gold-900/30">
+      <h2 class="font-cinzel text-sm font-bold text-stone-400 uppercase tracking-widest mb-4">
+        Ferramentas & Referência
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Card: Livro de Regras -->
+        <a href="paginas/livro.html" class="hub-card bg-parchment gold-border rounded-xl p-5 flex items-center justify-between group">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-stone-950 border border-gold-600/50 flex items-center justify-center text-gold-400 text-xl">
               <i class="fa-solid fa-book-skull"></i>
             </div>
-            <span class="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-stone-950 border border-stone-800 text-stone-400">
-              Referência
-            </span>
+            <div>
+              <h3 class="font-cinzel text-base font-bold text-gold-400 group-hover:text-gold-300">Grimório de Regras</h3>
+              <p class="text-stone-400 text-xs">Mecânicas de d20, combate, descanso e condições.</p>
+            </div>
           </div>
-          <h2 class="font-cinzel text-xl font-bold text-gold-400 group-hover:text-gold-300 mb-2">
-            Grimório de Regras
-          </h2>
-          <p class="text-stone-300 text-sm leading-relaxed">
-            Consulte a mecânica central de d20s, tabelas de dificuldades, regras de combate, descanso, raízes e condições.
-          </p>
-        </div>
-        <div class="mt-6 pt-3 border-t border-stone-800/80 flex items-center justify-between font-cinzel text-xs font-bold text-gold-500 group-hover:text-gold-300">
-          <span>Ler Regras</span>
-          <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
-        </div>
-      </a>
+          <i class="fa-solid fa-arrow-right text-gold-500 group-hover:translate-x-1 transition-transform"></i>
+        </a>
 
-      <!-- Card 3: Editor de Árvores -->
-      <a href="paginas/editor-arvores.html" class="hub-card bg-parchment gold-border rounded-xl p-6 flex flex-col justify-between group">
-        <div>
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-lg bg-stone-950 border border-gold-600/50 flex items-center justify-center text-gold-400 text-xl group-hover:text-gold-300">
+        <!-- Card: Editor de Árvores (Templates) -->
+        <a href="paginas/editor-arvores.html" class="hub-card bg-parchment gold-border rounded-xl p-5 flex items-center justify-between group">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-stone-950 border border-gold-600/50 flex items-center justify-center text-gold-400 text-xl">
               <i class="fa-solid fa-sitemap"></i>
             </div>
-            <span class="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-stone-950 border border-stone-800 text-stone-400">
-              Mestre / Criação
-            </span>
+            <div>
+              <h3 class="font-cinzel text-base font-bold text-gold-400 group-hover:text-gold-300">Editor de Árvores</h3>
+              <p class="text-stone-400 text-xs">Crie e gerencie árvores pré-prontas de evolução e raízes.</p>
+            </div>
           </div>
-          <h2 class="font-cinzel text-xl font-bold text-gold-400 group-hover:text-gold-300 mb-2">
-            Árvores de Evolução
-          </h2>
-          <p class="text-stone-300 text-sm leading-relaxed">
-            Visualize e monte grafos de evolução de Raízes e Vocações, conectando nós, ramificações e exportando em JSON.
-          </p>
-        </div>
-        <div class="mt-6 pt-3 border-t border-stone-800/80 flex items-center justify-between font-cinzel text-xs font-bold text-gold-500 group-hover:text-gold-300">
-          <span>Abrir Editor</span>
-          <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
-        </div>
-      </a>
+          <i class="fa-solid fa-arrow-right text-gold-500 group-hover:translate-x-1 transition-transform"></i>
+        </a>
+      </div>
+    </section>
 
-    </div>
   </main>
 
   <!-- Rodapé -->
-  <footer class="border-t border-gold-900/30 bg-stone-950/80 py-4 text-center text-xs text-stone-500 font-cinzel">
+  <footer class="border-t border-gold-900/30 bg-stone-950/80 py-4 text-center text-xs text-stone-500 font-cinzel mt-10">
     PANTHEON RPG &bull; Hub Central do Sistema
   </footer>
+
+  <!-- Lógica Firebase do Lobby -->
+  <script type="module">
+    import {
+      auth, db, loginComGoogle, deslogar, onAuthStateChanged,
+      collection, addDoc, getDocs, updateDoc, doc, query, where, arrayUnion
+    } from './js/firebase-config.js';
+
+    let usuarioAtual = null;
+
+    const authArea = document.getElementById('auth-area');
+    const lobbyDeslogado = document.getElementById('lobby-deslogado');
+    const lobbyLogado = document.getElementById('lobby-logado');
+    const listaMesasEl = document.getElementById('lista-mesas');
+
+    document.getElementById('btn-login-hero').onclick = loginComGoogle;
+
+    onAuthStateChanged(auth, async (user) => {
+      usuarioAtual = user;
+      if (user) {
+        authArea.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <img src="${user.photoURL || ''}" alt="" class="w-7 h-7 rounded-full border border-gold-500">
+            <span class="text-xs font-cinzel text-stone-200 hidden sm:inline">${user.displayName}</span>
+            <button id="btn-logout" class="px-2.5 py-1 rounded border border-stone-700 hover:border-red-500 text-stone-400 hover:text-red-400 text-xs font-cinzel transition-all">
+              Sair
+            </button>
+          </div>
+        `;
+        document.getElementById('btn-logout').onclick = deslogar;
+        lobbyDeslogado.classList.add('hidden');
+        lobbyLogado.classList.remove('hidden');
+        carregarMesasDoUsuario();
+      } else {
+        authArea.innerHTML = `
+          <button id="btn-login-nav" class="px-3 py-1.5 rounded bg-gold-700 hover:bg-gold-600 text-stone-950 font-cinzel font-bold text-xs transition-all flex items-center gap-1.5">
+            <i class="fa-brands fa-google"></i> Entrar
+          </button>
+        `;
+        document.getElementById('btn-login-nav').onclick = loginComGoogle;
+        lobbyDeslogado.classList.remove('hidden');
+        lobbyLogado.classList.add('hidden');
+      }
+    });
+
+    // Gerar código aleatório estilo PANT-4821
+    function gerarCodigoConvite() {
+      const num = Math.floor(1000 + Math.random() * 9000);
+      return `PANT-${num}`;
+    }
+
+    // Criar Mesa (Usuário vira Mestre)
+    document.getElementById('btn-criar-mesa').onclick = async () => {
+      if (!usuarioAtual) return;
+      const input = document.getElementById('input-nome-mesa');
+      const nome = input.value.trim();
+      if (!nome) return alert("Digite um nome para a mesa!");
+
+      try {
+        const codigo = gerarCodigoConvite();
+        const docRef = await addDoc(collection(db, "mesas"), {
+          nome: nome,
+          codigoConvite: codigo,
+          mestreId: usuarioAtual.uid,
+          mestreNome: usuarioAtual.displayName,
+          jogadores: [usuarioAtual.uid],
+          raizesDisponiveis: {},
+          arvores: [],
+          criadoEm: new Date().toISOString()
+        });
+
+        input.value = "";
+        window.location.href = `paginas/mesa.html?id=${docRef.id}`;
+      } catch (erro) {
+        console.error(erro);
+        alert("Erro ao criar mesa: " + erro.message);
+      }
+    };
+
+    // Entrar em Mesa pelo Código
+    document.getElementById('btn-entrar-mesa').onclick = async () => {
+      if (!usuarioAtual) return;
+      const input = document.getElementById('input-codigo-mesa');
+      const codigo = input.value.trim().toUpperCase();
+      if (!codigo) return alert("Digite o código de convite!");
+
+      try {
+        const q = query(collection(db, "mesas"), where("codigoConvite", "==", codigo));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+          return alert("Nenhuma mesa encontrada com esse código.");
+        }
+
+        const mesaDoc = snapshot.docs[0];
+        await updateDoc(doc(db, "mesas", mesaDoc.id), {
+          jogadores: arrayUnion(usuarioAtual.uid)
+        });
+
+        input.value = "";
+        window.location.href = `paginas/mesa.html?id=${mesaDoc.id}`;
+      } catch (erro) {
+        console.error(erro);
+        alert("Erro ao entrar na mesa: " + erro.message);
+      }
+    };
+
+    // Listar Mesas onde o usuário participa (como Mestre ou Jogador)
+    async function carregarMesasDoUsuario() {
+      listaMesasEl.innerHTML = '<p class="text-stone-500 text-sm italic">Carregando mesas...</p>';
+      try {
+        const q = query(collection(db, "mesas"), where("jogadores", "array-contains", usuarioAtual.uid));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+          listaMesasEl.innerHTML = '<p class="text-stone-400 text-sm col-span-3">Você ainda não participa de nenhuma mesa. Crie uma ou entre usando um código!</p>';
+          return;
+        }
+
+        listaMesasEl.innerHTML = '';
+        snapshot.forEach((docSnap) => {
+          const mesa = docSnap.data();
+          const souMestre = mesa.mestreId === usuarioAtual.uid;
+
+          const card = document.createElement('a');
+          card.href = `paginas/mesa.html?id=${docSnap.id}`;
+          card.className = "hub-card bg-parchment gold-border rounded-xl p-5 flex flex-col justify-between group";
+          card.innerHTML = `
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="font-mono text-[10px] uppercase px-2 py-0.5 rounded border ${souMestre ? 'bg-amber-950/80 border-gold-500 text-gold-300' : 'bg-sky-950/80 border-sky-600 text-sky-300'}">
+                  ${souMestre ? '👑 Mestre' : '⚔️ Jogador'}
+                </span>
+                <span class="font-mono text-[11px] text-stone-400">${mesa.codigoConvite}</span>
+              </div>
+              <h3 class="font-cinzel text-lg font-bold text-gold-400 group-hover:text-gold-300 truncate">${mesa.nome}</h3>
+              <p class="text-xs text-stone-400 mt-1">Mestre: ${mesa.mestreNome || 'Desconhecido'}</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-stone-800/80 flex justify-between items-center font-cinzel text-xs text-gold-500 group-hover:text-gold-300">
+              <span>Abrir Mesa</span>
+              <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </div>
+          `;
+          listaMesasEl.appendChild(card);
+        });
+      } catch (erro) {
+        console.error(erro);
+        listaMesasEl.innerHTML = '<p class="text-red-400 text-sm">Erro ao carregar mesas.</p>';
+      }
+    }
+  </script>
 
 </body>
 </html>
