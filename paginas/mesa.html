@@ -204,9 +204,23 @@
             <h2 class="font-cinzel text-lg font-bold text-emerald-400 flex items-center gap-2">
               <i class="fa-solid fa-suitcase"></i> Catálogo Oficial de Itens da Mesa
             </h2>
-            <p class="text-xs text-stone-400">Cadastre armas, armaduras, escudos, itens de cura e equipamentos com habilidades vinculadas.</p>
+            <p class="text-xs text-stone-400">Cadastre ou importe itens do livro e arquivos JSON para distribuir nas fichas.</p>
           </div>
-          <button id="btn-fechar-itens" class="px-2.5 py-2 rounded bg-stone-900 border border-stone-700 text-stone-400 hover:text-white text-xs">✕</button>
+
+          <!-- Botões de Importar / Exportar JSON & Padrões -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="btn-importar-itens-livro" class="px-2.5 py-1.5 rounded bg-stone-900 border border-gold-600/60 hover:border-gold-400 text-gold-300 font-cinzel text-[11px]" title="Importa Armaduras, Escudos e Itens Médicos do Livro">
+              <i class="fa-solid fa-book-open"></i> Itens do Livro
+            </button>
+            <button id="btn-importar-itens-json" class="px-2.5 py-1.5 rounded bg-stone-900 border border-sky-600/60 hover:border-sky-400 text-sky-300 font-cinzel text-[11px]" title="Importar catálogo de um arquivo JSON">
+              <i class="fa-solid fa-file-import"></i> Importar JSON
+            </button>
+            <button id="btn-exportar-itens-json" class="px-2.5 py-1.5 rounded bg-stone-900 border border-emerald-600/60 hover:border-emerald-400 text-emerald-300 font-cinzel text-[11px]" title="Baixar catálogo atual em JSON">
+              <i class="fa-solid fa-file-export"></i> Exportar JSON
+            </button>
+            <input type="file" id="input-arquivo-json-itens" accept=".json,application/json" hidden>
+            <button id="btn-fechar-itens" class="px-2.5 py-1.5 rounded bg-stone-900 border border-stone-700 text-stone-400 hover:text-white text-xs">✕</button>
+          </div>
         </div>
 
         <!-- Formulário de Cadastro de Item -->
@@ -475,6 +489,112 @@
       "Escriba / Devoto": [0, 6, 0, 2]
     };
 
+    // Itens oficiais descritos no pantheon_rulebook_2.html
+    const ITENS_DO_LIVRO = [
+      {
+        id: 'livro_armadura_leve',
+        nome: 'Armadura Leve',
+        categoria: 'armadura',
+        peso: 'leve',
+        rd: 2,
+        penalidadeDesl: 0,
+        descricao: 'Couro acolchoado, gibões de pano grosso ou peles simples. Sem penalidades de movimento ou furtividade.'
+      },
+      {
+        id: 'livro_armadura_media',
+        nome: 'Armadura Média',
+        categoria: 'armadura',
+        peso: 'medio',
+        rd: 4,
+        penalidadeDesl: 0,
+        descricao: 'Couro batido reforçado, brigandina ou cota de malha leve. Equilíbrio entre defesa e agilidade.'
+      },
+      {
+        id: 'livro_armadura_pesada',
+        nome: 'Armadura Pesada',
+        categoria: 'armadura',
+        peso: 'pesado',
+        rd: 6,
+        penalidadeDesl: -2,
+        descricao: 'Cota de malha pesada ou placas de aço. Impõe -2m no Deslocamento e -2 em rolagens que envolvam Destreza.'
+      },
+      {
+        id: 'livro_escudo_leve',
+        nome: 'Escudo Leve (Broquel)',
+        categoria: 'escudo',
+        peso: 'leve',
+        gd: 2,
+        descricao: 'Broquel preso ao antebraço. Concede GD 2 (+4 no teste de Bloqueio) e deixa a mão livre para itens leves.'
+      },
+      {
+        id: 'livro_escudo_medio',
+        nome: 'Escudo Médio (Gota / Redondo)',
+        categoria: 'escudo',
+        peso: 'medio',
+        gd: 3,
+        descricao: 'Escudo de madeira reforçada com bordo de metal. Concede GD 3 (+6 no teste de Bloqueio).'
+      },
+      {
+        id: 'livro_escudo_pesado',
+        nome: 'Escudo Pesado (Pavês / Torre)',
+        categoria: 'escudo',
+        peso: 'pesado',
+        gd: 4,
+        descricao: 'Muralha de madeira e aço. Concede GD 4 (+8 Bloqueio), Cobertura Parcial (+2 Defesa vs projéteis) e -1m Deslocamento.'
+      },
+      {
+        id: 'livro_kit_medico',
+        nome: 'Kit Médico',
+        categoria: 'cura',
+        peso: 'leve',
+        curaFormula: '2d8',
+        curaBonus: 2,
+        usosMax: 3,
+        descricao: 'Exige Habilidade Medicina. Concede +2 no teste de cura (+4 em estabilização) e cura 2d8 HP.'
+      },
+      {
+        id: 'livro_bandagem',
+        nome: 'Bandagem',
+        categoria: 'cura',
+        peso: 'miudeza',
+        curaFormula: '2d4',
+        curaBonus: 0,
+        usosMax: 3,
+        descricao: 'Não exige habilidade. Cura 2d4 HP e concede +2 no teste de estabilização.'
+      },
+      {
+        id: 'livro_item_improvisado',
+        nome: 'Curativo Improvisado',
+        categoria: 'cura',
+        peso: 'miudeza',
+        curaFormula: '1d4',
+        curaBonus: 0,
+        usosMax: 1,
+        descricao: 'Cura 1d4 HP apenas se possuir Habilidade Medicina; leigos usam apenas para estabilizar sem bônus.'
+      },
+      {
+        id: 'livro_racao',
+        nome: 'Ração de Viagem & Água',
+        categoria: 'utilitario',
+        peso: 'leve',
+        descricao: 'Permite recuperar 1d6 + Vigor (PE-F) e 1d6 + Ímpeto (PE-M) durante uma Pausa Curta (15-30 min).'
+      },
+      {
+        id: 'livro_corda',
+        nome: 'Corda de Cânhamo (15m)',
+        categoria: 'utilitario',
+        peso: 'medio',
+        descricao: 'Corda resistente para escalada, amarração e travessias.'
+      },
+      {
+        id: 'livro_tocha',
+        nome: 'Tocha',
+        categoria: 'utilitario',
+        peso: 'leve',
+        descricao: 'Ilumina uma área de 9 metros por até 1 hora.'
+      }
+    ];
+
     const NOMES_ESTAGIOS = {
       1: "1. Criação (Infância)",
       2: "2. Evolução da Raiz",
@@ -683,7 +803,7 @@
     };
 
     /* ========================================================= */
-    /* GAVETA 2: CATÁLOGO OFICIAL DE ITENS DA MESA               */
+    /* GAVETA 2: CATÁLOGO OFICIAL DE ITENS DA MESA + JSON        */
     /* ========================================================= */
     const selCatItem = document.getElementById('item-categoria');
     selCatItem.onchange = () => {
@@ -692,6 +812,118 @@
       document.getElementById('campos-item-escudo').hidden = cat !== 'escudo';
       document.getElementById('campos-item-armadura').hidden = cat !== 'armadura';
       document.getElementById('campos-item-cura').hidden = cat !== 'cura';
+    };
+
+    // Importar Itens Padrões do Livro
+    document.getElementById('btn-importar-itens-livro').onclick = async () => {
+      const atuais = [...(mesaDados.catalogoItens || [])];
+      const idsExistentes = new Set(atuais.map(i => i.id));
+      let adicionados = 0;
+
+      ITENS_DO_LIVRO.forEach(itemLivro => {
+        if (!idsExistentes.has(itemLivro.id)) {
+          atuais.push({ ...itemLivro });
+          adicionados++;
+        }
+      });
+
+      if (adicionados === 0) {
+        return alert("Todos os itens padrões do livro já estão no catálogo desta mesa.");
+      }
+      await updateDoc(doc(db, "mesas", mesaId), { catalogoItens: atuais });
+      alert(`${adicionados} item(ns) padrão(ões) do livro importado(s)!`);
+    };
+
+    // Exportar Catálogo em JSON
+    document.getElementById('btn-exportar-itens-json').onclick = () => {
+      const lista = mesaDados.catalogoItens || [];
+      if (!lista.length) return alert("O catálogo está vazio. Adicione ou importe itens antes de exportar.");
+
+      const blob = new Blob([JSON.stringify(lista, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `catalogo-itens-${(mesaDados.nome || 'pantheon').toLowerCase().replace(/\s+/g, '-')}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    // Importar Catálogo de Arquivo JSON
+    const inputArquivoJson = document.getElementById('input-arquivo-json-itens');
+    document.getElementById('btn-importar-itens-json').onclick = () => {
+      inputArquivoJson.value = '';
+      inputArquivoJson.click();
+    };
+
+    inputArquivoJson.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      try {
+        const texto = await file.text();
+        const dados = JSON.parse(texto);
+        const listaImportada = Array.isArray(dados) ? dados : (Array.isArray(dados.itens) ? dados.itens : null);
+
+        if (!listaImportada) {
+          return alert("JSON inválido: o arquivo deve conter uma lista [ ... ] de itens.");
+        }
+
+        const atuais = [...(mesaDados.catalogoItens || [])];
+        const idsExistentes = new Set(atuais.map(i => i.id));
+        let count = 0;
+
+        listaImportada.forEach((raw, idx) => {
+          if (!raw || !raw.nome) return;
+          const cat = ['arma', 'escudo', 'armadura', 'cura', 'utilitario'].includes(raw.categoria) ? raw.categoria : 'utilitario';
+          const peso = ['miudeza', 'leve', 'medio', 'pesado'].includes(raw.peso) ? raw.peso : 'leve';
+          const pesoVal = PESO_BASE[peso] || 0;
+
+          const itemLimpo = {
+            id: raw.id && !idsExistentes.has(raw.id) ? raw.id : `item_${Date.now()}_${idx}`,
+            nome: String(raw.nome).trim(),
+            categoria: cat,
+            peso,
+            descricao: raw.descricao ? String(raw.descricao).trim() : ''
+          };
+
+          if (cat === 'arma') {
+            const def = Boolean(raw.armaDefensiva);
+            itemLimpo.dano = raw.dano || '1d6';
+            itemLimpo.criticoMargem = parseInt(raw.criticoMargem) || 20;
+            itemLimpo.criticoMult = parseInt(raw.criticoMult) || 2;
+            itemLimpo.criticoExtra = raw.criticoExtra || '';
+            itemLimpo.ga = raw.ga !== undefined ? parseInt(raw.ga) : pesoVal;
+            itemLimpo.gd = raw.gd !== undefined ? parseInt(raw.gd) : pesoVal + (def ? 1 : 0);
+            itemLimpo.armaDefensiva = def;
+          } else if (cat === 'escudo') {
+            itemLimpo.gd = raw.gd !== undefined ? parseInt(raw.gd) : pesoVal + 1;
+          } else if (cat === 'armadura') {
+            itemLimpo.rd = parseInt(raw.rd) || 0;
+            itemLimpo.penalidadeDesl = parseInt(raw.penalidadeDesl) || 0;
+          } else if (cat === 'cura') {
+            itemLimpo.curaFormula = raw.curaFormula || '1d4';
+            itemLimpo.curaBonus = parseInt(raw.curaBonus) || 0;
+            itemLimpo.usosMax = Math.max(1, parseInt(raw.usosMax) || 1);
+          }
+
+          if (raw.habilidade && raw.habilidade.nome) {
+            itemLimpo.habilidade = {
+              nome: String(raw.habilidade.nome).trim(),
+              custo: raw.habilidade.custo ? String(raw.habilidade.custo).trim() : '',
+              efeito: raw.habilidade.efeito ? String(raw.habilidade.efeito).trim() : ''
+            };
+          }
+
+          atuais.push(itemLimpo);
+          idsExistentes.add(itemLimpo.id);
+          count++;
+        });
+
+        await updateDoc(doc(db, "mesas", mesaId), { catalogoItens: atuais });
+        alert(`${count} item(ns) importado(s) com sucesso do JSON!`);
+      } catch (err) {
+        alert("Erro ao ler o arquivo JSON: " + err.message);
+      }
     };
 
     document.getElementById('btn-salvar-item-catalogo').onclick = async () => {
@@ -742,7 +974,6 @@
       const atuais = [...(mesaDados.catalogoItens || []), novoItem];
       await updateDoc(doc(db, "mesas", mesaId), { catalogoItens: atuais });
 
-      // Limpa campos principais
       document.getElementById('item-nome').value = '';
       document.getElementById('item-desc').value = '';
       document.getElementById('item-hab-nome').value = '';
@@ -756,7 +987,7 @@
       const lista = mesaDados.catalogoItens || [];
       const container = document.getElementById('lista-catalogo-itens');
       if (!lista.length) {
-        container.innerHTML = `<p class="text-stone-500 italic col-span-2">Nenhum item cadastrado no catálogo desta mesa.</p>`;
+        container.innerHTML = `<p class="text-stone-500 italic col-span-2">Nenhum item cadastrado. Clique em "Itens do Livro" acima ou cadastre manualmente.</p>`;
         return;
       }
 
@@ -805,7 +1036,6 @@
       const raizPrincipal = h.tipo === 'auto' ? 'Órfão' : (h.r1 || '');
       const bonusRaiz = (mesaDados?.raizesDisponiveis || {})[raizPrincipal] || [0, 0, 0, 0];
 
-      // Soma atributos base + bônus de nós desbloqueados + conversões
       const attr = { ...(ficha.atributosBase || {}) };
       const arvores = mesaDados?.arvores || [];
       Object.entries(ficha.nosDesbloqueados || {}).forEach(([arvId, nosIds]) => {
@@ -1059,7 +1289,6 @@
       const descricao = `${rotulo ? rotulo + ' · ' : ''}${qtd}d${faces} (${modoTxt})${modStr}`;
       const detalhes = `Dados: [${dados.join(', ')}]${modStr}`;
 
-      // Exibe sempre no visor local do Mestre
       const boxRes = document.getElementById('mestre-resultado-local');
       const tagRes = document.getElementById('mestre-res-tag');
       boxRes.hidden = false;
