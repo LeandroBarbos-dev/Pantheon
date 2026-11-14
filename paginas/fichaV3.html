@@ -729,9 +729,9 @@ let CATALOGO_HABILIDADES = [];
 async function carregarDadosExternos() {
   try {
     const [resRaizes, resPericias, resHabilidades] = await Promise.all([
-      fetch('raizes.json'),
-      fetch('pericias.json'),
-      fetch('habilidades.json')
+      fetch('../dados/raizes.json'),
+      fetch('../dados/pericias.json'),
+      fetch('../dados/habilidades.json')
     ]);
 
     RAIZES = await resRaizes.json();
