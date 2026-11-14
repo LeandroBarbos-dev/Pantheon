@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PANTHEON · Portal do Sistema</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=Faustina:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              300: '#f6e05e',
+              400: '#ecc94b',
+              500: '#d69e2e',
+              600: '#b7791f',
+              700: '#975a16',
+              800: '#744210',
+            },
+            parchment: {
+              light: '#2a2620',
+              DEFAULT: '#1c1917',
+              dark: '#12100e',
+              border: '#3d3326'
+            }
+          },
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            decorative: ['Cinzel Decorative', 'serif'],
+            body: ['Faustina', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #090807;
+      color: #e2d8c3;
+      font-family: 'Faustina', serif;
+      background-image:
+        radial-gradient(circle at 50% 25%, #1c1610 0%, #090807 75%),
+        radial-gradient(1px 1px at 25px 35px, rgba(214, 158, 46, 0.25), transparent),
+        radial-gradient(1px 1px at 95px 80px, rgba(255, 255, 255, 0.12), transparent);
+      background-size: 100% 100%, 180px 180px, 220px 220px;
+    }
+
+    .gold-border {
+      border: 1px solid #b7791f;
+      box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.85), 0 0 12px rgba(183, 121, 31, 0.15);
+    }
+
+    .hub-card {
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .hub-card:hover {
+      transform: translateY(-4px);
+      border-color: #f6e05e;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9), 0 8px 25px rgba(214, 158, 46, 0.25);
+    }
+
+    .glow-gold {
+      text-shadow: 0 0 12px rgba(214, 158, 46, 0.55);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-between selection:bg-gold-700 selection:text-white">
+
+  <!-- Cabeçalho -->
+  <header class="pt-12 pb-6 px-4 text-center">
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-stone-950 border border-gold-500/60 mb-4 shadow-lg">
+      <i class="fa-solid fa-ankh text-gold-400 text-3xl glow-gold"></i>
+    </div>
+    <h1 class="font-decorative text-4xl md:text-5xl text-gold-400 tracking-widest glow-gold">
+      PANTHEON
+    </h1>
+    <p class="font-cinzel text-xs md:text-sm text-stone-400 uppercase tracking-[0.25em] mt-2">
+      Sistema de RPG &bull; Ferramentas & Compêndio
+    </p>
+    <div class="w-40 h-px bg-gradient-to-r from-transparent via-gold-500/60 to-transparent mx-auto mt-5"></div>
+  </header>
+
+  <!-- Cards de Navegação -->
+  <main class="max-w-5xl mx-auto px-4 py-6 w-full flex-1 flex items-center">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+
+      <!-- Card 1: Ficha de Personagem -->
+      <a href="paginas/ficha.html" class="hub-card bg-parchment gold-border rounded-xl p-6 flex flex-col justify-between group">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-lg bg-stone-950 border border-gold-600/50 flex items-center justify-center text-gold-400 text-xl group-hover:text-gold-300">
+              <i class="fa-solid fa-scroll"></i>
+            </div>
+            <span class="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-stone-950 border border-stone-800 text-stone-400">
+              Jogador
+            </span>
+          </div>
+          <h2 class="font-cinzel text-xl font-bold text-gold-400 group-hover:text-gold-300 mb-2">
+            Ficha Interativa
+          </h2>
+          <p class="text-stone-300 text-sm leading-relaxed">
+            Gerencie recursos de vida, sigilo de atributos, perícias, habilidades e utilize o motor de rolagem com macros rápidas.
+          </p>
+        </div>
+        <div class="mt-6 pt-3 border-t border-stone-800/80 flex items-center justify-between font-cinzel text-xs font-bold text-gold-500 group-hover:text-gold-300">
+          <span>Abrir Ficha</span>
+          <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+        </div>
+      </a>
+
+      <!-- Card 2: Livro de Regras -->
+      <a href="paginas/livro.html" class="hub-card bg-parchment gold-border rounded-xl p-6 flex flex-col justify-between group">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-lg bg-stone-950 border border-gold-600/50 flex items-center justify-center text-gold-400 text-xl group-hover:text-gold-300">
+              <i class="fa-solid fa-book-skull"></i>
+            </div>
+            <span class="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-stone-950 border border-stone-800 text-stone-400">
+              Referência
+            </span>
+          </div>
+          <h2 class="font-cinzel text-xl font-bold text-gold-400 group-hover:text-gold-300 mb-2">
+            Grimório de Regras
+          </h2>
+          <p class="text-stone-300 text-sm leading-relaxed">
+            Consulte a mecânica central de d20s, tabelas de dificuldades, regras de combate, descanso, raízes e condições.
+          </p>
+        </div>
+        <div class="mt-6 pt-3 border-t border-stone-800/80 flex items-center justify-between font-cinzel text-xs font-bold text-gold-500 group-hover:text-gold-300">
+          <span>Ler Regras</span>
+          <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+        </div>
+      </a>
+
+      <!-- Card 3: Editor de Árvores -->
+      <a href="paginas/editor-arvores.html" class="hub-card bg-parchment gold-border rounded-xl p-6 flex flex-col justify-between group">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-lg bg-stone-950 border border-gold-600/50 flex items-center justify-center text-gold-400 text-xl group-hover:text-gold-300">
+              <i class="fa-solid fa-sitemap"></i>
+            </div>
+            <span class="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-stone-950 border border-stone-800 text-stone-400">
+              Mestre / Criação
+            </span>
+          </div>
+          <h2 class="font-cinzel text-xl font-bold text-gold-400 group-hover:text-gold-300 mb-2">
+            Árvores de Evolução
+          </h2>
+          <p class="text-stone-300 text-sm leading-relaxed">
+            Visualize e monte grafos de evolução de Raízes e Vocações, conectando nós, ramificações e exportando em JSON.
+          </p>
+        </div>
+        <div class="mt-6 pt-3 border-t border-stone-800/80 flex items-center justify-between font-cinzel text-xs font-bold text-gold-500 group-hover:text-gold-300">
+          <span>Abrir Editor</span>
+          <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+        </div>
+      </a>
+
+    </div>
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="border-t border-gold-900/30 bg-stone-950/80 py-4 text-center text-xs text-stone-500 font-cinzel">
+    PANTHEON RPG &bull; Hub Central do Sistema
+  </footer>
+
+</body>
+</html>
