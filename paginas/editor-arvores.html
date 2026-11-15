@@ -68,8 +68,8 @@
 
     .node-card {
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      width: 185px;
-      min-height: 60px;
+      width: 190px;
+      min-height: 62px;
     }
     .node-card:hover { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.9); }
 
@@ -274,10 +274,16 @@
             <select id="inspector-type" class="w-full bg-stone-950 border border-stone-800 rounded px-2 py-1.5 text-gold-300">
               <option value="habilidade">Habilidade</option>
               <option value="pericia">Perícia</option>
-              <option value="atributo">Atributo (Escolha A/B)</option>
-              <option value="ambiguo">Dilema Ambíguo</option>
+              <option value="atributo">Atributo (c/ Alternativa)</option>
+              <option value="ambiguo">Dilema Ambíguo (A / B)</option>
             </select>
           </div>
+        </div>
+
+        <!-- Pré-requisito (Nó Pai) -->
+        <div class="flex items-center justify-between bg-stone-950/80 border border-stone-800 rounded px-2.5 py-1.5">
+          <span class="text-[11px] text-stone-400">Nó Pai: <strong id="inspector-parent-name" class="text-stone-200">Nenhum (Raiz)</strong></span>
+          <button type="button" id="btn-unlink-parent" class="text-[10px] text-amber-400 hover:text-amber-300 underline hidden">Desvincular</button>
         </div>
 
         <!-- CONFIGURAÇÃO DE PERÍCIAS CONCEDIDAS (Perícia ou Habilidade com Perícia) -->
@@ -316,7 +322,6 @@
             <input type="number" id="inspector-hab-ef-val" value="0" class="bg-stone-950 border border-stone-700 rounded px-2 py-1 text-gold-300 text-center" placeholder="Valor">
           </div>
 
-          <!-- Modificador de Crítico (Apenas quando esta habilidade estiver em uso) -->
           <div class="pt-1 border-t border-stone-800/80 flex items-center justify-between gap-2">
             <label class="text-[11px] text-red-300 font-semibold">Redução Margem Crítico:</label>
             <select id="inspector-hab-crit-mod" class="bg-stone-950 border border-stone-700 rounded px-2 py-1 font-mono text-red-300 text-[11px]">
@@ -327,42 +332,92 @@
           </div>
         </div>
 
-        <!-- CONFIGURAÇÃO ESPECÍFICA PARA ATRIBUTO / AMBÍGUO -->
-        <div id="sec-config-ambiguo" class="bg-purple-950/30 p-2.5 rounded border border-purple-700/40 space-y-2 hidden">
-          <span class="font-cinzel text-purple-300 font-bold block">Opções de Escolha (A ou B)</span>
-          <div class="space-y-1">
-            <span class="text-[10px] text-stone-400">Opção A:</span>
-            <div class="grid grid-cols-3 gap-1">
-              <select id="inspector-opta-attr" class="col-span-2 bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-stone-200">
-                <option value="potencia">Potência (POT)</option>
-                <option value="vigor">Vigor (VIG)</option>
-                <option value="destreza">Destreza (DES)</option>
-                <option value="percepcao">Percepção (PER)</option>
-                <option value="erudicao">Erudição (ERU)</option>
-                <option value="autoridade">Autoridade (AUT)</option>
-                <option value="impeto">Ímpeto (ÍMP)</option>
-                <option value="narrativo">Ramo / Narrativo</option>
-              </select>
-              <input type="number" id="inspector-opta-val" value="1" class="bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-purple-300 text-center">
-            </div>
-            <input type="text" id="inspector-opta-texto" placeholder="Texto exibido (ex: +1 POT ou Ramo X)" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-[11px] text-stone-200">
+        <!-- CONFIGURAÇÃO ESPECÍFICA PARA ATRIBUTO (1 Atributo + 1 Alternativa Perícia/Habilidade) -->
+        <div id="sec-config-atributo" class="bg-purple-950/30 p-2.5 rounded border border-purple-700/40 space-y-2.5 hidden">
+          <div>
+            <span class="font-cinzel text-purple-300 font-bold block">Escolha de Atributo (com Válvula de Escape)</span>
+            <p class="text-[10px] text-stone-400 leading-tight mt-0.5">Se o personagem já atingiu o teto biológico no atributo, ele escolhe a Opção B (Perícia ou Habilidade) para não travar a árvore.</p>
           </div>
-          <div class="space-y-1 pt-1 border-t border-purple-900/40">
-            <span class="text-[10px] text-stone-400">Opção B:</span>
+
+          <!-- Opção A: Sempre Atributo -->
+          <div class="space-y-1 bg-stone-950/60 p-2 rounded border border-purple-800/40">
+            <span class="text-[10px] font-bold text-purple-300 uppercase">Opção A · Atributo</span>
             <div class="grid grid-cols-3 gap-1">
-              <select id="inspector-optb-attr" class="col-span-2 bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-stone-200">
-                <option value="vigor">Vigor (VIG)</option>
+              <select id="attr-opta-key" class="col-span-2 bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-stone-200">
                 <option value="potencia">Potência (POT)</option>
+                <option value="vigor">Vigor (VIG)</option>
                 <option value="destreza">Destreza (DES)</option>
                 <option value="percepcao">Percepção (PER)</option>
                 <option value="erudicao">Erudição (ERU)</option>
                 <option value="autoridade">Autoridade (AUT)</option>
                 <option value="impeto">Ímpeto (ÍMP)</option>
-                <option value="narrativo">Ramo / Narrativo</option>
               </select>
-              <input type="number" id="inspector-optb-val" value="1" class="bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-purple-300 text-center">
+              <input type="number" id="attr-opta-val" min="1" max="3" value="1" class="bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-purple-300 text-center font-bold">
             </div>
-            <input type="text" id="inspector-optb-texto" placeholder="Texto exibido (ex: +1 VIG ou Ramo Y)" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-[11px] text-stone-200">
+          </div>
+
+          <!-- Opção B: Nunca Atributo -> Perícia ou Habilidade -->
+          <div class="space-y-1.5 bg-stone-950/60 p-2 rounded border border-sky-800/40">
+            <div class="flex justify-between items-center">
+              <span class="text-[10px] font-bold text-sky-300 uppercase">Opção B · Alternativa</span>
+              <select id="attr-optb-tipo" class="bg-stone-900 border border-stone-700 rounded px-1.5 py-0.5 text-[10px] text-sky-300">
+                <option value="pericia">Perícia (+X)</option>
+                <option value="habilidade">Habilidade</option>
+              </select>
+            </div>
+
+            <!-- Sub-bloco Opção B = Perícia -->
+            <div id="attr-optb-box-pericia" class="grid grid-cols-3 gap-1">
+              <input type="text" id="attr-optb-per-nome" placeholder="Nome da Perícia" class="col-span-2 bg-stone-950 border border-stone-700 rounded px-2 py-1 text-stone-200">
+              <input type="number" id="attr-optb-per-val" min="1" max="10" value="1" class="bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-sky-300 text-center font-bold">
+            </div>
+
+            <!-- Sub-bloco Opção B = Habilidade -->
+            <div id="attr-optb-box-habilidade" class="space-y-1 hidden">
+              <input type="text" id="attr-optb-hab-nome" placeholder="Nome da Habilidade alternativa" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-gold-300 font-cinzel">
+              <div class="grid grid-cols-3 gap-1">
+                <select id="attr-optb-hab-cat" class="bg-stone-950 border border-stone-700 rounded px-1 py-1 text-[10px] text-stone-200">
+                  <option value="passivo">Passiva</option>
+                  <option value="ativo">Ativa</option>
+                  <option value="reativo">Reativa</option>
+                  <option value="estatistico">Estatística</option>
+                </select>
+                <input type="number" id="attr-optb-hab-pef" min="0" placeholder="PE-F" class="bg-stone-950 border border-stone-700 rounded px-1 py-1 text-amber-300 text-center">
+                <input type="number" id="attr-optb-hab-pem" min="0" placeholder="PE-M" class="bg-stone-950 border border-stone-700 rounded px-1 py-1 text-sky-300 text-center">
+              </div>
+              <textarea id="attr-optb-hab-desc" rows="2" placeholder="Efeito da habilidade alternativa..." class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-[11px] text-stone-300 resize-none"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONFIGURAÇÃO ESPECÍFICA PARA DILEMA AMBÍGUO (2 Caminhos Mecânicos distintos) -->
+        <div id="sec-config-dilema" class="bg-amber-950/25 p-2.5 rounded border border-amber-600/40 space-y-2.5 hidden">
+          <span class="font-cinzel text-amber-300 font-bold block">Dilema Ambíguo (Opção A vs Opção B)</span>
+
+          <!-- Opção A do Dilema -->
+          <div class="space-y-1 bg-stone-950/60 p-2 rounded border border-stone-800">
+            <div class="flex justify-between items-center">
+              <span class="text-[10px] font-bold text-amber-300">OPÇÃO A</span>
+              <select id="dil-opta-tipo" class="bg-stone-900 border border-stone-700 rounded px-1.5 py-0.5 text-[10px] text-amber-300">
+                <option value="pericia">Perícia (+X)</option>
+                <option value="habilidade">Habilidade</option>
+                <option value="atributo">Atributo (+X)</option>
+              </select>
+            </div>
+            <div id="dil-opta-fields" class="space-y-1"></div>
+          </div>
+
+          <!-- Opção B do Dilema -->
+          <div class="space-y-1 bg-stone-950/60 p-2 rounded border border-stone-800">
+            <div class="flex justify-between items-center">
+              <span class="text-[10px] font-bold text-amber-300">OPÇÃO B</span>
+              <select id="dil-optb-tipo" class="bg-stone-900 border border-stone-700 rounded px-1.5 py-0.5 text-[10px] text-amber-300">
+                <option value="pericia">Perícia (+X)</option>
+                <option value="habilidade">Habilidade</option>
+                <option value="atributo">Atributo (+X)</option>
+              </select>
+            </div>
+            <div id="dil-optb-fields" class="space-y-1"></div>
           </div>
         </div>
 
@@ -382,7 +437,7 @@
 
         <!-- Descrição Normal -->
         <div class="space-y-1.5 border-t border-stone-800 pt-2">
-          <label class="block font-cinzel text-stone-300">Descrição Completa</label>
+          <label class="block font-cinzel text-stone-300">Descrição / Lore do Nó</label>
           <textarea id="inspector-desc" rows="3" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-stone-300 focus:outline-none focus:border-gold-500 resize-none"></textarea>
         </div>
 
@@ -665,7 +720,7 @@
       const roots = treeData.nos.filter(n => !primaryParent.has(n.id));
       const positions = new Map();
       const visited = new Set();
-      const cardStep = 235;
+      const cardStep = 240;
 
       function place(node, depth, cursor) {
         if (visited.has(node.id)) return cursor;
@@ -776,9 +831,12 @@
 
           let innerContent = '';
           if (node.tipoRecompensa === 'atributo' || node.tipoRecompensa === 'ambiguo') {
-            const optA = node.opcoesAmbiguas?.[0]?.efeito || '+1 POT';
-            const optB = node.opcoesAmbiguas?.[1]?.efeito || '+1 VIG';
-            innerContent = `${costBadge}${singularBadge}${branchIndicator}<div class="text-[11px] font-cinzel font-bold text-stone-200 text-center mb-1 truncate">${node.titulo}</div><div class="grid grid-cols-2 gap-1 text-[9px] font-mono font-bold text-center"><span class="bg-purple-950/80 border border-purple-600/50 text-purple-300 py-0.5 px-1 rounded truncate">${optA}</span><span class="bg-purple-950/80 border border-purple-600/50 text-purple-300 py-0.5 px-1 rounded truncate">${optB}</span></div>`;
+            const optA = node.opcoesAmbiguas?.[0]?.efeito || 'Opção A';
+            const optB = node.opcoesAmbiguas?.[1]?.efeito || 'Opção B';
+            const clsB = node.tipoRecompensa === 'atributo'
+              ? 'bg-sky-950/80 border-sky-600/50 text-sky-300'
+              : 'bg-amber-950/80 border-amber-600/50 text-amber-300';
+            innerContent = `${costBadge}${singularBadge}${branchIndicator}<div class="text-[11px] font-cinzel font-bold text-stone-200 text-center mb-1 truncate">${node.titulo}</div><div class="grid grid-cols-2 gap-1 text-[9px] font-mono font-bold text-center"><span class="bg-purple-950/80 border border-purple-600/50 text-purple-300 py-0.5 px-1 rounded truncate" title="${optA}">${optA}</span><span class="${clsB} border py-0.5 px-1 rounded truncate" title="${optB}">${optB}</span></div>`;
           } else if (node.tipoRecompensa === 'pericia') {
             const entries = Object.entries(node.conteudo?.bonusPericia || {});
             const periciaTxt = entries.length ? entries.map(([k, v]) => `+${v} ${k}`).join(' · ') : '+1 Perícia';
@@ -807,6 +865,7 @@
       if (!childNode || isAncestral(childId, parentId)) return;
       childNode.requisitos = [parentId];
       renderTreeVisual();
+      if (selectedNodeId === childId) atualizarInfoPaiInspetor(childNode);
     }
 
     function isAncestral(possibleAncestorId, targetNodeId) {
@@ -855,8 +914,24 @@
     }
 
     /* ========================================================= */
-    /* INSPETOR DO NÓ (COM MÚLTIPLAS PERÍCIAS E HERANÇA SINGULAR)*/
+    /* INSPETOR DO NÓ                                            */
     /* ========================================================= */
+    function atualizarInfoPaiInspetor(node) {
+      const parentId = node.requisitos?.[0];
+      const parentNode = parentId ? treeData.nos.find(n => n.id === parentId) : null;
+      document.getElementById('inspector-parent-name').textContent = parentNode ? parentNode.titulo : 'Nenhum (Raiz)';
+      document.getElementById('btn-unlink-parent').classList.toggle('hidden', !parentNode);
+    }
+
+    document.getElementById('btn-unlink-parent').onclick = () => {
+      if (!selectedNodeId) return;
+      const node = treeData.nos.find(n => n.id === selectedNodeId);
+      if (!node) return;
+      node.requisitos = [];
+      atualizarInfoPaiInspetor(node);
+      renderTreeVisual();
+    };
+
     function renderizarListaPericiasNo(node) {
       const container = document.getElementById('lista-pericias-no');
       const bonusMap = node.conteudo?.bonusPericia || {};
@@ -868,21 +943,19 @@
       }
 
       container.innerHTML = entries.map(([nome, val], idx) => `
-        <div class="grid grid-cols-12 gap-1 items-center">
+        <div class="grid grid-cols-12 gap-1 items-center per-row-item">
           <input type="text" data-per-nome="${idx}" value="${nome}" placeholder="Perícia (ex: Persuasão)" class="col-span-8 bg-stone-950 border border-stone-700 rounded px-2 py-1 text-stone-200">
           <input type="number" data-per-val="${idx}" value="${val}" min="1" max="10" class="col-span-3 bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-sky-300 font-bold text-center">
-          <button type="button" data-per-del="${nome}" class="col-span-1 text-stone-500 hover:text-red-400 text-center">✕</button>
+          <button type="button" data-per-del="${idx}" class="col-span-1 text-stone-500 hover:text-red-400 text-center">✕</button>
         </div>
       `).join('');
 
       const sincronizarPericias = () => {
         const novoMapa = {};
-        const inputsNome = container.querySelectorAll('[data-per-nome]');
-        const inputsVal = container.querySelectorAll('[data-per-val]');
-        inputsNome.forEach((inp, i) => {
-          const pName = inp.value.trim();
-          const pVal = parseInt(inputsVal[i].value) || 1;
-          if (pName) novoMapa[pName] = pVal;
+        container.querySelectorAll('.per-row-item').forEach(row => {
+          const pName = row.querySelector('[data-per-nome]').value.trim();
+          const pVal = parseInt(row.querySelector('[data-per-val]').value) || 1;
+          if (pName) novoMapa[pName] = (novoMapa[pName] || 0) + pVal;
         });
         if (!node.conteudo) node.conteudo = {};
         node.conteudo.bonusPericia = novoMapa;
@@ -892,9 +965,9 @@
       container.querySelectorAll('input').forEach(inp => inp.oninput = sincronizarPericias);
       container.querySelectorAll('[data-per-del]').forEach(btn => {
         btn.onclick = () => {
-          delete node.conteudo.bonusPericia[btn.dataset.perDel];
+          btn.closest('.per-row-item').remove();
+          sincronizarPericias();
           renderizarListaPericiasNo(node);
-          renderTreeVisual();
         };
       });
     }
@@ -911,6 +984,70 @@
       renderTreeVisual();
     };
 
+    /* Renderiza subformulário de uma opção do Dilema Ambíguo */
+    function renderizarCamposOpcaoDilema(prefixo, optObj) {
+      const container = document.getElementById(`${prefixo}-fields`);
+      const tipo = document.getElementById(`${prefixo}-tipo`).value;
+
+      if (tipo === 'atributo') {
+        container.innerHTML = `
+          <div class="grid grid-cols-3 gap-1">
+            <select id="${prefixo}-attr" class="col-span-2 bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-stone-200">
+              ${Object.entries(SIGLAS_ATTR).map(([k, sig]) => `<option value="${k}" ${optObj?.attr === k ? 'selected' : ''}>${sig} (${k})</option>`).join('')}
+            </select>
+            <input type="number" id="${prefixo}-val" min="1" max="3" value="${optObj?.val || 1}" class="bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-purple-300 text-center font-bold">
+          </div>
+        `;
+      } else if (tipo === 'pericia') {
+        container.innerHTML = `
+          <div class="grid grid-cols-3 gap-1">
+            <input type="text" id="${prefixo}-per-nome" value="${optObj?.periciaNome || ''}" placeholder="Nome da Perícia" class="col-span-2 bg-stone-950 border border-stone-700 rounded px-2 py-1 text-stone-200">
+            <input type="number" id="${prefixo}-per-val" min="1" max="10" value="${optObj?.periciaVal || 1}" class="bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-sky-300 text-center font-bold">
+          </div>
+        `;
+      } else {
+        const h = optObj?.habilidade || {};
+        container.innerHTML = `
+          <input type="text" id="${prefixo}-hab-nome" value="${h.nome || ''}" placeholder="Nome da Habilidade" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-gold-300 font-cinzel">
+          <div class="grid grid-cols-3 gap-1">
+            <select id="${prefixo}-hab-cat" class="bg-stone-950 border border-stone-700 rounded px-1 py-1 text-[10px] text-stone-200">
+              <option value="passivo" ${h.cat === 'passivo' ? 'selected' : ''}>Passiva</option>
+              <option value="ativo" ${h.cat === 'ativo' ? 'selected' : ''}>Ativa</option>
+              <option value="reativo" ${h.cat === 'reativo' ? 'selected' : ''}>Reativa</option>
+              <option value="estatistico" ${h.cat === 'estatistico' ? 'selected' : ''}>Estatística</option>
+            </select>
+            <input type="number" id="${prefixo}-hab-pef" min="0" value="${h.f || 0}" placeholder="PE-F" class="bg-stone-950 border border-stone-700 rounded px-1 py-1 text-amber-300 text-center">
+            <input type="number" id="${prefixo}-hab-pem" min="0" value="${h.m || 0}" placeholder="PE-M" class="bg-stone-950 border border-stone-700 rounded px-1 py-1 text-sky-300 text-center">
+          </div>
+          <textarea id="${prefixo}-hab-desc" rows="2" placeholder="Descrição mecânica..." class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-[11px] text-stone-300 resize-none">${h.descricao || ''}</textarea>
+        `;
+      }
+
+      container.querySelectorAll('input, select, textarea').forEach(el => {
+        el.oninput = el.onchange = saveInspectorChanges;
+      });
+    }
+
+    function lerOpcaoDilema(prefixo, idOpcao) {
+      const tipo = document.getElementById(`${prefixo}-tipo`).value;
+      if (tipo === 'atributo') {
+        const attr = document.getElementById(`${prefixo}-attr`)?.value || 'potencia';
+        const val = parseInt(document.getElementById(`${prefixo}-val`)?.value) || 1;
+        return { idOpcao, tipo: 'atributo', attr, val, efeito: `+${val} ${SIGLAS_ATTR[attr]}` };
+      }
+      if (tipo === 'pericia') {
+        const periciaNome = document.getElementById(`${prefixo}-per-nome`)?.value.trim() || 'Perícia';
+        const periciaVal = parseInt(document.getElementById(`${prefixo}-per-val`)?.value) || 1;
+        return { idOpcao, tipo: 'pericia', periciaNome, periciaVal, efeito: `+${periciaVal} ${periciaNome}` };
+      }
+      const nome = document.getElementById(`${prefixo}-hab-nome`)?.value.trim() || `Habilidade ${idOpcao.toUpperCase()}`;
+      const cat = document.getElementById(`${prefixo}-hab-cat`)?.value || 'passivo';
+      const f = parseInt(document.getElementById(`${prefixo}-hab-pef`)?.value) || 0;
+      const m = parseInt(document.getElementById(`${prefixo}-hab-pem`)?.value) || 0;
+      const descricao = document.getElementById(`${prefixo}-hab-desc`)?.value.trim() || '';
+      return { idOpcao, tipo: 'habilidade', habilidade: { nome, cat, f, m, descricao }, efeito: nome };
+    }
+
     function selectNode(nodeId) {
       selectedNodeId = nodeId;
       const node = treeData.nos.find(n => n.id === nodeId);
@@ -925,6 +1062,7 @@
       document.getElementById('inspector-branch-limit').value = node.limiteNosSecundarios || 1;
       document.getElementById('inspector-desc').value = node.conteudo?.descricao || '';
 
+      atualizarInfoPaiInspetor(node);
       renderizarListaPericiasNo(node);
 
       // Habilidade
@@ -935,16 +1073,29 @@
       document.getElementById('inspector-hab-ef-val').value = node.conteudo?.efVal || 0;
       document.getElementById('inspector-hab-crit-mod').value = node.conteudo?.critMod || 0;
 
-      // Opções Ambíguas / Atributo
+      // Nó de Atributo (Opção A = Atributo, Opção B = Perícia ou Habilidade)
       const optA = node.opcoesAmbiguas?.[0] || {};
       const optB = node.opcoesAmbiguas?.[1] || {};
-      document.getElementById('inspector-opta-attr').value = optA.attr || 'potencia';
-      document.getElementById('inspector-opta-val').value = optA.val || 1;
-      document.getElementById('inspector-opta-texto').value = optA.efeito || '';
 
-      document.getElementById('inspector-optb-attr').value = optB.attr || 'vigor';
-      document.getElementById('inspector-optb-val').value = optB.val || 1;
-      document.getElementById('inspector-optb-texto').value = optB.efeito || '';
+      document.getElementById('attr-opta-key').value = optA.attr || 'potencia';
+      document.getElementById('attr-opta-val').value = optA.val || 1;
+
+      // Migração automática caso exista JSON antigo com 2 atributos
+      const tipoOptB = (optB.tipo === 'habilidade') ? 'habilidade' : 'pericia';
+      document.getElementById('attr-optb-tipo').value = tipoOptB;
+      document.getElementById('attr-optb-per-nome').value = optB.periciaNome || '';
+      document.getElementById('attr-optb-per-val').value = optB.periciaVal || 1;
+      document.getElementById('attr-optb-hab-nome').value = optB.habilidade?.nome || '';
+      document.getElementById('attr-optb-hab-cat').value = optB.habilidade?.cat || 'passivo';
+      document.getElementById('attr-optb-hab-pef').value = optB.habilidade?.f || 0;
+      document.getElementById('attr-optb-hab-pem').value = optB.habilidade?.m || 0;
+      document.getElementById('attr-optb-hab-desc').value = optB.habilidade?.descricao || '';
+
+      // Dilema Ambíguo
+      document.getElementById('dil-opta-tipo').value = optA.tipo || (optA.attr ? 'atributo' : 'pericia');
+      document.getElementById('dil-optb-tipo').value = optB.tipo || (optB.attr ? 'atributo' : 'habilidade');
+      renderizarCamposOpcaoDilema('dil-opta', optA);
+      renderizarCamposOpcaoDilema('dil-optb', optB);
 
       // Herança Singular
       document.getElementById('inspector-singular-desc').value = node.herancaSingular?.descricao || '';
@@ -959,7 +1110,12 @@
       const type = document.getElementById('inspector-type').value;
       document.getElementById('sec-config-pericia').classList.toggle('hidden', type !== 'pericia' && type !== 'habilidade');
       document.getElementById('sec-config-habilidade').classList.toggle('hidden', type !== 'habilidade');
-      document.getElementById('sec-config-ambiguo').classList.toggle('hidden', type !== 'atributo' && type !== 'ambiguo');
+      document.getElementById('sec-config-atributo').classList.toggle('hidden', type !== 'atributo');
+      document.getElementById('sec-config-dilema').classList.toggle('hidden', type !== 'ambiguo');
+
+      const optBTipo = document.getElementById('attr-optb-tipo').value;
+      document.getElementById('attr-optb-box-pericia').classList.toggle('hidden', optBTipo !== 'pericia');
+      document.getElementById('attr-optb-box-habilidade').classList.toggle('hidden', optBTipo !== 'habilidade');
 
       const branch = document.getElementById('inspector-branch-type').value;
       document.getElementById('inspector-branch-limit-box').classList.toggle('hidden', branch !== 'restritiva');
@@ -976,38 +1132,60 @@
       node.tipoRamificacao = document.getElementById('inspector-branch-type').value;
       node.limiteNosSecundarios = parseInt(document.getElementById('inspector-branch-limit').value) || 1;
 
-      if (!node.conteudo) node.conteudo = {};
-      node.conteudo.descricao = document.getElementById('inspector-desc').value;
+      const descricaoGeral = document.getElementById('inspector-desc').value;
 
       if (node.tipoRecompensa === 'habilidade') {
-        node.conteudo.cat = document.getElementById('inspector-hab-cat').value;
-        node.conteudo.f = parseInt(document.getElementById('inspector-hab-pef').value) || 0;
-        node.conteudo.m = parseInt(document.getElementById('inspector-hab-pem').value) || 0;
-        node.conteudo.efTipo = document.getElementById('inspector-hab-ef-tipo').value;
-        node.conteudo.efVal = parseInt(document.getElementById('inspector-hab-ef-val').value) || 0;
-        node.conteudo.critMod = parseInt(document.getElementById('inspector-hab-crit-mod').value) || 0;
-      } else if (node.tipoRecompensa === 'atributo' || node.tipoRecompensa === 'ambiguo') {
-        const attrA = document.getElementById('inspector-opta-attr').value;
-        const valA = parseInt(document.getElementById('inspector-opta-val').value) || 1;
-        const txtA = document.getElementById('inspector-opta-texto').value.trim();
+        const bonusPericiaAtual = node.conteudo?.bonusPericia || {};
+        node.conteudo = {
+          descricao: descricaoGeral,
+          cat: document.getElementById('inspector-hab-cat').value,
+          f: parseInt(document.getElementById('inspector-hab-pef').value) || 0,
+          m: parseInt(document.getElementById('inspector-hab-pem').value) || 0,
+          efTipo: document.getElementById('inspector-hab-ef-tipo').value,
+          efVal: parseInt(document.getElementById('inspector-hab-ef-val').value) || 0,
+          critMod: parseInt(document.getElementById('inspector-hab-crit-mod').value) || 0,
+          ...(Object.keys(bonusPericiaAtual).length ? { bonusPericia: bonusPericiaAtual } : {})
+        };
+        delete node.opcoesAmbiguas;
+      } else if (node.tipoRecompensa === 'pericia') {
+        const bonusPericiaAtual = node.conteudo?.bonusPericia || {};
+        node.conteudo = {
+          descricao: descricaoGeral,
+          bonusPericia: bonusPericiaAtual
+        };
+        delete node.opcoesAmbiguas;
+      } else if (node.tipoRecompensa === 'atributo') {
+        node.conteudo = { descricao: descricaoGeral };
+        const attrA = document.getElementById('attr-opta-key').value;
+        const valA = parseInt(document.getElementById('attr-opta-val').value) || 1;
+        const optA = {
+          idOpcao: 'a',
+          tipo: 'atributo',
+          attr: attrA,
+          val: valA,
+          efeito: `+${valA} ${SIGLAS_ATTR[attrA]}`
+        };
 
-        const attrB = document.getElementById('inspector-optb-attr').value;
-        const valB = parseInt(document.getElementById('inspector-optb-val').value) || 1;
-        const txtB = document.getElementById('inspector-optb-texto').value.trim();
-
+        const tipoB = document.getElementById('attr-optb-tipo').value;
+        let optB;
+        if (tipoB === 'pericia') {
+          const perNome = document.getElementById('attr-optb-per-nome').value.trim() || 'Perícia';
+          const perVal = parseInt(document.getElementById('attr-optb-per-val').value) || 1;
+          optB = { idOpcao: 'b', tipo: 'pericia', periciaNome: perNome, periciaVal: perVal, efeito: `+${perVal} ${perNome}` };
+        } else {
+          const hNome = document.getElementById('attr-optb-hab-nome').value.trim() || 'Habilidade Alternativa';
+          const hCat = document.getElementById('attr-optb-hab-cat').value;
+          const hF = parseInt(document.getElementById('attr-optb-hab-pef').value) || 0;
+          const hM = parseInt(document.getElementById('attr-optb-hab-pem').value) || 0;
+          const hDesc = document.getElementById('attr-optb-hab-desc').value.trim();
+          optB = { idOpcao: 'b', tipo: 'habilidade', habilidade: { nome: hNome, cat: hCat, f: hF, m: hM, descricao: hDesc }, efeito: hNome };
+        }
+        node.opcoesAmbiguas = [optA, optB];
+      } else if (node.tipoRecompensa === 'ambiguo') {
+        node.conteudo = { descricao: descricaoGeral };
         node.opcoesAmbiguas = [
-          {
-            idOpcao: 'a',
-            attr: attrA,
-            val: valA,
-            efeito: txtA || (SIGLAS_ATTR[attrA] ? `+${valA} ${SIGLAS_ATTR[attrA]}` : 'Opção A')
-          },
-          {
-            idOpcao: 'b',
-            attr: attrB,
-            val: valB,
-            efeito: txtB || (SIGLAS_ATTR[attrB] ? `+${valB} ${SIGLAS_ATTR[attrB]}` : 'Opção B')
-          }
+          lerOpcaoDilema('dil-opta', 'a'),
+          lerOpcaoDilema('dil-optb', 'b')
         ];
       }
 
@@ -1028,8 +1206,8 @@
     [
       'inspector-title', 'inspector-cost', 'inspector-desc',
       'inspector-hab-pef', 'inspector-hab-pem', 'inspector-hab-ef-val',
-      'inspector-opta-val', 'inspector-opta-texto',
-      'inspector-optb-val', 'inspector-optb-texto',
+      'attr-opta-val', 'attr-optb-per-nome', 'attr-optb-per-val',
+      'attr-optb-hab-nome', 'attr-optb-hab-pef', 'attr-optb-hab-pem', 'attr-optb-hab-desc',
       'inspector-branch-limit',
       'inspector-singular-desc', 'inspector-singular-red-pe', 'inspector-singular-bonus'
     ].forEach(id => document.getElementById(id).oninput = saveInspectorChanges);
@@ -1037,10 +1215,17 @@
     [
       'inspector-type', 'inspector-branch-type',
       'inspector-hab-cat', 'inspector-hab-ef-tipo', 'inspector-hab-crit-mod',
-      'inspector-opta-attr', 'inspector-optb-attr'
+      'attr-opta-key', 'attr-optb-tipo', 'attr-optb-hab-cat'
     ].forEach(id => document.getElementById(id).onchange = () => {
       atualizarSecoesInspetor();
       saveInspectorChanges();
+    });
+
+    ['dil-opta', 'dil-optb'].forEach(prefixo => {
+      document.getElementById(`${prefixo}-tipo`).onchange = () => {
+        renderizarCamposOpcaoDilema(prefixo, {});
+        saveInspectorChanges();
+      };
     });
 
     document.getElementById('btn-close-inspector').onclick = closeInspector;
