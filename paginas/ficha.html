@@ -1,555 +1,694 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark" data-pal="ouro">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PANTHEON · Ficha de Personagem</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Faustina:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            gold: { 300: '#f6e05e', 400: '#ecc94b', 500: '#d69e2e', 600: '#b7791f', 700: '#975a16' },
-            parchment: { light: '#2a2620', DEFAULT: '#1c1917', dark: '#12100e', border: '#3d3326' }
-          },
-          fontFamily: { cinzel: ['Cinzel', 'serif'], body: ['Faustina', 'serif'] }
-        }
-      }
-    }
-  </script>
-  <style>
-    body { background-color: #090807; color: #e2d8c3; font-family: 'Faustina', serif; }
-    .gold-border { border: 1px solid #b7791f; box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.8); }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #090807; }
-    ::-webkit-scrollbar-thumb { background: #3d3326; border-radius: 3px; }
+  <title>PANTHEON · Ficha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Faustina:wght@400;600&display=swap" rel="stylesheet">
 
-    /* Visualizador da Árvore dentro da Ficha */
-    #ficha-tree-wrapper {
+  <style>
+    /* Variáveis Globais de Cores e Temas */
+    :root {
+      --h: 40;
+      --acc: hsl(var(--h) 70% 50%);
+      --on: #140f08;
+      --bg: hsl(var(--h) 10% 2%);
+      --card: hsl(var(--h) 15% 4%);
+      --card2: hsl(var(--h) 20% 14%);
+      --line: hsl(var(--h) 35% 30%);
+      --txt: hsl(var(--h) 30% 85%);
+      --mut: hsl(var(--h) 12% 58%);
+    }
+
+    [data-theme="light"] {
+      --acc: hsl(var(--h) 65% 36%);
+      --on: #fff;
+      --bg: hsl(var(--h) 35% 91%);
+      --card: hsl(var(--h) 40% 97%);
+      --card2: hsl(var(--h) 30% 90%);
+      --line: hsl(var(--h) 25% 76%);
+      --txt: hsl(var(--h) 30% 12%);
+      --mut: hsl(var(--h) 15% 38%);
+    }
+
+    /* Paletas de Cor Primária */
+    [data-pal="carmesim"] { --h: 355; }
+    [data-pal="esmeralda"] { --h: 150; }
+    [data-pal="safira"] { --h: 210; }
+    [data-pal="violeta"] { --h: 270; }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 12px;
+      background: var(--bg);
+      color: var(--txt);
+      font-family: Faustina, Georgia, serif;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .cz, h2, .btn, .nome-personagem { font-family: Cinzel, Georgia, serif; }
+
+    /* Cartões e Blocos Layout */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--acc);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .blk.minimized h2 { margin-bottom: 0; }
+    .blk.minimized .blk-body { display: none; }
+
+    .grip {
       cursor: grab;
+      color: var(--mut);
       user-select: none;
-      touch-action: none;
-      overflow: hidden;
-      position: relative;
+      font-size: 15px;
     }
-    #ficha-tree-wrapper.is-panning { cursor: grabbing; }
-    #ficha-tree-stage {
-      position: absolute;
-      left: 0;
-      top: 0;
-      transform-origin: 0 0;
+
+    .r {
+      margin-left: auto;
+      display: flex;
+      gap: 6px;
+      align-items: center;
     }
-    #ficha-tree-grid {
-      position: absolute;
-      left: 400px;
-      top: 400px;
+
+    /* Formulários e Controles */
+    button, input, select { font: inherit; color: inherit; }
+
+    .btn {
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 3px 9px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .btn:hover:not(:disabled), .btn.on {
+      border-color: var(--acc);
+      color: var(--acc);
+    }
+
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn.pri {
+      background: var(--acc) !important;
+      color: var(--on) !important;
+      border-color: var(--acc) !important;
+      font-weight: 700;
+    }
+
+    input, select {
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 3px 6px;
+      min-width: 0;
+    }
+
+    input:focus, select:focus { outline: none; border-color: var(--acc); }
+    input:disabled, select:disabled { opacity: 0.65; cursor: not-allowed; }
+    input[type=number] { -moz-appearance: textfield; }
+    input::-webkit-inner-spin-button, input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+    /* Cabeçalho */
+    .head { display: grid; gap: 8px; }
+
+    .nome-personagem {
+      font-size: 22px;
+      font-weight: 700;
+      width: 100%;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      color: var(--acc);
+      padding: 2px 0;
+    }
+
+    .rz {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .rz label { color: var(--mut); }
+
+    .chip {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 99px;
+      border: 1px solid var(--line);
+      background: var(--card2);
+      font: 600 11px monospace;
+    }
+
+    /* Layout Principal + Barra Lateral de Histórico */
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 290px;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .workspace.no-hist { grid-template-columns: minmax(0, 1fr); }
+    .workspace.no-hist .hist-side { display: none; }
+
+    @media (max-width: 1120px) {
+      .workspace { grid-template-columns: 1fr; }
+    }
+
+    /* Grid de Colunas Arrastáveis */
+    .cols {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+
+    .col { min-height: 80px; }
+
+    @media (max-width: 900px) {
+      .cols { grid-template-columns: 1fr; }
+    }
+
+    .dragging { opacity: 0.4; }
+    .col.over { outline: 1px dashed var(--acc); outline-offset: 4px; }
+
+    /* Histórico Lateral */
+    .hist-side { position: sticky; top: 12px; }
+    .hist-list {
+      max-height: 72vh;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 90px;
-      padding: 40px 0;
+      gap: 6px;
     }
-    .f-tree-level { position: relative; height: 78px; width: 100%; }
-    .f-node-card {
+    .hist-item {
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+
+    /* Barras de Recursos */
+    .res { margin-bottom: 10px; }
+    .rt { display: flex; justify-content: space-between; font: 700 12px monospace; }
+    .bar {
+      height: 9px;
+      border-radius: 5px;
+      background: var(--card2);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      margin-top: 2px;
+    }
+    .bar i { display: block; height: 100%; transition: width 0.25s; }
+    .ctl { display: flex; gap: 4px; margin-top: 5px; }
+    .ctl input { width: 64px; text-align: center; }
+    .sg { width: 28px; font-weight: 700; padding: 0; }
+    .sg.add { color: #4cc36f; }
+    .sg.sub { color: #e05555; }
+
+    /* Sigilo / Roda de Atributos */
+    .wheel {
+      position: relative;
+      width: min(100%, 300px);
+      aspect-ratio: 1;
+      margin: 4px auto;
+    }
+    .wheel svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .ctr {
+      position: absolute;
+      left: 50%;
+      top: 51.7%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: var(--mut);
+      font-size: 10px;
+      line-height: 1.1;
+    }
+    .ctr b { display: block; font: 700 20px Cinzel, serif; color: var(--acc); }
+
+    .node {
+      position: absolute;
+      width: 19%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--card);
+      border: 2px solid var(--acc);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      box-shadow: 0 2px 8px #0006;
+    }
+    .node b { font: 700 9px Cinzel, serif; letter-spacing: 0.04em; }
+    .node input {
+      width: 70%;
+      text-align: center;
+      background: transparent;
+      border: 0;
+      font: 700 17px Cinzel, serif;
+      padding: 0;
+      color: var(--txt);
+    }
+    .c-r { color: #e06a5a; }
+    .c-b { color: #4fb0e0; }
+    .c-p { color: #b480e6; }
+    .node.on { background: var(--acc); }
+    .node.on b, .node.on input { color: var(--on); }
+
+    /* Perícias, Habilidades, Inventário e Macros */
+    .prow, .hcard, .mrow {
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 5px 8px;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+    .prow, .mrow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: space-between;
+    }
+    .prow.on, .hcard.on {
+      border-color: var(--acc);
+      box-shadow: 0 0 0 1px var(--acc);
+    }
+    .hcard p { margin: 2px 0; font-size: 12px; color: var(--mut); }
+    .hcard .t {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      font-family: Cinzel, serif;
+      font-weight: 700;
+      color: var(--acc);
+      font-size: 12px;
+    }
+    .tag {
+      font: 700 9px monospace;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--mut);
+    }
+    .x { background: none; border: 0; color: var(--mut); cursor: pointer; }
+    .x:hover { color: #e05555; }
+
+    /* Motor de Teste */
+    .sl {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+      min-height: 28px;
+    }
+    .sl > span.k {
+      width: 66px;
+      font-size: 11px;
+      color: var(--mut);
+      font-family: Cinzel, serif;
+    }
+    .hint {
+      display: none;
+      margin: 4px 0;
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: var(--card2);
+      border: 1px dashed var(--acc);
+      font-size: 12px;
+    }
+    [data-arm] .hint { display: block; }
+    [data-arm=attr] .node,
+    [data-arm=per] .prow,
+    [data-arm=hab] .hcard.el {
+      cursor: crosshair;
+      animation: pulsarm 1.2s infinite;
+    }
+    [data-arm] .node input { pointer-events: none; }
+
+    @keyframes pulsarm {
+      50% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 35%, transparent); }
+    }
+
+    .pool {
+      display: flex;
+      justify-content: space-between;
+      font: 600 12px monospace;
+      background: var(--card2);
+      padding: 5px 8px;
+      border-radius: 6px;
+      margin: 6px 0;
+    }
+    .out {
+      margin-top: 8px;
+      padding: 8px;
+      border: 1px solid var(--acc);
+      border-radius: 8px;
+      background: var(--card2);
+    }
+    .tot { font: 700 30px Cinzel, serif; color: var(--acc); }
+    .die {
+      display: inline-flex;
+      width: 24px;
+      height: 24px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      font: 700 11px monospace;
+      margin: 2px 2px 0 0;
+      opacity: 0.55;
+    }
+    .die.pk { opacity: 1; border-color: var(--acc); color: var(--acc); }
+
+    /* Modal e Toasts */
+    .ov {
+      position: fixed;
+      inset: 0;
+      background: #000b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      z-index: 9;
+    }
+    .ov[hidden] { display: none; }
+    .mod {
+      width: min(500px, 100%);
+      max-height: 88vh;
+      overflow: auto;
+      margin: 0;
+    }
+    .mod.mod-tree {
+      width: min(1150px, 98vw);
+      height: 88vh;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Visualizador de Árvores na Ficha */
+    .tree-view-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      cursor: grab;
+      user-select: none;
+    }
+    .tree-view-wrap.panning { cursor: grabbing; }
+    .tree-stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .tree-grid { position: absolute; left: 320px; top: 320px; display: flex; flex-direction: column; gap: 82px; padding: 30px 0; }
+    .tree-lvl { position: relative; height: 72px; width: 100%; }
+    .tnode {
       position: absolute;
       top: 0;
       transform: translateX(-50%);
-      width: 185px;
-      min-height: 60px;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      width: 175px;
+      min-height: 56px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      cursor: pointer;
+      font-size: 12px;
     }
-    .f-node-card:hover { transform: translateX(-50%) scale(1.03); z-index: 20; }
-    #ficha-svg-lines {
-      position: absolute;
-      top: 0;
-      left: 0;
+    .tnode.done { border-color: #4cc36f; background: color-mix(in srgb, #4cc36f 14%, var(--card)); }
+    .tnode.avail { border-color: var(--acc); box-shadow: 0 0 10px color-mix(in srgb, var(--acc) 35%, transparent); }
+    .tnode.lock { opacity: 0.52; }
+    .tnode.block { border-color: #e05555; opacity: 0.55; }
+
+    .sw { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; }
+    .sw.on { border-color: var(--txt); }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translate(-50%, 20px);
+      background: var(--acc);
+      color: var(--on);
+      padding: 6px 14px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: 0.2s;
       pointer-events: none;
-      overflow: visible;
-      z-index: 5;
+      z-index: 20;
+      font-weight: 600;
     }
+    #toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .mut { color: var(--mut); font-size: 12px; font-style: italic; }
+
+    .sigla-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 6px; font-size: 12px; }
+    .sigla-item { background: var(--card2); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+    .sigla-item b { color: var(--acc); font-family: monospace; }
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body>
 
-  <!-- Cabeçalho Fixo -->
-  <header class="border-b border-gold-600/50 bg-parchment-dark/95 sticky top-0 z-30 backdrop-blur">
-    <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap justify-between items-center gap-2">
-      <div class="flex items-center gap-2.5">
-        <a id="btn-voltar-mesa" href="../index.html" class="px-3 py-1.5 rounded bg-stone-900 border border-stone-700 hover:border-gold-500 text-xs font-cinzel text-stone-300">
-          ← Mesa
-        </a>
-        <div>
-          <div class="flex items-center gap-2">
-            <input type="text" id="ficha-nome-input" class="bg-transparent border-b border-transparent hover:border-stone-700 focus:border-gold-500 font-cinzel text-lg md:text-xl font-bold text-gold-400 focus:outline-none w-48 sm:w-64">
-            <span id="badge-status-ficha" class="px-2 py-0.5 rounded text-[10px] font-mono border"></span>
-          </div>
-          <p id="subtitulo-ficha" class="text-[11px] text-stone-400">Carregando...</p>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-2">
-        <button id="btn-legenda-siglas" class="px-2.5 py-1.5 rounded bg-stone-900 border border-stone-700 hover:border-gold-500 text-stone-300 font-cinzel text-xs flex items-center gap-1.5" title="Legenda das siglas do sistema">
-          <i class="fa-solid fa-circle-question text-gold-400"></i> Siglas
-        </button>
-
-        <button id="btn-abrir-arvores" class="px-3 py-1.5 rounded bg-amber-950/90 border border-amber-500 hover:bg-amber-800/70 text-amber-200 font-cinzel text-xs font-bold flex items-center gap-1.5 shadow">
-          <i class="fa-solid fa-diagram-project"></i> Árvores (<span id="top-pt-count">0</span> PT)
-        </button>
-
-        <button id="btn-descanso" class="px-2.5 py-1.5 rounded bg-stone-900 border border-sky-700/70 hover:border-sky-400 text-sky-300 font-cinzel text-xs flex items-center gap-1.5">
-          <i class="fa-solid fa-campground"></i> Descanso
-        </button>
-
-        <button id="btn-toggle-sidebar" class="px-2.5 py-1.5 rounded bg-stone-900 border border-stone-700 hover:border-gold-500 text-stone-300 font-cinzel text-xs flex items-center gap-1.5" title="Mostrar ou recolher histórico de rolagens">
-          <i class="fa-solid fa-dice-d20 text-gold-400"></i> <span id="txt-toggle-sidebar">Histórico</span>
-        </button>
-
-        <button id="btn-finalizar-criacao" class="hidden px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-cinzel text-xs font-bold">
-          🔒 Finalizar Criação
-        </button>
-      </div>
+  <!-- Cabeçalho Principal -->
+  <header class="card head">
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+      <a id="btn-voltar" href="../index.html" class="btn" style="text-decoration:none">← Mesa</a>
+      <input class="nome-personagem" id="nome" placeholder="Nome do personagem" style="flex:1; min-width:180px">
+      <span class="chip" id="badge-etapa">Carregando...</span>
+      <button class="btn pri" id="btn-finalizar" hidden onclick="finalizarCriacaoFicha()">🔒 Finalizar Criação</button>
+      <button class="btn on" id="btn-arvores" onclick="abrirModalArvores()">🌳 Árvores (<span id="pt-badge">0</span> PT)</button>
+      <button class="btn" onclick="abrirModalDescanso()" title="Descanso">🏕 Descanso</button>
+      <button class="btn" onclick="abrirLegendaSiglas()" title="Legenda das siglas">? Siglas</button>
+      <button class="btn" id="btn-toggle-hist" onclick="alternarHistoricoLateral()">📜 Histórico</button>
+      <button class="btn" onclick="abrirConfiguracaoAparencia()" title="Aparência">⚙ Aparência</button>
     </div>
+
+    <div class="rz">
+      <label for="tipo">Tipo</label>
+      <select id="tipo">
+        <option value="singular">Raiz Singular (misto)</option>
+        <option value="heranca">Herança Singular</option>
+        <option value="dupla">Raiz Dupla</option>
+        <option value="auto">Autodidata (Órfão)</option>
+      </select>
+      <label id="lbl-raiz1" for="raiz1">Raiz principal</label>
+      <select id="raiz1"></select>
+      <label id="lbl-raiz2" for="raiz2">Secundária</label>
+      <select id="raiz2"></select>
+      <span class="chip" id="bonus-raiz"></span>
+      <span class="chip" id="chip-status-derivados">RD: 0 · DESL: 5m · Teto: 2</span>
+    </div>
+
+    <!-- Passatempos Infantis (Editáveis na Criação) -->
+    <div id="box-passatempos" class="rz" style="border-top:1px solid var(--line); padding-top:6px"></div>
   </header>
 
-  <!-- Barra de Recursos Atuais & Combate Rápido -->
-  <section class="border-b border-stone-800 bg-stone-950/90">
-    <div class="max-w-7xl mx-auto px-4 py-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-xs">
-      <!-- HP -->
-      <div class="bg-stone-900/90 border border-red-900/60 rounded-lg p-2 flex flex-col justify-between">
-        <div class="flex justify-between items-center">
-          <span class="font-cinzel font-bold text-red-400">❤️ HP</span>
-          <span class="font-mono text-[11px] text-stone-400">Máx: <strong id="rec-hp-max" class="text-stone-200">10</strong></span>
-        </div>
-        <div class="flex items-center justify-between gap-1 mt-1">
-          <button data-rec-delta="hp:-1" class="px-2 py-0.5 rounded bg-stone-950 border border-stone-700 hover:border-red-500 font-mono font-bold">-1</button>
-          <input type="number" id="rec-hp-cur" class="w-14 bg-stone-950 border border-stone-800 rounded text-center font-mono font-bold text-red-300 py-0.5">
-          <button data-rec-delta="hp:1" class="px-2 py-0.5 rounded bg-stone-950 border border-stone-700 hover:border-emerald-500 font-mono font-bold">+1</button>
-        </div>
-      </div>
-
-      <!-- SAN -->
-      <div class="bg-stone-900/90 border border-purple-900/60 rounded-lg p-2 flex flex-col justify-between">
-        <div class="flex justify-between items-center">
-          <span class="font-cinzel font-bold text-purple-400">🧠 SAN</span>
-          <span class="font-mono text-[11px] text-stone-400">Máx: <strong id="rec-san-max" class="text-stone-200">10</strong></span>
-        </div>
-        <div class="flex items-center justify-between gap-1 mt-1">
-          <button data-rec-delta="san:-1" class="px-2 py-0.5 rounded bg-stone-950 border border-stone-700 hover:border-purple-500 font-mono font-bold">-1</button>
-          <input type="number" id="rec-san-cur" class="w-14 bg-stone-950 border border-stone-800 rounded text-center font-mono font-bold text-purple-300 py-0.5">
-          <button data-rec-delta="san:1" class="px-2 py-0.5 rounded bg-stone-950 border border-stone-700 hover:border-emerald-500 font-mono font-bold">+1</button>
-        </div>
-      </div>
-
-      <!-- PE-F -->
-      <div class="bg-stone-900/90 border border-amber-900/60 rounded-lg p-2 flex flex-col justify-between">
-        <div class="flex justify-between items-center">
-          <span class="font-cinzel font-bold text-amber-400">⚡ PE-F</span>
-          <span class="font-mono text-[11px] text-stone-400">Máx: <strong id="rec-pef-max" class="text-stone-200">5</strong></span>
-        </div>
-        <div class="flex items-center justify-between gap-1 mt-1">
-          <button data-rec-delta="pef:-1" class="px-2 py-0.5 rounded bg-stone-950 border border-stone-700 hover:border-amber-500 font-mono font-bold">-1</button>
-          <input type="number" id="rec-pef-cur" class="w-14 bg-stone-950 border border-stone-800 rounded text-center font-mono font-bold text-amber-300 py-0.5">
-          <button data-rec-delta="pef:1" class="px-2 py-0.5 rounded bg-stone-950 border border-stone-700 hover:border-emerald-500 font-mono font-bold">+1</button>
-        </div>
-      </div>
-
-      <!-- PE-M -->
-      <div class="bg-stone-900/90 border border-sky-900/60 rounded-lg p-2 flex flex-col justify-between">
-        <div class="flex justify-between items-center">
-          <span class="font-cinzel font-bold text-sky-400">✨ PE-M</span>
-          <span class="font-mono text-[11px] text-stone-400">Máx: <strong id="rec-pem-max" class="text-stone-200">5</strong></span>
-        </div>
-        <div class="flex items-center justify-between gap-1 mt-1">
-          <button data-rec-delta="pem:-1" class="px-2 py-0.5 rounded bg-stone-950 border border-stone-700 hover:border-sky-500 font-mono font-bold">-1</button>
-          <input type="number" id="rec-pem-cur" class="w-14 bg-stone-950 border border-stone-800 rounded text-center font-mono font-bold text-sky-300 py-0.5">
-          <button data-rec-delta="pem:1" class="px-2 py-0.5 rounded bg-stone-950 border border-stone-700 hover:border-emerald-500 font-mono font-bold">+1</button>
-        </div>
-      </div>
-
-      <!-- Status Derivados (RD / DESL / Estágio) -->
-      <div class="col-span-2 bg-stone-900/90 border border-gold-700/40 rounded-lg p-2 flex items-center justify-around text-center">
-        <div>
-          <span class="text-[10px] text-stone-400 block font-cinzel">RD Total</span>
-          <strong id="stat-rd" class="font-mono text-base text-sky-300">0</strong>
-        </div>
-        <div class="h-7 w-px bg-stone-800"></div>
-        <div>
-          <span class="text-[10px] text-stone-400 block font-cinzel">Deslocamento</span>
-          <strong id="stat-desl" class="font-mono text-base text-emerald-300">5m</strong>
-        </div>
-        <div class="h-7 w-px bg-stone-800"></div>
-        <div>
-          <span class="text-[10px] text-stone-400 block font-cinzel">Teto Atributo</span>
-          <strong id="stat-teto" class="font-mono text-base text-gold-400">2</strong>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Corpo Principal -->
-  <main class="max-w-7xl mx-auto px-4 py-5 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-5">
-
-    <!-- COLUNA DA FICHA -->
-    <div id="coluna-principal" class="lg:col-span-8 space-y-4">
-
-      <!-- BLOCO 1: ORIGEM, RAÍZES & PASSATEMPOS -->
-      <section class="bg-parchment gold-border rounded-xl overflow-hidden">
-        <button type="button" data-collapse="body-origem" class="w-full px-4 py-3 bg-stone-950/60 border-b border-gold-600/30 flex justify-between items-center text-left">
-          <h2 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
-            <i class="fa-solid fa-seedling text-gold-500"></i> Origem, Raízes & Passatempos Infantis
-          </h2>
-          <span class="text-xs text-stone-400 font-mono">[−]</span>
-        </button>
-
-        <div id="body-origem" class="p-4 space-y-4 text-xs">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label class="text-stone-400 font-cinzel text-[10px] block">Tipo de Herança</label>
-              <select id="sel-tipo-heranca" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2.5 py-1.5 text-gold-300 font-semibold">
-                <option value="heranca">Herança Simples (1 Raiz)</option>
-                <option value="singular">Herança Singular (Aprimorada)</option>
-                <option value="dupla">Herança Dupla (2 Raízes / Ignora Restrição)</option>
-                <option value="auto">Autodidata (Órfão · +1 Attr, +2 Passatempos)</option>
-              </select>
-            </div>
-            <div id="box-raiz-1">
-              <label class="text-stone-400 font-cinzel text-[10px] block">Raiz Principal</label>
-              <select id="sel-raiz-1" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2.5 py-1.5 text-stone-200"></select>
-            </div>
-            <div id="box-raiz-2" class="hidden">
-              <label class="text-stone-400 font-cinzel text-[10px] block">Segunda Raiz (Herança Dupla)</label>
-              <select id="sel-raiz-2" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2.5 py-1.5 text-stone-200"></select>
-            </div>
-          </div>
-
-          <div id="box-raizes-extras" class="hidden bg-emerald-950/20 border border-emerald-800/50 rounded p-2.5">
-            <span class="text-emerald-300 font-cinzel font-bold">Raízes Extras Liberadas pelo Mestre:</span>
-            <span id="txt-raizes-extras" class="text-stone-200 ml-1"></span>
-          </div>
-
-          <!-- Passatempos Infantis -->
-          <div class="border-t border-stone-800 pt-3 space-y-2">
-            <div class="flex justify-between items-center">
-              <span class="font-cinzel font-bold text-amber-300">Passatempos Infantis (Origem das Perícias Iniciais)</span>
-              <span id="info-slots-passatempos" class="text-[11px] text-stone-400"></span>
-            </div>
-            <div id="container-passatempos" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- BLOCO 2: ATRIBUTOS -->
-      <section class="bg-parchment gold-border rounded-xl overflow-hidden">
-        <button type="button" data-collapse="body-atributos" class="w-full px-4 py-3 bg-stone-950/60 border-b border-gold-600/30 flex justify-between items-center text-left">
-          <h2 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
-            <i class="fa-solid fa-dumbbell text-gold-500"></i> Atributos
-            <span id="badge-pontos-attr" class="ml-2 px-2 py-0.5 rounded bg-gold-950 border border-gold-600/60 text-gold-300 font-mono text-[11px]"></span>
-          </h2>
-          <span class="text-xs text-stone-400 font-mono">[−]</span>
-        </button>
-
-        <div id="body-atributos" class="p-4">
-          <div id="grid-atributos" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5 text-center"></div>
-        </div>
-      </section>
-
-      <!-- BLOCO 3: ROLADOR DE TESTES & COMBATE -->
-      <section class="bg-parchment gold-border rounded-xl overflow-hidden">
-        <button type="button" data-collapse="body-rolador" class="w-full px-4 py-3 bg-stone-950/60 border-b border-gold-600/30 flex justify-between items-center text-left">
-          <h2 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
-            <i class="fa-solid fa-dice-d20 text-gold-500"></i> Motor de Testes & Ataques
-          </h2>
-          <span class="text-xs text-stone-400 font-mono">[−]</span>
-        </button>
-
-        <div id="body-rolador" class="p-4 space-y-3 text-xs">
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
-            <div>
-              <label class="text-[10px] text-stone-400 font-cinzel block">Atributo Principal</label>
-              <select id="roll-attr-1" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 text-gold-300 font-semibold"></select>
-            </div>
-            <div>
-              <label class="text-[10px] text-stone-400 font-cinzel block">Atributo Secundário (Opcional)</label>
-              <select id="roll-attr-2" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 text-stone-300"></select>
-            </div>
-            <div>
-              <label class="text-[10px] text-stone-400 font-cinzel block">Perícia Aplicada</label>
-              <select id="roll-pericia" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 text-sky-300"></select>
-            </div>
-            <div>
-              <label class="text-[10px] text-stone-400 font-cinzel block">Habilidade / Mod. Crítico</label>
-              <select id="roll-habilidade" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 text-purple-300"></select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 items-end">
-            <div>
-              <label class="text-[10px] text-stone-400 font-cinzel block">Arma / Escudo Equipado</label>
-              <select id="roll-equipamento" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 text-amber-300"></select>
-            </div>
-            <div>
-              <label class="text-[10px] text-stone-400 font-cinzel block">Postura / Bônus Extra</label>
-              <div class="flex gap-1.5 mt-1">
-                <select id="roll-modo-equip" class="flex-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 text-stone-200">
-                  <option value="ataque">⚔️ Ataque (+GA × 2)</option>
-                  <option value="bloqueio">🛡️ Bloqueio (+GD × 2)</option>
-                  <option value="nenhum">Sem Bônus Equip.</option>
-                </select>
-                <input type="number" id="roll-bonus-extra" value="0" class="w-16 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 text-center font-mono text-gold-300" title="Bônus/Penalidade situacional">
-              </div>
-            </div>
-            <div class="flex gap-2">
-              <button id="btn-executar-teste" class="flex-1 py-2 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel font-bold shadow">
-                🎲 Rolar Teste (d20)
-              </button>
-              <button id="btn-rolar-dano-arma" class="hidden px-3 py-2 rounded bg-red-900/90 hover:bg-red-800 border border-red-600 text-red-200 font-cinzel font-bold">
-                💥 Dano
-              </button>
-            </div>
-          </div>
-
-          <!-- Rolador Livre Rápido -->
-          <div class="pt-2 border-t border-stone-800/80 flex flex-wrap items-center gap-2">
-            <span class="text-[11px] font-cinzel text-stone-400">Dado Livre:</span>
-            <input type="number" id="livre-qtd" value="1" min="1" max="20" class="w-12 bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-center font-mono">
-            <select id="livre-faces" class="bg-stone-950 border border-stone-700 rounded px-2 py-1 font-mono text-gold-300">
-              <option value="4">d4</option>
-              <option value="6" selected>d6</option>
-              <option value="8">d8</option>
-              <option value="10">d10</option>
-              <option value="12">d12</option>
-              <option value="16">d16</option>
-              <option value="20">d20</option>
-            </select>
-            <input type="number" id="livre-mod" value="0" class="w-14 bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-center font-mono" placeholder="+0">
-            <select id="livre-modo" class="bg-stone-950 border border-stone-700 rounded px-2 py-1 text-stone-300">
-              <option value="soma">Somar</option>
-              <option value="maior">Maior</option>
-              <option value="menor">Menor</option>
-            </select>
-            <button id="btn-rolar-livre" class="px-3 py-1 rounded bg-stone-800 hover:bg-stone-700 border border-stone-600 text-gold-300 font-cinzel font-bold">
-              Rolar
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- BLOCO 4: PERÍCIAS & CONVERSÃO DE MAESTRIA -->
-      <section class="bg-parchment gold-border rounded-xl overflow-hidden">
-        <button type="button" data-collapse="body-pericias" class="w-full px-4 py-3 bg-stone-950/60 border-b border-gold-600/30 flex justify-between items-center text-left">
-          <h2 class="font-cinzel text-sm font-bold text-sky-400 flex items-center gap-2">
-            <i class="fa-solid fa-graduation-cap"></i> Perícias Adquiridas & Conversão de Maestria
-          </h2>
-          <span class="text-xs text-stone-400 font-mono">[−]</span>
-        </button>
-
-        <div id="body-pericias" class="p-4 space-y-3 text-xs">
-          <p class="text-[11px] text-stone-400">
-            Calculadas automaticamente a partir dos <strong>Passatempos Infantis</strong> e dos <strong>Nós da Árvore</strong>. Ao atingir <strong>5 pontos</strong> em uma perícia, você pode convertê-los em <strong>+1 Atributo</strong> (respeitando o teto do estágio).
-          </p>
-          <div id="lista-pericias-ficha" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5"></div>
-        </div>
-      </section>
-
-      <!-- BLOCO 5: HABILIDADES DESBLOQUEADAS (ÁRVORES + ITENS) -->
-      <section class="bg-parchment gold-border rounded-xl overflow-hidden">
-        <button type="button" data-collapse="body-habilidades" class="w-full px-4 py-3 bg-stone-950/60 border-b border-gold-600/30 flex justify-between items-center text-left">
-          <h2 class="font-cinzel text-sm font-bold text-purple-400 flex items-center gap-2">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Habilidades (Árvores & Itens Equipados)
-          </h2>
-          <span class="text-xs text-stone-400 font-mono">[−]</span>
-        </button>
-
-        <div id="body-habilidades" class="p-4 space-y-2.5 text-xs">
-          <div id="lista-habilidades-ficha" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
-        </div>
-      </section>
-
-      <!-- BLOCO 6: INVENTÁRIO & CAPACIDADE DE CARGA -->
-      <section class="bg-parchment gold-border rounded-xl overflow-hidden">
-        <button type="button" data-collapse="body-inventario" class="w-full px-4 py-3 bg-stone-950/60 border-b border-gold-600/30 flex justify-between items-center text-left">
-          <h2 class="font-cinzel text-sm font-bold text-emerald-400 flex items-center gap-2">
-            <i class="fa-solid fa-suitcase"></i> Inventário & Slots de Carga
-          </h2>
-          <span class="text-xs text-stone-400 font-mono">[−]</span>
-        </button>
-
-        <div id="body-inventario" class="p-4 space-y-3 text-xs">
-          <!-- Resumo de Slots -->
-          <div id="resumo-slots-carga" class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-stone-950 p-2.5 rounded border border-stone-800 text-center font-mono"></div>
-
-          <!-- Adicionar Item do Catálogo da Mesa -->
-          <div class="flex flex-wrap gap-2">
-            <select id="sel-catalogo-mesa" class="flex-1 bg-stone-950 border border-stone-700 rounded px-2.5 py-1.5 text-stone-200">
-              <option value="">-- Selecionar Item do Catálogo da Mesa --</option>
-            </select>
-            <button id="btn-pegar-item-catalogo" class="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-cinzel font-bold">
-              + Adicionar à Mochila
-            </button>
-          </div>
-
-          <div id="lista-inventario-ficha" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
-        </div>
-      </section>
-
+  <!-- Área Principal (Colunas Arrastáveis + Histórico Lateral Recolhível) -->
+  <div class="workspace" id="workspace">
+    <div class="cols" id="cols">
+      <div class="col"></div>
+      <div class="col"></div>
+      <div class="col"></div>
     </div>
 
-    <!-- COLUNA DIREITA: HISTÓRICO DE ROLAGENS (RECOLHÍVEL) -->
-    <aside id="sidebar-historico" class="lg:col-span-4 space-y-4">
-      <section class="bg-parchment gold-border rounded-xl p-4 flex flex-col h-[520px] sticky top-20">
-        <div class="border-b border-gold-600/40 pb-2 mb-3 flex justify-between items-center">
-          <h3 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
-            <i class="fa-solid fa-dice-d20 text-gold-500"></i> Histórico da Mesa
-          </h3>
-          <button id="btn-fechar-sidebar" class="text-xs text-stone-400 hover:text-gold-400" title="Minimizar histórico">✕</button>
-        </div>
-
-        <div id="feed-rolagens-ficha" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
-          <p class="text-stone-500 italic text-center mt-8">Nenhuma rolagem ainda.</p>
-        </div>
-      </section>
-    </aside>
-
-  </main>
-
-  <!-- ========================================================= -->
-  <!-- MODAL 1: VISUALIZADOR INTERATIVO DE ÁRVORES               -->
-  <!-- ========================================================= -->
-  <div id="modal-arvores" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex-col">
-    <div class="bg-parchment-dark border-b border-gold-600/50 px-5 py-3 flex flex-wrap justify-between items-center gap-3">
-      <div class="flex items-center gap-3">
-        <i class="fa-solid fa-sitemap text-gold-400 text-xl"></i>
-        <div>
-          <h2 class="font-cinzel text-lg font-bold text-gold-400">Árvores de Evolução</h2>
-          <p class="text-xs text-stone-400">Clique em um nó disponível para desbloqueá-lo com seus Pontos de Evolução.</p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <span class="px-3 py-1 rounded bg-emerald-950 border border-emerald-600 text-emerald-300 font-mono text-xs font-bold">
-          Disponível: <span id="modal-pt-disponivel">0</span> PT
+    <!-- Lateral de Histórico de Rolagens -->
+    <aside class="card hist-side" id="hist-side">
+      <h2>
+        📜 Histórico da Mesa
+        <span class="r">
+          <button class="btn" onclick="alternarHistoricoLateral()" title="Esconder histórico">✕</button>
         </span>
-        <select id="sel-arvore-personagem" class="bg-stone-950 border border-gold-600/60 rounded px-3 py-1.5 text-xs text-gold-300 font-cinzel"></select>
-        <button id="btn-fechar-modal-arvores" class="px-3 py-1.5 rounded bg-stone-900 border border-stone-700 hover:border-red-500 text-stone-300 text-xs font-cinzel">
-          Fechar ✕
-        </button>
+      </h2>
+      <div class="hist-list" id="hist-list">
+        <span class="mut">Carregando rolagens...</span>
       </div>
-    </div>
+    </aside>
+  </div>
 
-    <div class="flex-1 flex relative overflow-hidden">
-      <!-- Canvas da Árvore -->
-      <div id="ficha-tree-wrapper" class="flex-1 bg-stone-950/80">
-        <div id="ficha-tree-stage">
-          <svg id="ficha-svg-lines"></svg>
-          <div id="ficha-tree-grid"></div>
+  <!-- Blocos de Conteúdo (Gerenciados via JS) -->
+  <div id="store" hidden>
+    <section class="card blk" id="b-recursos">
+      <h2>
+        <span class="grip">⠿</span>Recursos de Vida
+        <span class="r"><button class="btn min-btn" onclick="alternarMinBloco('recursos')">−</button></span>
+      </h2>
+      <div class="blk-body" id="res"></div>
+    </section>
+
+    <section class="card blk" id="b-atributos">
+      <h2>
+        <span class="grip">⠿</span>Sigilo de Atributos
+        <span class="r">
+          <span class="mut" id="info-pts-attr" style="font-style:normal; font-family:monospace; font-size:10px"></span>
+          <button class="btn min-btn" onclick="alternarMinBloco('atributos')">−</button>
+        </span>
+      </h2>
+      <div class="blk-body">
+        <div class="wheel" id="wheel"></div>
+      </div>
+    </section>
+
+    <section class="card blk" id="b-teste">
+      <h2>
+        <span class="grip">⠿</span>Motor de Teste
+        <span class="r">
+          <span class="mut">d20s</span>
+          <button class="btn min-btn" onclick="alternarMinBloco('teste')">−</button>
+        </span>
+      </h2>
+      <div class="blk-body">
+        <div class="sl">
+          <span class="k">Atributos</span>
+          <span id="s-attr"></span>
+          <button class="btn" data-add="attr">+ Atributo</button>
         </div>
-
-        <!-- Legenda de Cores dos Nós -->
-        <div class="absolute left-4 bottom-4 z-20 bg-stone-950/90 border border-stone-800 rounded-lg p-2.5 text-[11px] flex flex-wrap gap-3">
-          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-600 inline-block"></span> Desbloqueado</span>
-          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-500 inline-block"></span> Disponível</span>
-          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-red-900 border border-red-500 inline-block"></span> Teto / Bloqueado</span>
-          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-stone-800 inline-block"></span> Trancado</span>
+        <div class="sl">
+          <span class="k">Perícia</span>
+          <span id="s-per"></span>
+          <button class="btn" data-add="per">+ Perícia</button>
         </div>
+        <div class="sl">
+          <span class="k">Habilidade</span>
+          <span id="s-hab"></span>
+          <button class="btn" data-add="hab">+ Habilidade</button>
+        </div>
+        <div class="sl">
+          <span class="k">Equip.</span>
+          <select id="sel-equip-teste" style="flex:1; min-width:110px"></select>
+          <select id="sel-modo-equip">
+            <option value="ataque">⚔ GA×2</option>
+            <option value="bloqueio">🛡 GD×2</option>
+            <option value="none">Sem bônus</option>
+          </select>
+        </div>
+        <div class="hint" id="hint"></div>
+        <div class="pool">
+          <span id="pool"></span>
+          <span id="cost"></span>
+        </div>
+        <div style="display:flex; gap:6px">
+          <button class="btn pri" style="flex:1; padding:6px" onclick="executarRolarDado()">🎲 Girar Teste</button>
+          <button class="btn" id="btn-dano-arma" hidden onclick="rolarDanoArmaSelecionada()" title="Rolar dano da arma">💥 Dano</button>
+          <button class="btn" onclick="salvarSelecaoComoMacro()" title="Salvar como macro">🔖</button>
+          <button class="btn" onclick="limparSelecao()" title="Limpar">✕</button>
+        </div>
+        <div class="out" id="out" hidden></div>
 
-        <!-- Controles de Zoom -->
-        <div class="absolute right-4 bottom-4 z-20 flex items-center gap-1.5 bg-stone-950/90 border border-gold-600/40 rounded-lg p-1.5">
-          <button id="f-zoom-out" class="w-7 h-7 rounded bg-stone-800 text-gold-300 font-bold">−</button>
-          <span id="f-zoom-val" class="text-[11px] font-mono w-11 text-center">100%</span>
-          <button id="f-zoom-in" class="w-7 h-7 rounded bg-stone-800 text-gold-300 font-bold">+</button>
-          <button id="f-zoom-reset" class="w-7 h-7 rounded bg-stone-800 text-gold-300 text-xs">↺</button>
+        <!-- Rolador Livre Compacto -->
+        <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap; margin-top:8px; padding-top:8px; border-top:1px solid var(--line)">
+          <span class="mut" style="font-style:normal; font-size:11px">Livre:</span>
+          <input type="number" id="lv-qtd" value="1" min="1" max="20" style="width:40px; text-align:center">
+          <select id="lv-faces">
+            <option value="4">d4</option>
+            <option value="6" selected>d6</option>
+            <option value="8">d8</option>
+            <option value="10">d10</option>
+            <option value="12">d12</option>
+            <option value="16">d16</option>
+            <option value="20">d20</option>
+          </select>
+          <input type="number" id="lv-mod" value="0" style="width:44px; text-align:center" title="Modificador">
+          <select id="lv-modo">
+            <option value="soma">Soma</option>
+            <option value="maior">Maior</option>
+            <option value="menor">Menor</option>
+          </select>
+          <button class="btn" onclick="executarDadoLivre()">Rolar</button>
         </div>
       </div>
+    </section>
 
-      <!-- Painel de Detalhes & Compra do Nó Selecionado -->
-      <aside id="painel-compra-no" class="w-80 bg-parchment-dark border-l border-gold-600/40 p-4 flex flex-col justify-between z-30 hidden">
-        <div class="space-y-3 overflow-y-auto pr-1 text-xs">
-          <div class="border-b border-stone-800 pb-2">
-            <span id="det-no-tipo" class="text-[10px] font-mono uppercase text-gold-400"></span>
-            <h3 id="det-no-titulo" class="font-cinzel text-base font-bold text-stone-100 mt-0.5"></h3>
-          </div>
+    <section class="card blk" id="b-macros">
+      <h2>
+        <span class="grip">⠿</span>Macros
+        <span class="r">
+          <span class="mut">1 clique</span>
+          <button class="btn min-btn" onclick="alternarMinBloco('macros')">−</button>
+        </span>
+      </h2>
+      <div class="blk-body" id="macros"></div>
+    </section>
 
-          <p id="det-no-desc" class="text-stone-300 leading-relaxed"></p>
+    <section class="card blk" id="b-pericias">
+      <h2>
+        <span class="grip">⠿</span>Perícias
+        <span class="r">
+          <span class="mut" style="font-size:10px">Passatempos & Árvores</span>
+          <button class="btn min-btn" onclick="alternarMinBloco('pericias')">−</button>
+        </span>
+      </h2>
+      <div class="blk-body" id="pericias"></div>
+    </section>
 
-          <div id="det-no-extras" class="space-y-1.5"></div>
+    <section class="card blk" id="b-habilidades">
+      <h2>
+        <span class="grip">⠿</span>Habilidades
+        <span class="r">
+          <span class="mut" style="font-size:10px">Árvores & Itens</span>
+          <button class="btn min-btn" onclick="alternarMinBloco('habilidades')">−</button>
+        </span>
+      </h2>
+      <div class="blk-body" id="habs"></div>
+    </section>
 
-          <!-- Aprimoramento de Herança Singular -->
-          <div id="det-no-singular" class="hidden bg-gold-950/30 border border-gold-500/50 rounded p-2.5 space-y-1">
-            <span class="font-cinzel text-[11px] font-bold text-gold-300 block">★ Bônus de Herança Singular</span>
-            <p id="det-no-singular-txt" class="text-[11px] text-gold-200"></p>
-          </div>
+    <section class="card blk" id="b-inventario">
+      <h2>
+        <span class="grip">⠿</span>Inventário
+        <span class="r">
+          <button class="btn" onclick="abrirModalCatalogoItens()">+ Catálogo</button>
+          <button class="btn min-btn" onclick="alternarMinBloco('inventario')">−</button>
+        </span>
+      </h2>
+      <div class="blk-body">
+        <div class="pool" id="slots-carga" style="font-size:11px; flex-wrap:wrap; gap:6px"></div>
+        <div id="inv-list"></div>
+      </div>
+    </section>
+  </div>
 
-          <!-- Escolha de Opção Ambígua / Atributo -->
-          <div id="det-no-opcoes" class="hidden space-y-2 pt-2 border-t border-stone-800">
-            <span class="font-cinzel font-bold text-purple-300 block">Escolha uma Opção:</span>
-            <label class="flex items-center gap-2 p-2 rounded bg-stone-950 border border-stone-800 cursor-pointer">
-              <input type="radio" name="escolha-no-ambiguo" value="a" checked class="accent-purple-500">
-              <span id="lbl-opt-a" class="text-stone-200 font-semibold"></span>
-            </label>
-            <label class="flex items-center gap-2 p-2 rounded bg-stone-950 border border-stone-800 cursor-pointer">
-              <input type="radio" name="escolha-no-ambiguo" value="b" class="accent-purple-500">
-              <span id="lbl-opt-b" class="text-stone-200 font-semibold"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="pt-3 border-t border-stone-800 space-y-2">
-          <div id="det-no-status-msg" class="text-[11px] text-center font-semibold"></div>
-          <button id="btn-comprar-no" class="w-full py-2.5 rounded bg-gold-600 hover:bg-gold-500 disabled:opacity-40 disabled:cursor-not-allowed text-stone-950 font-cinzel font-bold text-xs shadow-lg">
-            Desbloquear Nó
-          </button>
-        </div>
-      </aside>
+  <!-- Modal Genérico -->
+  <div class="ov" id="modal" hidden>
+    <div class="card mod" id="modal-box">
+      <h2 id="modal-titulo"></h2>
+      <div id="modal-conteudo" style="flex:1; min-height:0; display:flex; flex-direction:column"></div>
+      <div style="text-align:right; margin-top:8px">
+        <button class="btn" onclick="fecharModal()">Fechar</button>
+      </div>
     </div>
   </div>
 
-  <!-- ========================================================= -->
-  <!-- MODAL 2: LEGENDA DE SIGLAS                                -->
-  <!-- ========================================================= -->
-  <div id="modal-siglas" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-parchment-dark gold-border rounded-xl max-w-lg w-full p-5 space-y-4">
-      <div class="flex justify-between items-center border-b border-gold-600/40 pb-2">
-        <h3 class="font-cinzel text-base font-bold text-gold-400">📖 Legenda de Siglas do Sistema</h3>
-        <button id="btn-fechar-siglas" class="text-stone-400 hover:text-white">✕</button>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-        <div class="bg-stone-950 p-2.5 rounded border border-stone-800"><strong class="text-red-400 font-mono">HP</strong> — Pontos de Vida (Vitalidade física).</div>
-        <div class="bg-stone-950 p-2.5 rounded border border-stone-800"><strong class="text-purple-400 font-mono">SAN</strong> — Sanidade (Estabilidade mental contra o Véu).</div>
-        <div class="bg-stone-950 p-2.5 rounded border border-stone-800"><strong class="text-amber-400 font-mono">PE-F</strong> — Pontos de Energia Física (Vigor e agilidade).</div>
-        <div class="bg-stone-950 p-2.5 rounded border border-stone-800"><strong class="text-sky-400 font-mono">PE-M</strong> — Pontos de Energia Mística/Mental.</div>
-        <div class="bg-stone-950 p-2.5 rounded border border-stone-800"><strong class="text-emerald-400 font-mono">PT</strong> — Pontos de Evolução para gastar nas Árvores.</div>
-        <div class="bg-stone-950 p-2.5 rounded border border-stone-800"><strong class="text-gold-400 font-mono">GA / GD</strong> — Grau de Ataque / Grau de Defesa do equipamento.</div>
-        <div class="bg-stone-950 p-2.5 rounded border border-stone-800"><strong class="text-sky-300 font-mono">RD</strong> — Redução de Dano (absorvida por armaduras).</div>
-        <div class="bg-stone-950 p-2.5 rounded border border-stone-800"><strong class="text-stone-200 font-mono">DESL</strong> — Deslocamento em metros por turno (5 + DES).</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================================================= -->
-  <!-- MODAL 3: DESCANSO (PAUSA CURTA / DESCANSO LONGO)          -->
-  <!-- ========================================================= -->
-  <div id="modal-descanso" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-parchment-dark gold-border rounded-xl max-w-md w-full p-5 space-y-4 text-xs">
-      <div class="flex justify-between items-center border-b border-gold-600/40 pb-2">
-        <h3 class="font-cinzel text-base font-bold text-sky-400">🏕️ Realizar Descanso</h3>
-        <button id="btn-fechar-descanso" class="text-stone-400 hover:text-white">✕</button>
-      </div>
-      <div class="space-y-3">
-        <button id="btn-pausa-curta" class="w-full p-3 rounded bg-stone-950 hover:border-amber-500 border border-stone-800 text-left space-y-1">
-          <div class="font-cinzel font-bold text-amber-300">⏳ Pausa Curta (15–30 min)</div>
-          <p class="text-stone-400 text-[11px]">Recupera <strong>1d6 + Vigor</strong> (PE-F) e <strong>1d6 + Ímpeto</strong> (PE-M).</p>
-        </button>
-        <button id="btn-descanso-longo" class="w-full p-3 rounded bg-stone-950 hover:border-emerald-500 border border-stone-800 text-left space-y-1">
-          <div class="font-cinzel font-bold text-emerald-300">🌙 Descanso Longo (8 horas)</div>
-          <p class="text-stone-400 text-[11px]">Restaura totalmente <strong>PE-F e PE-M</strong>, e recupera <strong>1d4 + Vigor</strong> (HP) e <strong>1d4 + Ímpeto</strong> (SAN).</p>
-        </button>
-      </div>
-    </div>
-  </div>
+  <!-- Toast Notificação -->
+  <div id="toast"></div>
 
   <script type="module">
     import {
@@ -563,16 +702,33 @@
     const fichaId = params.get('fichaId');
     if (!mesaId || !fichaId) window.location.href = '../index.html';
 
-    document.getElementById('btn-voltar-mesa').href = `mesa.html?id=${mesaId}`;
+    const getEl = selector => document.querySelector(selector);
+    getEl('#btn-voltar').href = `mesa.html?id=${mesaId}`;
 
-    const LISTA_ATRIBUTOS = [
-      { key: 'potencia', nome: 'Potência', sigla: 'POT' },
-      { key: 'vigor', nome: 'Vigor', sigla: 'VIG' },
-      { key: 'destreza', nome: 'Destreza', sigla: 'DES' },
-      { key: 'percepcao', nome: 'Percepção', sigla: 'PER' },
-      { key: 'erudicao', nome: 'Erudição', sigla: 'ERU' },
-      { key: 'autoridade', nome: 'Autoridade', sigla: 'AUT' },
-      { key: 'impeto', nome: 'Ímpeto', sigla: 'ÍMP' }
+    const ATRIBUTOS = [
+      ['potencia', 'POT', 'r'],
+      ['vigor', 'VIG', 'r'],
+      ['destreza', 'DES', 'r'],
+      ['percepcao', 'PER', 'b'],
+      ['erudicao', 'ERU', 'b'],
+      ['autoridade', 'AUT', 'p'],
+      ['impeto', 'ÍMP', 'p']
+    ];
+
+    const ESTRUTURA_RECURSOS = [
+      ['hp', 'HP', '#d64545'],
+      ['san', 'SAN', '#9b59d0'],
+      ['pef', 'PE-F (Físico)', '#e0a030'],
+      ['pem', 'PE-M (Mental)', '#3da5d9']
+    ];
+
+    const BONUS_ORFAO = [2, -2, 2, 2];
+    const QTD_SLOTS_RAIZ = { singular: 2, heranca: 1, dupla: 1, auto: 0 };
+
+    const LAYOUT_PADRAO = [
+      ['recursos', 'atributos'],
+      ['teste', 'macros'],
+      ['pericias', 'habilidades', 'inventario']
     ];
 
     const REGRAS_PADRAO = {
@@ -580,660 +736,954 @@
       estagioInicial: 1,
       tetosPorEstagio: { 1: 2, 2: 3, 3: 4, 4: 5 },
       pontosEvolucaoIniciais: 0,
-      slotsRaizExtraCriacao: 0,
       passatemposFocados: 1,
       passatemposMistos: 1,
       travaAscendenteCarga: true
     };
 
-    const PESO_BASE = { miudeza: 0, leve: 1, medio: 2, pesado: 3 };
-
+    // Estado Firebase
     let usuarioAtual = null;
     let mesaDados = null;
-    let fichaDados = null;
-    let souMestre = false;
+    let fichaDoc = null;
     let regras = { ...REGRAS_PADRAO };
+    let RAIZES = {};
     let computado = null;
 
-    // Estado do Visualizador de Árvore
-    let arvoreSelecionadaId = null;
-    let noSelecionadoId = null;
-    let fZoom = 1, fPanX = 0, fPanY = 0;
+    // Preferências visuais locais do jogador
+    let layoutAtual = LAYOUT_PADRAO;
+    let temaAtual = 'dark';
+    let paletaAtual = 'ouro';
+    let blocosMinimizados = {};
+    let historicoOculto = false;
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) return window.location.href = '../index.html';
-      usuarioAtual = user;
-      iniciarListeners();
-    });
+    // Estado de interação
+    let modoArmado = null;
+    let selecaoTeste = { attrs: [], per: null, hab: null };
+    let sinalRecursos = { hp: -1, san: -1, pef: -1, pem: -1 };
+    let maximosRecursos = {};
+    let arvoreAtivaId = null;
+    let tZoom = 1, tPanX = 0, tPanY = 0;
 
-    function iniciarListeners() {
-      onSnapshot(doc(db, "mesas", mesaId), (snap) => {
-        if (!snap.exists()) return window.location.href = '../index.html';
-        mesaDados = snap.data();
-        souMestre = mesaDados.mestreId === usuarioAtual.uid;
-        regras = {
-          ...REGRAS_PADRAO,
-          ...(mesaDados.regras || {}),
-          tetosPorEstagio: { ...REGRAS_PADRAO.tetosPorEstagio, ...(mesaDados.regras?.tetosPorEstagio || {}) }
-        };
-        if (fichaDados) recalcularERenderizarTudo();
-      });
+    try {
+      const prefs = JSON.parse(localStorage.getItem('pantheon_ui_prefs'));
+      if (prefs) {
+        layoutAtual = prefs.layout || layoutAtual;
+        temaAtual = prefs.theme || temaAtual;
+        paletaAtual = prefs.pal || paletaAtual;
+        blocosMinimizados = prefs.min || {};
+        historicoOculto = Boolean(prefs.histHide);
+      }
+    } catch (e) {}
 
-      onSnapshot(doc(db, "fichas", fichaId), (snap) => {
-        if (!snap.exists()) return window.location.href = `mesa.html?id=${mesaId}`;
-        fichaDados = snap.data();
-        if (mesaDados) recalcularERenderizarTudo();
-      });
+    function salvarPrefsLocais() {
+      try {
+        localStorage.setItem('pantheon_ui_prefs', JSON.stringify({
+          layout: layoutAtual,
+          theme: temaAtual,
+          pal: paletaAtual,
+          min: blocosMinimizados,
+          histHide: historicoOculto
+        }));
+      } catch (e) {}
+    }
 
-      const qRolagens = query(collection(db, "rolagens"), where("mesaId", "==", mesaId));
-      onSnapshot(qRolagens, (snapshot) => {
-        const lista = [];
-        snapshot.forEach(d => lista.push({ id: d.id, ...d.data() }));
-        lista.sort((a, b) => (b.criadoEm?.toMillis?.() || Date.now()) - (a.criadoEm?.toMillis?.() || Date.now()));
-        renderizarHistoricoLateral(lista.slice(0, 25));
+    function mostrarToast(mensagem) {
+      const toast = getEl('#toast');
+      toast.textContent = mensagem;
+      toast.classList.add('show');
+      clearTimeout(mostrarToast.timer);
+      mostrarToast.timer = setTimeout(() => toast.classList.remove('show'), 2300);
+    }
+
+    const obterSiglaAtributo = chave => ATRIBUTOS.find(a => a[0] === chave)?.[1] || chave.toUpperCase();
+
+    /* ---------- Aparência, Minimização e Histórico ---------- */
+    const PALETAS_CORES = { ouro: 40, carmesim: 355, esmeralda: 150, safira: 210, violeta: 270 };
+
+    function aplicarVisual() {
+      document.documentElement.dataset.theme = temaAtual;
+      document.documentElement.dataset.pal = paletaAtual;
+      getEl('#workspace').classList.toggle('no-hist', historicoOculto);
+      Object.entries(blocosMinimizados).forEach(([id, isMin]) => {
+        const blk = getEl('#b-' + id);
+        if (blk) {
+          blk.classList.toggle('minimized', isMin);
+          const btn = blk.querySelector('.min-btn');
+          if (btn) btn.textContent = isMin ? '+' : '−';
+        }
       });
     }
 
-    /* ========================================================= */
-    /* MOTOR DE CÁLCULO CENTRAL DA FICHA                         */
-    /* ========================================================= */
-    function calcularEstadoFicha() {
-      const f = fichaDados;
-      const h = f.raizesHeranca || { tipo: 'heranca', r1: '', r2: '' };
-      const estagio = f.estagioBiologico || 1;
-      const tetoAtributo = f.tetoIndividualOverride || regras.tetosPorEstagio[estagio] || 2;
+    window.alternarMinBloco = (id) => {
+      blocosMinimizados[id] = !blocosMinimizados[id];
+      aplicarVisual();
+      salvarPrefsLocais();
+    };
 
-      // 1. Atributos Base + Árvores + Conversões
-      const attrBase = { ...(f.atributosBase || {}) };
-      const attrBonusArvore = { potencia: 0, vigor: 0, destreza: 0, percepcao: 0, erudicao: 0, autoridade: 0, impeto: 0 };
-      const attrBonusMaestria = { potencia: 0, vigor: 0, destreza: 0, percepcao: 0, erudicao: 0, autoridade: 0, impeto: 0 };
+    window.alternarHistoricoLateral = () => {
+      historicoOculto = !historicoOculto;
+      aplicarVisual();
+      salvarPrefsLocais();
+    };
 
-      (f.conversoesMaestria || []).forEach(c => {
-        if (c.atributo && attrBonusMaestria[c.atributo] !== undefined) {
-          attrBonusMaestria[c.atributo] += 1;
-        }
+    window.abrirLegendaSiglas = () => {
+      abrirModal('Legenda de Siglas do Sistema', `
+        <div class="sigla-grid">
+          <div class="sigla-item"><b>HP</b> — Pontos de Vida (Vitalidade física).</div>
+          <div class="sigla-item"><b>SAN</b> — Sanidade (Estabilidade contra o Véu).</div>
+          <div class="sigla-item"><b>PE-F</b> — Energia Física (Vigor e agilidade).</div>
+          <div class="sigla-item"><b>PE-M</b> — Energia Mística / Mental.</div>
+          <div class="sigla-item"><b>PT</b> — Pontos de Evolução das Árvores.</div>
+          <div class="sigla-item"><b>GA / GD</b> — Grau de Ataque / Grau de Defesa.</div>
+          <div class="sigla-item"><b>RD</b> — Redução de Dano (Armaduras).</div>
+          <div class="sigla-item"><b>DESL</b> — Deslocamento em metros (5 + DES).</div>
+        </div>
+      `);
+    };
+
+    window.abrirConfiguracaoAparencia = () => {
+      const botoesTema = ['dark', 'light'].map(t =>
+        `<button class="btn ${temaAtual === t ? 'on' : ''}" onclick="mudarTema('${t}')">${t === 'dark' ? '🌙 Escuro' : '☀ Claro'}</button>`
+      ).join('');
+
+      const bolotasPaleta = Object.entries(PALETAS_CORES).map(([nome, hue]) =>
+        `<div class="sw ${paletaAtual === nome ? 'on' : ''}" title="${nome}" style="background:hsl(${hue} 62% 50%)" onclick="mudarPaleta('${nome}')"></div>`
+      ).join('');
+
+      abrirModal('Aparência', `
+        <p class="mut" style="margin:0 0 4px">Tema</p>
+        <div style="display:flex; gap:6px; margin-bottom:12px">${botoesTema}</div>
+        <p class="mut" style="margin:0 0 4px">Paleta</p>
+        <div style="display:flex; gap:8px; margin-bottom:12px">${bolotasPaleta}</div>
+        <button class="btn" onclick="restaurarLayout()">↺ Restaurar layout dos blocos</button>
+      `);
+    };
+
+    window.mudarTema = (t) => { temaAtual = t; aplicarVisual(); salvarPrefsLocais(); abrirConfiguracaoAparencia(); };
+    window.mudarPaleta = (p) => { paletaAtual = p; aplicarVisual(); salvarPrefsLocais(); abrirConfiguracaoAparencia(); };
+    window.restaurarLayout = () => { layoutAtual = LAYOUT_PADRAO; montarColunasLayout(); salvarPrefsLocais(); fecharModal(); };
+
+    function abrirModal(titulo, htmlConteudo, isTree = false) {
+      getEl('#modal-box').classList.toggle('mod-tree', isTree);
+      getEl('#modal-titulo').innerHTML = titulo;
+      getEl('#modal-conteudo').innerHTML = htmlConteudo;
+      getEl('#modal').hidden = false;
+    }
+
+    window.fecharModal = () => {
+      getEl('#modal').hidden = true;
+      getEl('#modal-box').classList.remove('mod-tree');
+    };
+    getEl('#modal').onclick = e => { if (e.target.id === 'modal') fecharModal(); };
+
+    /* ---------- Drag & Drop do Layout ---------- */
+    function montarColunasLayout() {
+      const colunas = [...document.querySelectorAll('.col')];
+      const blocos = [...document.querySelectorAll('.blk')];
+      const usados = new Set();
+
+      layoutAtual.forEach((idsBloco, i) => {
+        idsBloco.forEach(id => {
+          const bloco = getEl('#b-' + id);
+          if (bloco && colunas[i]) {
+            colunas[i].appendChild(bloco);
+            usados.add(bloco);
+          }
+        });
       });
 
-      // 2. Perícias e Habilidades das Árvores
-      const periciasMap = {}; // { NomePericia: { valor: number, fontes: [] } }
-      const habilidadesLista = [];
+      blocos.forEach(bloco => {
+        if (!usados.has(bloco)) colunas[0].appendChild(bloco);
+      });
+    }
+
+    function salvarLayoutAtual() {
+      layoutAtual = [...document.querySelectorAll('.col')].map(col =>
+        [...col.querySelectorAll('.blk')].map(bloco => bloco.id.replace('b-', ''))
+      );
+      salvarPrefsLocais();
+    }
+
+    function inicializarDragAndDrop() {
+      document.querySelectorAll('.blk').forEach(bloco => {
+        const alca = bloco.querySelector('.grip');
+        alca.onmousedown = () => bloco.draggable = true;
+        bloco.ondragstart = e => {
+          bloco.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        };
+        bloco.ondragend = () => {
+          bloco.classList.remove('dragging');
+          bloco.draggable = false;
+          document.querySelectorAll('.col').forEach(c => c.classList.remove('over'));
+          salvarLayoutAtual();
+        };
+      });
+
+      document.querySelectorAll('.col').forEach(col => {
+        col.ondragover = e => {
+          e.preventDefault();
+          const blocoArrastando = document.querySelector('.dragging');
+          if (!blocoArrastando) return;
+          document.querySelectorAll('.col').forEach(c => c.classList.toggle('over', c === col));
+          const proximoBloco = [...col.querySelectorAll('.blk:not(.dragging)')].find(b => {
+            const rect = b.getBoundingClientRect();
+            return e.clientY < rect.top + rect.height / 2;
+          });
+          col.insertBefore(blocoArrastando, proximoBloco || null);
+        };
+      });
+    }
+
+    /* ---------- Cálculo Consolidado da Ficha (Regras Pantheon) ---------- */
+    function calcularEstadoFicha() {
+      const f = fichaDoc;
+      const h = f.raizesHeranca || { tipo: 'heranca', r1: '', r2: '' };
+      const estagio = f.estagioBiologico || 1;
+      const teto = f.tetoIndividualOverride || regras.tetosPorEstagio[estagio] || 2;
+
+      const attrBase = {
+        potencia: 0, vigor: 0, destreza: 0, percepcao: 0, erudicao: 0, autoridade: 0, impeto: 0,
+        ...(f.atributosBase || {})
+      };
+      const attrArvore = { potencia: 0, vigor: 0, destreza: 0, percepcao: 0, erudicao: 0, autoridade: 0, impeto: 0 };
+      const attrMaestria = { potencia: 0, vigor: 0, destreza: 0, percepcao: 0, erudicao: 0, autoridade: 0, impeto: 0 };
+
+      (f.conversoesMaestria || []).forEach(c => {
+        if (c.atributo && attrMaestria[c.atributo] !== undefined) attrMaestria[c.atributo] += 1;
+      });
+
+      const pericias = {}; // { Nome: { val, fontes } }
+      const habilidades = [];
       const bonusRecArvore = { hp: 0, san: 0, pef: 0, pem: 0 };
 
+      // 1. Nós desbloqueados nas Árvores
       const arvoresMesa = mesaDados?.arvores || [];
       Object.entries(f.nosDesbloqueados || {}).forEach(([arvId, nosIds]) => {
         const arv = arvoresMesa.find(a => a.id === arvId);
         if (!arv) return;
-        const temSingularNestaRaiz = h.tipo === 'singular' && h.r1 === arv.raizAssociada;
+        const temSingular = h.tipo === 'heranca' && h.r1 === arv.raizAssociada;
 
         (nosIds || []).forEach(noId => {
           const no = (arv.nos || []).find(n => n.id === noId);
           if (!no) return;
 
-          const singAtiva = temSingularNestaRaiz && Boolean(no.herancaSingular);
+          const singAtiva = temSingular && Boolean(no.herancaSingular);
           const bonusSing = singAtiva ? (parseInt(no.herancaSingular?.bonusExtra) || 0) : 0;
           const redPeSing = singAtiva ? (parseInt(no.herancaSingular?.reducaoPe) || 0) : 0;
 
-          // Atributo / Escolha Ambígua
           if (no.tipoRecompensa === 'atributo' || no.tipoRecompensa === 'ambiguo') {
             const esc = (f.escolhasAmbiguas || {})[no.id] || 'a';
             const opt = (no.opcoesAmbiguas || []).find(o => o.idOpcao === esc) || no.opcoesAmbiguas?.[0];
-            if (opt?.attr && attrBonusArvore[opt.attr] !== undefined) {
-              attrBonusArvore[opt.attr] += (parseInt(opt.val) || 1) + bonusSing;
+            if (opt?.attr && attrArvore[opt.attr] !== undefined) {
+              attrArvore[opt.attr] += (parseInt(opt.val) || 1) + bonusSing;
             }
           }
 
-          // Perícias do Nó
           if (no.conteudo?.bonusPericia) {
             Object.entries(no.conteudo.bonusPericia).forEach(([pNome, pVal]) => {
-              if (!periciasMap[pNome]) periciasMap[pNome] = { valor: 0, fontes: [] };
-              const totalP = (parseInt(pVal) || 0) + bonusSing;
-              periciasMap[pNome].valor += totalP;
-              periciasMap[pNome].fontes.push(`${no.titulo} (+${totalP})`);
+              if (!pericias[pNome]) pericias[pNome] = { val: 0, fontes: [] };
+              const add = (parseInt(pVal) || 0) + bonusSing;
+              pericias[pNome].val += add;
+              pericias[pNome].fontes.push(`${no.titulo} (+${add})`);
             });
           }
 
-          // Habilidades e Bônus Numéricos de Recurso
           if (no.tipoRecompensa === 'habilidade') {
             const c = no.conteudo || {};
             if (c.efTipo && ['hp', 'san', 'pef', 'pem'].includes(c.efTipo)) {
               bonusRecArvore[c.efTipo] += (parseInt(c.efVal) || 0) + bonusSing;
             }
-            const pefFinal = Math.max(0, (parseInt(c.f) || 0) - redPeSing);
-            const pemFinal = Math.max(0, (parseInt(c.m) || 0) - redPeSing);
-
-            habilidadesLista.push({
+            habilidades.push({
               id: no.id,
               nome: no.titulo,
-              origem: arv.nome,
               cat: c.cat || 'passivo',
-              pef: pefFinal,
-              pem: pemFinal,
+              f: Math.max(0, (parseInt(c.f) || 0) - redPeSing),
+              m: Math.max(0, (parseInt(c.m) || 0) - redPeSing),
+              ef: c.efTipo === 'teste' ? { k: 'teste', v: (parseInt(c.efVal) || 0) + bonusSing } : null,
               critMod: parseInt(c.critMod) || 0,
-              bonusTeste: c.efTipo === 'teste' ? (parseInt(c.efVal) || 0) + bonusSing : 0,
-              descricao: singAtiva && no.herancaSingular?.descricao
-                ? `${c.descricao || ''} [★ Singular: ${no.herancaSingular.descricao}]`
-                : (c.descricao || ''),
-              singularAtiva: singAtiva
+              desc: singAtiva && no.herancaSingular?.descricao
+                ? `${c.descricao || ''} [★ Herança: ${no.herancaSingular.descricao}]`
+                : (c.descricao || '')
             });
           }
         });
       });
 
-      // 3. Perícias dos Passatempos Infantis
+      // 2. Passatempos Infantis
       const pass = f.passatempos || { focados: [], mistos: [], extrasOrfao: [] };
       (pass.focados || []).forEach(pNome => {
         if (!pNome) return;
-        if (!periciasMap[pNome]) periciasMap[pNome] = { valor: 0, fontes: [] };
-        periciasMap[pNome].valor += 2;
-        periciasMap[pNome].fontes.push('Passatempo Focado (+2)');
+        if (!pericias[pNome]) pericias[pNome] = { val: 0, fontes: [] };
+        pericias[pNome].val += 2;
+        pericias[pNome].fontes.push('Focado (+2)');
       });
       (pass.mistos || []).forEach(par => {
         (par || []).forEach(pNome => {
           if (!pNome) return;
-          if (!periciasMap[pNome]) periciasMap[pNome] = { valor: 0, fontes: [] };
-          periciasMap[pNome].valor += 1;
-          periciasMap[pNome].fontes.push('Passatempo Misto (+1)');
+          if (!pericias[pNome]) pericias[pNome] = { val: 0, fontes: [] };
+          pericias[pNome].val += 1;
+          pericias[pNome].fontes.push('Misto (+1)');
         });
       });
       if (h.tipo === 'auto') {
         (pass.extrasOrfao || []).forEach(pNome => {
           if (!pNome) return;
-          if (!periciasMap[pNome]) periciasMap[pNome] = { valor: 0, fontes: [] };
-          periciasMap[pNome].valor += 1;
-          periciasMap[pNome].fontes.push('Vivência de Órfão (+1)');
+          if (!pericias[pNome]) pericias[pNome] = { val: 0, fontes: [] };
+          pericias[pNome].val += 1;
+          pericias[pNome].fontes.push('Órfão (+1)');
         });
       }
 
-      // Subtrai pontos gastos em Conversão de Maestria (-5 por conversão)
+      // 3. Conversão de Maestria (-5 perícia -> +1 atributo)
       (f.conversoesMaestria || []).forEach(c => {
-        if (c.pericia && periciasMap[c.pericia]) {
-          periciasMap[c.pericia].valor = Math.max(0, periciasMap[c.pericia].valor - 5);
-          periciasMap[c.pericia].fontes.push('Conversão Maestria (-5)');
+        if (c.pericia && pericias[c.pericia]) {
+          pericias[c.pericia].val = Math.max(0, pericias[c.pericia].val - 5);
+          pericias[c.pericia].fontes.push('Maestria (-5)');
         }
       });
 
-      // 4. Soma Final de Atributos
-      const attrTotais = {};
-      LISTA_ATRIBUTOS.forEach(a => {
-        attrTotais[a.key] = (attrBase[a.key] || 0) + (attrBonusArvore[a.key] || 0) + (attrBonusMaestria[a.key] || 0);
+      // 4. Soma Final Atributos
+      const attr = {};
+      ATRIBUTOS.forEach(([k]) => {
+        attr[k] = (attrBase[k] || 0) + (attrArvore[k] || 0) + (attrMaestria[k] || 0);
       });
 
-      // 5. Recursos Máximos (Raiz + Atributos + Árvore)
-      const raizPrincipal = h.tipo === 'auto' ? 'Órfão' : (h.r1 || '');
-      const bonusRaiz = (mesaDados?.raizesDisponiveis || {})[raizPrincipal] || [0, 0, 0, 0];
+      // 5. Recursos Máximos
+      const b = h.tipo === 'auto' ? BONUS_ORFAO : (RAIZES[h.r1] || [0, 0, 0, 0]);
+      const maxRec = {
+        hp: 10 + attr.vigor * 3 + (b[0] || 0) + bonusRecArvore.hp,
+        san: 10 + attr.impeto * 3 + (b[1] || 0) + bonusRecArvore.san,
+        pef: 5 + attr.destreza + attr.vigor + (b[2] || 0) + bonusRecArvore.pef,
+        pem: 5 + attr.impeto + attr.erudicao + (b[3] || 0) + bonusRecArvore.pem
+      };
 
-      const hpMax = 10 + (attrTotais.vigor * 3) + (bonusRaiz[0] || 0) + bonusRecArvore.hp;
-      const sanMax = 10 + (attrTotais.impeto * 3) + (bonusRaiz[1] || 0) + bonusRecArvore.san;
-      const pefMax = 5 + attrTotais.destreza + attrTotais.vigor + (bonusRaiz[2] || 0) + bonusRecArvore.pef;
-      const pemMax = 5 + attrTotais.impeto + attrTotais.erudicao + (bonusRaiz[3] || 0) + bonusRecArvore.pem;
-
-      // 6. Inventário, Equipamentos, RD e Deslocamento
-      let rdTotal = 0;
-      let penDesl = 0;
-      const inv = f.inventario || [];
-      inv.forEach(item => {
-        if (!item.equipado) return;
-        if (item.categoria === 'armadura') {
-          rdTotal += parseInt(item.rd) || 0;
-          penDesl += parseInt(item.penalidadeDesl) || 0;
+      // 6. Inventário (RD, Deslocamento e Habilidades de Itens Equipados)
+      let rd = 0, penDesl = 0;
+      (f.inventario || []).forEach(it => {
+        if (!it.equipado) return;
+        if (it.categoria === 'armadura') {
+          rd += parseInt(it.rd) || 0;
+          penDesl += parseInt(it.penalidadeDesl) || 0;
         }
-        if (item.categoria === 'escudo' && item.peso === 'pesado') {
-          penDesl -= 1;
-        }
-        if (item.habilidade && item.habilidade.nome) {
-          habilidadesLista.push({
-            id: `item_hab_${item.uid}`,
-            nome: `${item.habilidade.nome} (${item.nome})`,
-            origem: 'Item Equipado',
+        if (it.categoria === 'escudo' && it.peso === 'pesado') penDesl -= 1;
+        if (it.habilidade?.nome) {
+          habilidades.push({
+            id: `item_${it.uid}`,
+            nome: `${it.habilidade.nome} (${it.nome})`,
             cat: 'ativo',
-            pef: 0,
-            pem: 0,
-            custoTexto: item.habilidade.custo || '',
+            f: 0,
+            m: 0,
+            custoTxt: it.habilidade.custo || '',
+            ef: null,
             critMod: 0,
-            bonusTeste: 0,
-            descricao: item.habilidade.efeito || ''
+            desc: it.habilidade.efeito || ''
           });
         }
       });
 
-      const deslocamento = Math.max(1, 5 + attrTotais.destreza + penDesl);
-
       return {
         estagio,
-        tetoAtributo,
+        teto,
         attrBase,
-        attrTotais,
-        periciasMap,
-        habilidadesLista,
-        hpMax,
-        sanMax,
-        pefMax,
-        pemMax,
-        rdTotal,
-        deslocamento
+        attr,
+        pericias,
+        habilidades,
+        maxRec,
+        rd,
+        desl: Math.max(1, 5 + attr.destreza + penDesl)
       };
     }
 
-    function recalcularERenderizarTudo() {
-      computado = calcularEstadoFicha();
-      renderizarTopoERecursos();
-      renderizarOrigemEPassatempos();
-      renderizarAtributos();
-      renderizarRolador();
-      renderizarPericias();
-      renderizarHabilidades();
-      renderizarInventario();
-      if (!document.getElementById('modal-arvores').classList.contains('hidden')) {
-        renderizarCanvasArvoreFicha();
-      }
-    }
-
-    /* ========================================================= */
-    /* TOPO E BARRA DE RECURSOS                                  */
-    /* ========================================================= */
-    function renderizarTopoERecursos() {
-      const f = fichaDados;
-      document.getElementById('ficha-nome-input').value = f.nome || '';
-      document.getElementById('top-pt-count').textContent = f.pontosEvolucao || 0;
-
-      const badge = document.getElementById('badge-status-ficha');
-      const btnFin = document.getElementById('btn-finalizar-criacao');
-
-      if (f.criacaoFinalizada) {
-        badge.textContent = "🔒 Ficha Finalizada";
-        badge.className = "px-2 py-0.5 rounded text-[10px] font-mono border border-emerald-700 bg-emerald-950 text-emerald-300";
-        btnFin.classList.add('hidden');
-      } else {
-        badge.textContent = "✏️ Em Criação";
-        badge.className = "px-2 py-0.5 rounded text-[10px] font-mono border border-sky-700 bg-sky-950 text-sky-300";
-        btnFin.classList.remove('hidden');
-      }
-
-      document.getElementById('subtitulo-ficha').textContent =
-        `Mesa: ${mesaDados.nome} · Jogador: ${f.donoNome || '—'}`;
-
-      const atuais = f.recursosAtuais || {};
-      document.getElementById('rec-hp-max').textContent = computado.hpMax;
-      document.getElementById('rec-san-max').textContent = computado.sanMax;
-      document.getElementById('rec-pef-max').textContent = computado.pefMax;
-      document.getElementById('rec-pem-max').textContent = computado.pemMax;
-
-      document.getElementById('rec-hp-cur').value = atuais.hp ?? computado.hpMax;
-      document.getElementById('rec-san-cur').value = atuais.san ?? computado.sanMax;
-      document.getElementById('rec-pef-cur').value = atuais.pef ?? computado.pefMax;
-      document.getElementById('rec-pem-cur').value = atuais.pem ?? computado.pemMax;
-
-      document.getElementById('stat-rd').textContent = computado.rdTotal;
-      document.getElementById('stat-desl').textContent = `${computado.deslocamento}m`;
-      document.getElementById('stat-teto').textContent = computado.tetoAtributo;
-    }
-
-    document.getElementById('ficha-nome-input').onchange = async (e) => {
-      const novo = e.target.value.trim();
-      if (novo) await updateDoc(doc(db, "fichas", fichaId), { nome: novo });
-    };
-
-    document.getElementById('btn-finalizar-criacao').onclick = async () => {
-      if (!confirm("Finalizar a criação da ficha? Após finalizar, atributos iniciais, origem e passatempos serão travados.")) return;
-      await updateDoc(doc(db, "fichas", fichaId), {
-        criacaoFinalizada: true,
-        recursosAtuais: {
-          hp: computado.hpMax,
-          san: computado.sanMax,
-          pef: computado.pefMax,
-          pem: computado.pemMax
-        }
-      });
-    };
-
-    // Controles de Recursos Atuais (+1 / -1 e input direto)
-    document.querySelectorAll('[data-rec-delta]').forEach(btn => {
-      btn.onclick = async () => {
-        const [campo, deltaStr] = btn.dataset.recDelta.split(':');
-        const delta = parseInt(deltaStr);
-        const maxMap = { hp: computado.hpMax, san: computado.sanMax, pef: computado.pefMax, pem: computado.pemMax };
-        const atuais = {
-          hp: fichaDados.recursosAtuais?.hp ?? computado.hpMax,
-          san: fichaDados.recursosAtuais?.san ?? computado.sanMax,
-          pef: fichaDados.recursosAtuais?.pef ?? computado.pefMax,
-          pem: fichaDados.recursosAtuais?.pem ?? computado.pemMax
-        };
-        atuais[campo] = Math.max(0, Math.min(maxMap[campo] + 20, (atuais[campo] || 0) + delta));
-        await updateDoc(doc(db, "fichas", fichaId), { recursosAtuais: atuais });
-      };
-    });
-
-    ['hp', 'san', 'pef', 'pem'].forEach(campo => {
-      document.getElementById(`rec-${campo}-cur`).onchange = async (e) => {
-        const val = Math.max(0, parseInt(e.target.value) || 0);
-        const atuais = {
-          hp: fichaDados.recursosAtuais?.hp ?? computado.hpMax,
-          san: fichaDados.recursosAtuais?.san ?? computado.sanMax,
-          pef: fichaDados.recursosAtuais?.pef ?? computado.pefMax,
-          pem: fichaDados.recursosAtuais?.pem ?? computado.pemMax,
-          [campo]: val
-        };
-        await updateDoc(doc(db, "fichas", fichaId), { recursosAtuais: atuais });
-      };
-    });
-
-    /* ========================================================= */
-    /* BLOCO 1: ORIGEM, RAÍZES & PASSATEMPOS                     */
-    /* ========================================================= */
-    function renderizarOrigemEPassatempos() {
-      const f = fichaDados;
+    /* ---------- Cabeçalho, Raízes e Passatempos ---------- */
+    function construirCabecalho() {
+      const f = fichaDoc;
       const travado = Boolean(f.criacaoFinalizada);
       const h = f.raizesHeranca || { tipo: 'heranca', r1: '', r2: '' };
 
-      const selTipo = document.getElementById('sel-tipo-heranca');
-      const selR1 = document.getElementById('sel-raiz-1');
-      const selR2 = document.getElementById('sel-raiz-2');
+      getEl('#nome').value = f.nome || '';
+      getEl('#pt-badge').textContent = f.pontosEvolucao || 0;
 
-      selTipo.value = h.tipo || 'heranca';
-      selTipo.disabled = travado;
+      const badge = getEl('#badge-etapa');
+      badge.textContent = travado ? '🔒 Finalizada' : '✏ Em Criação';
+      getEl('#btn-finalizar').hidden = travado;
 
-      const raizesDisp = Object.keys(mesaDados.raizesDisponiveis || {}).filter(r => r !== 'Órfão');
-      const optsHtml = `<option value="">-- Selecione --</option>` + raizesDisp.map(r => `<option value="${r}">${r}</option>`).join('');
-      selR1.innerHTML = optsHtml;
-      selR2.innerHTML = optsHtml;
-      selR1.value = h.r1 || '';
-      selR2.value = h.r2 || '';
-      selR1.disabled = travado;
-      selR2.disabled = travado;
+      const listaRaizes = Object.keys(RAIZES).filter(r => r !== 'Órfão');
+      const gerarOpcoes = (selecionada, permitirVazio) =>
+        (permitirVazio ? '<option value="">—</option>' : '') +
+        listaRaizes.map(r => `<option value="${r}" ${r === selecionada ? 'selected' : ''}>${r}</option>`).join('');
 
-      document.getElementById('box-raiz-1').classList.toggle('hidden', h.tipo === 'auto');
-      document.getElementById('box-raiz-2').classList.toggle('hidden', h.tipo !== 'dupla');
+      getEl('#raiz1').innerHTML = gerarOpcoes(h.r1, true);
+      getEl('#raiz2').innerHTML = gerarOpcoes(h.r2, true);
+      getEl('#tipo').value = h.tipo || 'heranca';
 
-      const extras = f.raizesExtras || [];
-      document.getElementById('box-raizes-extras').classList.toggle('hidden', extras.length === 0);
-      document.getElementById('txt-raizes-extras').textContent = extras.join(', ');
+      getEl('#tipo').disabled = travado;
+      getEl('#raiz1').disabled = travado;
+      getEl('#raiz2').disabled = travado;
 
-      // Passatempos
+      const qtdSlots = QTD_SLOTS_RAIZ[h.tipo] ?? 1;
+      getEl('#raiz1').hidden = getEl('#lbl-raiz1').hidden = qtdSlots < 1;
+      getEl('#raiz2').hidden = getEl('#lbl-raiz2').hidden = qtdSlots < 2;
+      getEl('#lbl-raiz1').textContent = qtdSlots > 1 ? 'Raiz principal' : 'Raiz';
+
+      const bonus = h.tipo === 'auto' ? BONUS_ORFAO : (RAIZES[h.r1] || [0, 0, 0, 0]);
+      const nomesStatus = ['HP', 'SAN', 'PE-F', 'PE-M'];
+      getEl('#bonus-raiz').textContent = (h.tipo === 'auto' ? 'Órfão: ' : 'Bônus: ') +
+        nomesStatus.map((nome, i) => `${nome} ${bonus[i] >= 0 ? '+' : ''}${bonus[i]}`).join(' · ');
+
+      getEl('#chip-status-derivados').textContent = `RD: ${computado.rd} · DESL: ${computado.desl}m · Teto: ${computado.teto}`;
+
+      // Passatempos Infantis
       const qtdFoc = regras.passatemposFocados || 0;
       const qtdMis = regras.passatemposMistos || 0;
-      const qtdOrf = h.tipo === 'auto' ? 2 : 0;
-
-      document.getElementById('info-slots-passatempos').textContent =
-        `${qtdFoc} Focado (+2) · ${qtdMis} Misto (+1/+1)${qtdOrf ? ' · +2 Órfão (+1)' : ''}`;
-
       const pass = f.passatempos || { focados: [], mistos: [], extrasOrfao: [] };
-      const cont = document.getElementById('container-passatempos');
-      let html = '';
 
+      let htmlPass = `<label>Passatempos:</label>`;
       for (let i = 0; i < qtdFoc; i++) {
-        const val = pass.focados?.[i] || '';
-        html += `
-          <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
-            <label class="text-[10px] text-gold-300 font-cinzel block">Passatempo Focado #${i + 1} (+2 na Perícia)</label>
-            <input type="text" data-pass-foc="${i}" value="${val}" ${travado ? 'disabled' : ''} placeholder="Ex: Ferreiro, Atletismo, Furtividade..." class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-stone-200">
-          </div>
-        `;
+        htmlPass += `<input type="text" data-pfoc="${i}" value="${pass.focados?.[i] || ''}" ${travado ? 'disabled' : ''} placeholder="Focado #${i + 1} (+2)" style="width:135px">`;
       }
-
       for (let i = 0; i < qtdMis; i++) {
         const par = pass.mistos?.[i] || ['', ''];
-        html += `
-          <div class="bg-stone-950 p-2.5 rounded border border-stone-800 space-y-1">
-            <label class="text-[10px] text-sky-300 font-cinzel block">Passatempo Misto #${i + 1} (+1 em cada)</label>
-            <div class="grid grid-cols-2 gap-1.5">
-              <input type="text" data-pass-mis="${i}:0" value="${par[0] || ''}" ${travado ? 'disabled' : ''} placeholder="Perícia A" class="bg-stone-900 border border-stone-700 rounded px-2 py-1 text-stone-200">
-              <input type="text" data-pass-mis="${i}:1" value="${par[1] || ''}" ${travado ? 'disabled' : ''} placeholder="Perícia B" class="bg-stone-900 border border-stone-700 rounded px-2 py-1 text-stone-200">
-            </div>
-          </div>
-        `;
+        htmlPass += `<input type="text" data-pmis="${i}:0" value="${par[0] || ''}" ${travado ? 'disabled' : ''} placeholder="Misto A (+1)" style="width:110px">`;
+        htmlPass += `<input type="text" data-pmis="${i}:1" value="${par[1] || ''}" ${travado ? 'disabled' : ''} placeholder="Misto B (+1)" style="width:110px">`;
       }
-
       if (h.tipo === 'auto') {
         for (let i = 0; i < 2; i++) {
-          const val = pass.extrasOrfao?.[i] || '';
-          html += `
-            <div class="bg-amber-950/20 p-2.5 rounded border border-amber-800/50 space-y-1">
-              <label class="text-[10px] text-amber-300 font-cinzel block">Vivência Extra de Órfão #${i + 1} (+1 Perícia)</label>
-              <input type="text" data-pass-orf="${i}" value="${val}" ${travado ? 'disabled' : ''} placeholder="Ex: Sobrevivência, Ladinagem..." class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-stone-200">
-            </div>
-          `;
+          htmlPass += `<input type="text" data-porf="${i}" value="${pass.extrasOrfao?.[i] || ''}" ${travado ? 'disabled' : ''} placeholder="Órfão #${i + 1} (+1)" style="width:115px">`;
         }
       }
-
-      cont.innerHTML = html;
+      getEl('#box-passatempos').innerHTML = htmlPass;
 
       if (!travado) {
-        cont.querySelectorAll('[data-pass-foc]').forEach(inp => {
+        getEl('#box-passatempos').querySelectorAll('[data-pfoc]').forEach(inp => {
           inp.onchange = async () => {
-            const idx = parseInt(inp.dataset.passFoc);
-            const arr = [...(fichaDados.passatempos?.focados || [])];
-            arr[idx] = inp.value.trim();
+            const arr = [...(fichaDoc.passatempos?.focados || [])];
+            arr[parseInt(inp.dataset.pfoc)] = inp.value.trim();
             await updateDoc(doc(db, "fichas", fichaId), { "passatempos.focados": arr });
           };
         });
-        cont.querySelectorAll('[data-pass-mis]').forEach(inp => {
+        getEl('#box-passatempos').querySelectorAll('[data-pmis]').forEach(inp => {
           inp.onchange = async () => {
-            const [idxStr, posStr] = inp.dataset.passMis.split(':');
-            const idx = parseInt(idxStr), pos = parseInt(posStr);
-            const arr = JSON.parse(JSON.stringify(fichaDados.passatempos?.mistos || []));
+            const [idx, pos] = inp.dataset.pmis.split(':').map(Number);
+            const arr = JSON.parse(JSON.stringify(fichaDoc.passatempos?.mistos || []));
             if (!arr[idx]) arr[idx] = ['', ''];
             arr[idx][pos] = inp.value.trim();
             await updateDoc(doc(db, "fichas", fichaId), { "passatempos.mistos": arr });
           };
         });
-        cont.querySelectorAll('[data-pass-orf]').forEach(inp => {
+        getEl('#box-passatempos').querySelectorAll('[data-porf]').forEach(inp => {
           inp.onchange = async () => {
-            const idx = parseInt(inp.dataset.passOrf);
-            const arr = [...(fichaDados.passatempos?.extrasOrfao || [])];
-            arr[idx] = inp.value.trim();
+            const arr = [...(fichaDoc.passatempos?.extrasOrfao || [])];
+            arr[parseInt(inp.dataset.porf)] = inp.value.trim();
             await updateDoc(doc(db, "fichas", fichaId), { "passatempos.extrasOrfao": arr });
           };
         });
       }
     }
 
-    document.getElementById('sel-tipo-heranca').onchange = async (e) => {
-      await updateDoc(doc(db, "fichas", fichaId), { "raizesHeranca.tipo": e.target.value });
+    getEl('#nome').onchange = async e => {
+      const v = e.target.value.trim();
+      if (v) await updateDoc(doc(db, "fichas", fichaId), { nome: v });
     };
-    document.getElementById('sel-raiz-1').onchange = async (e) => {
-      await updateDoc(doc(db, "fichas", fichaId), { "raizesHeranca.r1": e.target.value });
+    getEl('#tipo').onchange = async e => {
+      const novoTipo = e.target.value;
+      const upd = { "raizesHeranca.tipo": novoTipo };
+      if ((QTD_SLOTS_RAIZ[novoTipo] ?? 1) < 2) upd["raizesHeranca.r2"] = '';
+      await updateDoc(doc(db, "fichas", fichaId), upd);
     };
-    document.getElementById('sel-raiz-2').onchange = async (e) => {
-      await updateDoc(doc(db, "fichas", fichaId), { "raizesHeranca.r2": e.target.value });
+    getEl('#raiz1').onchange = async e => await updateDoc(doc(db, "fichas", fichaId), { "raizesHeranca.r1": e.target.value });
+    getEl('#raiz2').onchange = async e => await updateDoc(doc(db, "fichas", fichaId), { "raizesHeranca.r2": e.target.value });
+
+    window.finalizarCriacaoFicha = async () => {
+      if (!confirm("Finalizar a criação da ficha? Atributos iniciais, raízes e passatempos ficarão travados.")) return;
+      await updateDoc(doc(db, "fichas", fichaId), {
+        criacaoFinalizada: true,
+        recursosAtuais: { ...computado.maxRec }
+      });
     };
 
-    /* ========================================================= */
-    /* BLOCO 2: ATRIBUTOS                                        */
-    /* ========================================================= */
-    function renderizarAtributos() {
-      const f = fichaDados;
-      const travado = Boolean(f.criacaoFinalizada);
-      const isOrfao = f.raizesHeranca?.tipo === 'auto';
-      const pontosMax = (regras.pontosAtributoIniciais || 5) + (isOrfao ? 1 : 0);
-      const pontosGastos = Object.values(computado.attrBase).reduce((a, b) => a + (b || 0), 0);
-      const pontosRestantes = pontosMax - pontosGastos;
-
-      const badge = document.getElementById('badge-pontos-attr');
-      if (travado) {
-        badge.textContent = `Teto Estágio: ${computado.tetoAtributo}`;
-      } else {
-        badge.textContent = `Pontos Criação: ${pontosRestantes} / ${pontosMax}`;
-      }
-
-      const grid = document.getElementById('grid-atributos');
-      grid.innerHTML = LISTA_ATRIBUTOS.map(a => {
-        const base = computado.attrBase[a.key] || 0;
-        const total = computado.attrTotais[a.key] || 0;
-        const bonus = total - base;
-        const podeSubir = !travado && pontosRestantes > 0 && total < computado.tetoAtributo;
-        const podeDescer = !travado && base > 0;
-
-        return `
-          <div class="bg-stone-950 border border-stone-800 rounded-lg p-2.5 flex flex-col items-center justify-between gap-1.5">
-            <span class="font-cinzel text-[11px] font-bold text-gold-400">${a.sigla}</span>
-            <span class="text-[10px] text-stone-400">${a.nome}</span>
-            <div class="font-cinzel text-2xl font-bold text-stone-100">${total}</div>
-            ${bonus > 0 ? `<span class="text-[10px] font-mono text-purple-300">(Base ${base} +${bonus})</span>` : `<span class="text-[10px] font-mono text-stone-500">Base ${base}</span>`}
-            ${!travado ? `
-              <div class="flex gap-1.5 pt-1">
-                <button data-attr-mod="${a.key}:-1" ${!podeDescer ? 'disabled' : ''} class="w-6 h-6 rounded bg-stone-900 border border-stone-700 disabled:opacity-30 font-bold">−</button>
-                <button data-attr-mod="${a.key}:1" ${!podeSubir ? 'disabled' : ''} class="w-6 h-6 rounded bg-stone-900 border border-stone-700 disabled:opacity-30 font-bold text-gold-300">+</button>
-              </div>
-            ` : ''}
+    /* ---------- Recursos ---------- */
+    function construirInterfaceRecursos() {
+      getEl('#res').innerHTML = ESTRUTURA_RECURSOS.map(([chave, nome, cor]) => `
+        <div class="res">
+          <div class="rt"><span style="color:${cor}">${nome}</span><span id="v-${chave}"></span></div>
+          <div class="bar"><i id="b-${chave}" style="background:${cor}"></i></div>
+          <div class="ctl">
+            <button class="btn sg sub" id="sg-${chave}" onclick="alternarSinalRecurso('${chave}')" title="Alternar subtrair / somar">−</button>
+            <input type="number" min="0" id="in-${chave}" placeholder="0" onkeydown="if(event.key==='Enter') aplicarAlteracaoRecurso('${chave}')">
+            <button class="btn pri" onclick="aplicarAlteracaoRecurso('${chave}')">Aplicar</button>
+            <button class="btn" style="margin-left:auto" onclick="restaurarRecursoMax('${chave}')">Máx</button>
           </div>
-        `;
-      }).join('');
+        </div>
+      `).join('');
+    }
 
-      grid.querySelectorAll('[data-attr-mod]').forEach(btn => {
-        btn.onclick = async () => {
-          const [key, deltaStr] = btn.dataset.attrMod.split(':');
-          const novoVal = Math.max(0, (computado.attrBase[key] || 0) + parseInt(deltaStr));
-          await updateDoc(doc(db, "fichas", fichaId), { [`atributosBase.${key}`]: novoVal });
+    window.alternarSinalRecurso = (chave) => {
+      sinalRecursos[chave] *= -1;
+      const btn = getEl('#sg-' + chave);
+      btn.textContent = sinalRecursos[chave] < 0 ? '−' : '+';
+      btn.className = 'btn sg ' + (sinalRecursos[chave] < 0 ? 'sub' : 'add');
+    };
+
+    window.aplicarAlteracaoRecurso = async (chave) => {
+      const input = getEl('#in-' + chave);
+      const valor = Math.abs(parseInt(input.value) || 0);
+      if (!valor) return;
+      input.value = '';
+
+      const cur = obterRecursosAtuais();
+      cur[chave] = Math.min(maximosRecursos[chave], Math.max(0, cur[chave] + sinalRecursos[chave] * valor));
+      await updateDoc(doc(db, "fichas", fichaId), { recursosAtuais: cur });
+    };
+
+    window.restaurarRecursoMax = async (chave) => {
+      const cur = obterRecursosAtuais();
+      cur[chave] = maximosRecursos[chave];
+      await updateDoc(doc(db, "fichas", fichaId), { recursosAtuais: cur });
+    };
+
+    function obterRecursosAtuais() {
+      const r = fichaDoc.recursosAtuais || {};
+      return {
+        hp: r.hp ?? maximosRecursos.hp,
+        san: r.san ?? maximosRecursos.san,
+        pef: r.pef ?? maximosRecursos.pef,
+        pem: r.pem ?? maximosRecursos.pem
+      };
+    }
+
+    function atualizarValoresRecursos() {
+      const cur = obterRecursosAtuais();
+      ESTRUTURA_RECURSOS.forEach(([chave]) => {
+        getEl('#v-' + chave).textContent = `${cur[chave]} / ${maximosRecursos[chave]}`;
+        getEl('#b-' + chave).style.width = Math.max(0, (cur[chave] / maximosRecursos[chave]) * 100) + '%';
+      });
+    }
+
+    /* ---------- Sigilo / Roda de Atributos ---------- */
+    function construirRodaAtributos() {
+      const raio = 35, centroX = 50, centroY = 51.7;
+      const pontos = ATRIBUTOS.map((_, i) => {
+        const angulo = i * 2 * Math.PI / 7 - Math.PI / 2;
+        return [centroX + raio * Math.cos(angulo), centroY + raio * Math.sin(angulo)];
+      });
+
+      let linhasConexao = '';
+      pontos.forEach((p, i) => {
+        const proximo = pontos[(i + 1) % 7];
+        const salto = pontos[(i + 2) % 7];
+        linhasConexao += `<line x1="${p[0]}" y1="${p[1]}" x2="${proximo[0]}" y2="${proximo[1]}" stroke-width="1.2"/>
+                          <line x1="${p[0]}" y1="${p[1]}" x2="${salto[0]}" y2="${salto[1]}" stroke-width=".6" opacity=".4"/>`;
+      });
+
+      const travado = Boolean(fichaDoc.criacaoFinalizada);
+      const isOrfao = fichaDoc.raizesHeranca?.tipo === 'auto';
+      const ptsMax = (regras.pontosAtributoIniciais || 5) + (isOrfao ? 1 : 0);
+      const ptsGastos = Object.values(computado.attrBase).reduce((a, b) => a + (b || 0), 0);
+
+      getEl('#info-pts-attr').textContent = travado
+        ? `Teto ${computado.teto}`
+        : `Pts: ${ptsMax - ptsGastos}/${ptsMax}`;
+
+      const nosHtml = ATRIBUTOS.map((attr, i) => `
+        <div class="node" data-k="${attr[0]}" style="left:${pontos[i][0]}%; top:${pontos[i][1]}%" title="${attr[0]} (Base: ${computado.attrBase[attr[0]]})">
+          <b class="c-${attr[2]}">${attr[1]}</b>
+          <input type="number" min="0" max="${computado.teto}" value="${computado.attr[attr[0]]}" ${travado ? 'disabled' : ''}>
+        </div>
+      `).join('');
+
+      getEl('#wheel').innerHTML = `
+        <svg viewBox="0 0 100 100" stroke="var(--acc)" fill="none">
+          <circle cx="${centroX}" cy="${centroY}" r="${raio}" stroke-width=".4" opacity=".3"/>
+          ${linhasConexao}
+        </svg>
+        <div class="ctr"><b id="wsum">${Object.values(computado.attr).reduce((a, b) => a + b, 0)}</b>total</div>
+        ${nosHtml}
+      `;
+
+      document.querySelectorAll('.node').forEach(no => {
+        no.onclick = () => { if (modoArmado === 'attr') selecionarAtributo(no.dataset.k); };
+        const inp = no.querySelector('input');
+        inp.onchange = async e => {
+          if (travado) return;
+          const key = no.dataset.k;
+          const bonusNaoBase = computado.attr[key] - computado.attrBase[key];
+          let novoTotal = Math.max(bonusNaoBase, Math.min(computado.teto, parseInt(e.target.value) || 0));
+          let novoBase = novoTotal - bonusNaoBase;
+
+          const outrosGastos = ptsGastos - (computado.attrBase[key] || 0);
+          if (outrosGastos + novoBase > ptsMax) {
+            novoBase = Math.max(0, ptsMax - outrosGastos);
+            mostrarToast(`Limite de ${ptsMax} pontos de atributo iniciais!`);
+          }
+          await updateDoc(doc(db, "fichas", fichaId), { [`atributosBase.${key}`]: novoBase });
         };
       });
     }
 
-    /* ========================================================= */
-    /* BLOCO 3: MOTOR DE ROLAGEM                                 */
-    /* ========================================================= */
-    function renderizarRolador() {
-      const selA1 = document.getElementById('roll-attr-1');
-      const selA2 = document.getElementById('roll-attr-2');
-      const prevA1 = selA1.value;
-      const prevA2 = selA2.value;
+    /* ---------- Perícias (Automáticas + Conversão de Maestria) ---------- */
+    function renderizarPericias() {
+      const chaves = Object.keys(computado.pericias);
+      getEl('#pericias').innerHTML = chaves.length ? '' : '<span class="mut">Nenhuma perícia adquirida (preencha Passatempos ou evolua nas Árvores).</span>';
 
-      selA1.innerHTML = LISTA_ATRIBUTOS.map(a => `<option value="${a.key}">${a.nome} (${computado.attrTotais[a.key]})</option>`).join('');
-      selA2.innerHTML = `<option value="">-- Nenhum --</option>` +
-        LISTA_ATRIBUTOS.map(a => `<option value="${a.key}">${a.nome} (+${computado.attrTotais[a.key]})</option>`).join('');
-      if (prevA1) selA1.value = prevA1;
-      if (prevA2) selA2.value = prevA2;
-
-      const selPer = document.getElementById('roll-pericia');
-      const prevPer = selPer.value;
-      const perEntries = Object.entries(computado.periciasMap);
-      selPer.innerHTML = `<option value="">-- Sem Perícia (0) --</option>` +
-        perEntries.map(([nome, info]) => `<option value="${nome}">${nome} (+${info.valor})</option>`).join('');
-      if (prevPer) selPer.value = prevPer;
-
-      const selHab = document.getElementById('roll-habilidade');
-      const prevHab = selHab.value;
-      selHab.innerHTML = `<option value="">-- Nenhuma --</option>` +
-        computado.habilidadesLista.map(h => {
-          const tags = [];
-          if (h.bonusTeste) tags.push(`+${h.bonusTeste} Teste`);
-          if (h.critMod) tags.push(`Crít ${h.critMod}`);
-          return `<option value="${h.id}">${h.nome}${tags.length ? ` (${tags.join(', ')})` : ''}</option>`;
-        }).join('');
-      if (prevHab) selHab.value = prevHab;
-
-      const selEq = document.getElementById('roll-equipamento');
-      const prevEq = selEq.value;
-      const equips = (fichaDados.inventario || []).filter(i => i.equipado && (i.categoria === 'arma' || i.categoria === 'escudo'));
-      selEq.innerHTML = `<option value="">-- Desarmado --</option>` +
-        equips.map(eq => {
-          const info = eq.categoria === 'arma'
-            ? `Dano ${eq.dano} · Crít ${eq.criticoMargem}+ (×${eq.criticoMult}) · GA ${eq.ga} / GD ${eq.gd}`
-            : `Escudo · GD ${eq.gd}`;
-          return `<option value="${eq.uid}">${eq.nome} (${info})</option>`;
-        }).join('');
-      if (prevEq) selEq.value = prevEq;
-
-      atualizarVisibilidadeBotaoDano();
+      chaves.forEach(nome => {
+        const info = computado.pericias[nome];
+        const div = document.createElement('div');
+        div.className = 'prow';
+        div.dataset.n = nome;
+        div.title = info.fontes.join(' · ');
+        div.innerHTML = `
+          <span>${nome}</span>
+          <span style="display:flex; align-items:center; gap:5px">
+            <b style="font-family:monospace">+${info.val}</b>
+            ${info.val >= 5 ? `<button class="btn pri" style="padding:1px 6px; font-size:10px" onclick="event.stopPropagation(); converterMaestria('${nome}')" title="Sacrificar 5 pts por +1 Atributo">5→+1</button>` : ''}
+          </span>
+        `;
+        div.onclick = () => { if (modoArmado === 'per') selecionarPericia(nome); };
+        getEl('#pericias').appendChild(div);
+      });
     }
 
-    function atualizarVisibilidadeBotaoDano() {
-      const eqUid = document.getElementById('roll-equipamento').value;
-      const eq = (fichaDados?.inventario || []).find(i => i.uid === eqUid);
-      const btnDano = document.getElementById('btn-rolar-dano-arma');
-      btnDano.classList.toggle('hidden', !eq || eq.categoria !== 'arma');
-    }
-    document.getElementById('roll-equipamento').onchange = atualizarVisibilidadeBotaoDano;
+    window.converterMaestria = async (pericia) => {
+      const disp = ATRIBUTOS.filter(([k]) => (computado.attr[k] || 0) < computado.teto);
+      if (!disp.length) return mostrarToast(`Todos atributos estão no teto (${computado.teto})!`);
 
-    document.getElementById('btn-executar-teste').onclick = async () => {
-      const a1Key = document.getElementById('roll-attr-1').value;
-      const a2Key = document.getElementById('roll-attr-2').value;
-      const perNome = document.getElementById('roll-pericia').value;
-      const habId = document.getElementById('roll-habilidade').value;
-      const eqUid = document.getElementById('roll-equipamento').value;
-      const modoEq = document.getElementById('roll-modo-equip').value;
-      const extra = parseInt(document.getElementById('roll-bonus-extra').value) || 0;
+      const escolha = prompt(
+        `Converter 5 pontos de "${pericia}" em +1 Atributo (Teto atual: ${computado.teto}):\n\nDigite a chave:\n` +
+        disp.map(([k, sig]) => `${k} (${sig} - atual ${computado.attr[k]})`).join('\n')
+      );
+      if (!escolha) return;
+      const key = escolha.trim().toLowerCase();
+      if (!disp.some(([k]) => k === key)) return mostrarToast('Atributo inválido ou no teto.');
 
-      const d20 = Math.floor(Math.random() * 20) + 1;
-      const valA1 = computado.attrTotais[a1Key] || 0;
-      const valA2 = a2Key ? (computado.attrTotais[a2Key] || 0) : 0;
-      const valPer = perNome ? (computado.periciasMap[perNome]?.valor || 0) : 0;
-
-      const hab = computado.habilidadesLista.find(h => h.id === habId);
-      const valHab = hab?.bonusTeste || 0;
-      const critModHab = hab?.critMod || 0;
-
-      const eq = (fichaDados.inventario || []).find(i => i.uid === eqUid);
-      let valEq = 0;
-      if (eq && modoEq === 'ataque') valEq = (parseInt(eq.ga) || 0) * 2;
-      if (eq && modoEq === 'bloqueio') valEq = (parseInt(eq.gd) || 0) * 2;
-
-      const total = d20 + valA1 + valA2 + valPer + valHab + valEq + extra;
-
-      // Margem de crítico efetiva (base da arma ou 20 + modificador da habilidade selecionada)
-      const margemBase = eq?.categoria === 'arma' ? (parseInt(eq.criticoMargem) || 20) : 20;
-      const margemEfetiva = Math.max(2, margemBase + critModHab);
-      const ehCritico = d20 >= margemEfetiva;
-      const ehDesastre = d20 === 1;
-
-      const partesDesc = [`Teste: ${a1Key.toUpperCase()}`];
-      if (a2Key) partesDesc.push(`+ ${a2Key.toUpperCase()}`);
-      if (perNome) partesDesc.push(`(${perNome})`);
-      if (hab) partesDesc.push(`[${hab.nome}]`);
-      if (eq) partesDesc.push(`{${eq.nome}}`);
-
-      const tagCrit = ehCritico ? ' 🔥 CRÍTICO!' : (ehDesastre ? ' 💀 FALHA CRÍTICA!' : '');
-      const detalhes = `d20[${d20}] (Margem ${margemEfetiva}+) + Attr(${valA1 + valA2}) + Per(${valPer}) + Hab(${valHab}) + Equip(${valEq})${extra ? ` + Extra(${extra})` : ''}`;
-
-      await registrarRolagemMesa(total, partesDesc.join(' ') + tagCrit, detalhes);
+      const convs = [...(fichaDoc.conversoesMaestria || []), { pericia, atributo: key }];
+      await updateDoc(doc(db, "fichas", fichaId), { conversoesMaestria: convs });
+      mostrarToast(`+1 em ${obterSiglaAtributo(key)} via Maestria!`);
     };
 
-    document.getElementById('btn-rolar-dano-arma').onclick = async () => {
-      const eqUid = document.getElementById('roll-equipamento').value;
-      const eq = (fichaDados.inventario || []).find(i => i.uid === eqUid);
-      if (!eq || eq.categoria !== 'arma') return;
+    /* ---------- Habilidades (Árvores + Itens Equipados) ---------- */
+    function renderizarHabilidades() {
+      const lista = computado.habilidades;
+      getEl('#habs').innerHTML = lista.length ? '' : '<span class="mut">Nenhuma habilidade desbloqueada.</span>';
 
-      const ehCrit = confirm(`O ataque com ${eq.nome} foi um ACERTO CRÍTICO (×${eq.criticoMult || 2})?\n\nOK = Rolar Dano Crítico\nCancelar = Rolar Dano Normal`);
-      const res = rolarExpressaoDados(eq.dano || '1d6');
-      const mult = ehCrit ? (parseInt(eq.criticoMult) || 2) : 1;
-      const pot = computado.attrTotais.potencia || 0;
-      const total = (res.total * mult) + pot;
+      lista.forEach(hab => {
+        const div = document.createElement('div');
+        const elegivelTeste = hab.cat === 'ativo' || hab.cat === 'reativo' || Boolean(hab.ef) || Boolean(hab.critMod);
+        div.className = 'hcard' + (elegivelTeste ? ' el' : '');
+        div.dataset.id = hab.id;
+        div.innerHTML = `
+          <div class="t"><span>${hab.nome}</span><span class="tag">${hab.cat}</span></div>
+          <p>${hab.desc}</p>
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--mut)">
+            <span>${hab.custoTxt ? `Custo: ${hab.custoTxt}` : `PE F:${hab.f} / M:${hab.m}`}${hab.critMod ? ` · Crít ${hab.critMod}` : ''}</span>
+            ${(hab.f > 0 || hab.m > 0) ? `<button class="btn" style="padding:1px 6px; font-size:10px" onclick="event.stopPropagation(); gastarPeHabilidade(${hab.f}, ${hab.m}, '${hab.nome.replace(/'/g, '')}')">Ativar</button>` : ''}
+          </div>
+        `;
+        div.onclick = () => {
+          if (modoArmado === 'hab') {
+            elegivelTeste ? selecionarHabilidade(hab.id) : mostrarToast('Esta habilidade passiva não altera rolagens.');
+          }
+        };
+        getEl('#habs').appendChild(div);
+      });
+    }
 
-      const desc = `Dano ${ehCrit ? 'CRÍTICO ' : ''}(${eq.nome})`;
-      const det = `${eq.dano} [${res.dados.join(', ')}]${ehCrit ? ` ×${mult}` : ''} + POT(${pot})`;
+    window.gastarPeHabilidade = async (fCost, mCost, nome) => {
+      const cur = obterRecursosAtuais();
+      if (cur.pef < fCost || cur.pem < mCost) return mostrarToast('PE insuficiente!');
+      cur.pef -= fCost;
+      cur.pem -= mCost;
+      await updateDoc(doc(db, "fichas", fichaId), { recursosAtuais: cur });
+      mostrarToast(`"${nome}" ativada!`);
+    };
+
+    /* ---------- Inventário & Catálogo da Mesa ---------- */
+    function renderizarInventario() {
+      const vig = computado.attr.vigor || 0;
+      const cap = { pesado: vig, medio: vig + 1, leve: vig + 2, miudeza: 10 };
+      const inv = fichaDoc.inventario || [];
+      const usados = { pesado: 0, medio: 0, leve: 0, miudeza: 0 };
+      inv.forEach(it => { if (usados[it.peso] !== undefined) usados[it.peso]++; });
+
+      getEl('#slots-carga').innerHTML = `
+        <span>Pesado: ${usados.pesado}/${cap.pesado}</span>
+        <span>Médio: ${usados.medio}/${cap.medio}</span>
+        <span>Leve: ${usados.leve}/${cap.leve}</span>
+        <span>Miud.: ${usados.miudeza}/${cap.miudeza}</span>
+      `;
+
+      const cont = getEl('#inv-list');
+      cont.innerHTML = inv.length ? '' : '<span class="mut">Mochila vazia.</span>';
+
+      inv.forEach(it => {
+        const podeEquipar = ['arma', 'escudo', 'armadura'].includes(it.categoria);
+        const div = document.createElement('div');
+        div.className = 'hcard' + (it.equipado ? ' on' : '');
+        div.innerHTML = `
+          <div class="t"><span>${it.nome}</span><span class="tag">${it.peso}</span></div>
+          <p>${it.descricao || ''}</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; margin-top:4px">
+            <span>
+              ${podeEquipar ? `<button class="btn ${it.equipado ? 'pri' : ''}" onclick="alternarEquiparItem('${it.uid}')">${it.equipado ? '✓ Equipado' : 'Equipar'}</button>` : ''}
+              ${it.categoria === 'cura' ? `<button class="btn pri" onclick="usarItemCura('${it.uid}')">🩹 Curar (${it.usosAtuais ?? it.usosMax}/${it.usosMax})</button>` : ''}
+            </span>
+            <button class="x" onclick="removerItemInventario('${it.uid}')">Remover</button>
+          </div>
+        `;
+        cont.appendChild(div);
+      });
+
+      // Atualiza seletor de equipamento no Motor de Teste
+      const selEq = getEl('#sel-equip-teste');
+      const prev = selEq.value;
+      const equips = inv.filter(i => i.equipado && (i.categoria === 'arma' || i.categoria === 'escudo'));
+      selEq.innerHTML = `<option value="">Desarmado</option>` + equips.map(eq =>
+        `<option value="${eq.uid}">${eq.nome} (${eq.categoria === 'arma' ? `GA:${eq.ga} GD:${eq.gd} Crít:${eq.criticoMargem}+` : `GD:${eq.gd}`})</option>`
+      ).join('');
+      if (prev) selEq.value = prev;
+      atualizarBotaoDanoArma();
+    }
+
+    function atualizarBotaoDanoArma() {
+      const uid = getEl('#sel-equip-teste').value;
+      const eq = (fichaDoc?.inventario || []).find(i => i.uid === uid);
+      getEl('#btn-dano-arma').hidden = !eq || eq.categoria !== 'arma';
+    }
+    getEl('#sel-equip-teste').onchange = atualizarBotaoDanoArma;
+
+    window.alternarEquiparItem = async (uid) => {
+      const inv = (fichaDoc.inventario || []).map(it => it.uid === uid ? { ...it, equipado: !it.equipado } : it);
+      await updateDoc(doc(db, "fichas", fichaId), { inventario: inv });
+    };
+
+    window.removerItemInventario = async (uid) => {
+      const inv = (fichaDoc.inventario || []).filter(it => it.uid !== uid);
+      await updateDoc(doc(db, "fichas", fichaId), { inventario: inv });
+    };
+
+    window.usarItemCura = async (uid) => {
+      const inv = [...(fichaDoc.inventario || [])];
+      const item = inv.find(i => i.uid === uid);
+      if (!item) return;
+      const usos = item.usosAtuais ?? item.usosMax ?? 1;
+      if (usos <= 0) return mostrarToast('Sem usos restantes!');
+
+      const m = String(item.curaFormula || '1d4').match(/^(\d+)d(\d+)([+-]\d+)?$/i);
+      const qtd = m ? parseInt(m[1]) : 1, faces = m ? parseInt(m[2]) : 4, b = m ? parseInt(m[3] || 0) : 0;
+      const dados = Array.from({ length: qtd }, () => 1 + Math.floor(Math.random() * faces));
+      const cura = dados.reduce((a, x) => a + x, 0) + b;
+
+      item.usosAtuais = usos - 1;
+      const cur = obterRecursosAtuais();
+      cur.hp = Math.min(maximosRecursos.hp, cur.hp + cura);
+
+      await updateDoc(doc(db, "fichas", fichaId), { inventario: inv, recursosAtuais: cur });
+      await registrarRolagemMesa(cura, `Cura (${item.nome})`, `[${dados.join(',')}] → HP ${cur.hp}/${maximosRecursos.hp}`);
+      mostrarToast(`+${cura} HP recuperados!`);
+    };
+
+    window.abrirModalCatalogoItens = () => {
+      const cat = mesaDados?.catalogoItens || [];
+      abrirModal('Catálogo de Itens da Mesa', cat.length ? cat.map(it => `
+        <div class="hcard">
+          <div class="t"><span>${it.nome}</span><span class="tag">${it.categoria} · ${it.peso}</span></div>
+          <p>${it.descricao || ''}</p>
+          <div style="text-align:right; margin-top:4px">
+            <button class="btn pri" onclick="adicionarItemDaMesa('${it.id}')">+ Pegar Item</button>
+          </div>
+        </div>
+      `).join('') : '<span class="mut">O Mestre ainda não cadastrou itens no catálogo desta mesa.</span>');
+    };
+
+    window.adicionarItemDaMesa = async (catId) => {
+      const base = (mesaDados?.catalogoItens || []).find(i => i.id === catId);
+      if (!base) return;
+      const inv = [...(fichaDoc.inventario || []), { ...JSON.parse(JSON.stringify(base)), uid: 'inv_' + Date.now(), equipado: false, usosAtuais: base.usosMax || 1 }];
+      await updateDoc(doc(db, "fichas", fichaId), { inventario: inv });
+      mostrarToast(`${base.nome} adicionado!`);
+    };
+
+    /* ---------- Seleção para Testes (Modo "Armar") ---------- */
+    const TEXTOS_AJUDA = {
+      attr: 'Clique em até 2 atributos na roda.',
+      per: 'Clique em uma perícia da lista.',
+      hab: 'Clique em uma habilidade elegível.'
+    };
+
+    function alternarModoArmado(tipo) {
+      modoArmado = modoArmado === tipo ? null : tipo;
+      if (modoArmado === 'attr' && selecaoTeste.attrs.length >= 2) {
+        modoArmado = null;
+        mostrarToast('Já são 2 atributos. Remova um primeiro.');
+      }
+
+      if (modoArmado) document.body.dataset.arm = modoArmado;
+      else delete document.body.dataset.arm;
+
+      getEl('#hint').textContent = modoArmado ? TEXTOS_AJUDA[modoArmado] + ' (Esc cancela)' : '';
+      document.querySelectorAll('[data-add]').forEach(b => b.classList.toggle('on', b.dataset.add === modoArmado));
+    }
+
+    document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => alternarModoArmado(b.dataset.add));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (modoArmado) alternarModoArmado(modoArmado);
+        fecharModal();
+      }
+    });
+
+    function selecionarAtributo(chave) {
+      const index = selecaoTeste.attrs.indexOf(chave);
+      if (index >= 0) selecaoTeste.attrs.splice(index, 1);
+      else selecaoTeste.attrs.push(chave);
+      renderizarSelecaoTeste();
+      if (selecaoTeste.attrs.length >= 2) alternarModoArmado('attr');
+    }
+
+    function selecionarPericia(nome) {
+      selecaoTeste.per = selecaoTeste.per === nome ? null : nome;
+      renderizarSelecaoTeste();
+      alternarModoArmado('per');
+    }
+
+    function selecionarHabilidade(id) {
+      selecaoTeste.hab = selecaoTeste.hab === id ? null : id;
+      renderizarSelecaoTeste();
+      alternarModoArmado('hab');
+    }
+
+    window.limparSelecao = () => {
+      selecaoTeste = { attrs: [], per: null, hab: null };
+      if (modoArmado) alternarModoArmado(modoArmado);
+      renderizarSelecaoTeste();
+    };
+
+    function criarChip(texto, eventoRemover) {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.innerHTML = `${texto} <button class="x">✕</button>`;
+      chip.querySelector('button').onclick = eventoRemover;
+      return chip;
+    }
+
+    function renderizarSelecaoTeste() {
+      const elAttr = getEl('#s-attr'), elPer = getEl('#s-per'), elHab = getEl('#s-hab');
+      elAttr.innerHTML = elPer.innerHTML = elHab.innerHTML = '';
+
+      selecaoTeste.attrs = selecaoTeste.attrs.filter(k => computado.attr[k] != null);
+      selecaoTeste.attrs.forEach(k => elAttr.appendChild(criarChip(`${obterSiglaAtributo(k)} <b>${computado.attr[k]}</b>`, () => selecionarAtributo(k))));
+
+      if (selecaoTeste.per && !(selecaoTeste.per in computado.pericias)) selecaoTeste.per = null;
+      if (selecaoTeste.hab && !computado.habilidades.some(h => h.id === selecaoTeste.hab)) selecaoTeste.hab = null;
+
+      if (selecaoTeste.per) {
+        elPer.appendChild(criarChip(`${selecaoTeste.per} <b>+${computado.pericias[selecaoTeste.per].val}</b>`, () => { selecaoTeste.per = null; renderizarSelecaoTeste(); }));
+      }
+
+      const habObj = selecaoTeste.hab && computado.habilidades.find(x => x.id === selecaoTeste.hab);
+      if (habObj) {
+        const extraTxt = [habObj.ef ? `+${habObj.ef.v}` : '', habObj.critMod ? `Crít ${habObj.critMod}` : ''].filter(Boolean).join(' ');
+        elHab.appendChild(criarChip(`${habObj.nome}${extraTxt ? ` <b>${extraTxt}</b>` : ''}`, () => { selecaoTeste.hab = null; renderizarSelecaoTeste(); }));
+      }
+
+      document.querySelectorAll('.node').forEach(n => n.classList.toggle('on', selecaoTeste.attrs.includes(n.dataset.k)));
+      document.querySelectorAll('.prow').forEach(n => n.classList.toggle('on', n.dataset.n === selecaoTeste.per));
+      document.querySelectorAll('.hcard[data-id]').forEach(n => n.classList.toggle('on', n.dataset.id === selecaoTeste.hab));
+
+      const somaAtributos = selecaoTeste.attrs.reduce((t, k) => t + computado.attr[k], 0);
+      getEl('#pool').innerHTML = !selecaoTeste.attrs.length ? 'Escolha um atributo' :
+        somaAtributos === 0 ? '<span style="color:#e05555">DEFICIÊNCIA 2d20 (menor)</span>' : `${somaAtributos}d20 (maior)`;
+
+      getEl('#cost').textContent = habObj ? `Custo: ${habObj.f} PE-F / ${habObj.m} PE-M` : 'Custo: 0 PE';
+    }
+
+    /* ---------- Rolagens (Motor Pantheon + Dano + Livre + Macros) ---------- */
+    window.executarRolarDado = async () => {
+      if (!selecaoTeste.attrs.length) return mostrarToast('Adicione ao menos um atributo.');
+
+      const habObj = selecaoTeste.hab && computado.habilidades.find(x => x.id === selecaoTeste.hab);
+      if (habObj && (habObj.f > 0 || habObj.m > 0)) {
+        const cur = obterRecursosAtuais();
+        if (cur.pef < habObj.f || cur.pem < habObj.m) return mostrarToast('PE insuficiente!');
+        cur.pef -= habObj.f;
+        cur.pem -= habObj.m;
+        await updateDoc(doc(db, "fichas", fichaId), { recursosAtuais: cur });
+      }
+
+      const qtdDados = selecaoTeste.attrs.reduce((t, k) => t + computado.attr[k], 0);
+      const rolard20 = () => 1 + Math.floor(Math.random() * 20);
+      const ehDeficiencia = qtdDados === 0;
+      const dadosRolados = ehDeficiencia ? [rolard20(), rolard20()] : Array.from({ length: qtdDados }, rolard20);
+
+      const dadoEscolhido = ehDeficiencia ? Math.min(...dadosRolados) : Math.max(...dadosRolados);
+      const eq = (fichaDoc.inventario || []).find(i => i.uid === getEl('#sel-equip-teste').value);
+      const modoEq = getEl('#sel-modo-equip').value;
+
+      // Margem de crítico: base da arma (ou 20) + modificador da habilidade selecionada
+      const margemBase = eq?.categoria === 'arma' ? (parseInt(eq.criticoMargem) || 20) : 20;
+      const margemCrit = Math.max(2, margemBase + (habObj?.critMod || 0));
+
+      const critico = (dadosRolados.filter(d => d >= margemCrit).length - dadosRolados.filter(d => d === 1).length) * 2;
+      const bonusPericia = selecaoTeste.per ? (computado.pericias[selecaoTeste.per]?.val || 0) : 0;
+      const bonusHabilidade = habObj?.ef ? habObj.ef.v : 0;
+      const bonusEquip = eq && modoEq === 'ataque' ? (parseInt(eq.ga) || 0) * 2 : (eq && modoEq === 'bloqueio' ? (parseInt(eq.gd) || 0) * 2 : 0);
+
+      const total = dadoEscolhido + bonusPericia + bonusHabilidade + bonusEquip + critico;
+      const indiceEscolhido = dadosRolados.indexOf(dadoEscolhido);
+
+      const elOutput = getEl('#out');
+      elOutput.hidden = false;
+      elOutput.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:baseline">
+          <span class="tot">${total}</span>
+          <span class="tag" style="${critico > 0 ? 'color:#4cc36f' : critico < 0 ? 'color:#e05555' : ''}">
+            ${critico > 0 ? 'Crítico +' + critico : critico < 0 ? 'Desastre ' + critico : `Padrão (${margemCrit}+)`}
+          </span>
+        </div>
+        <div class="mut" style="font-style:normal; font-family:monospace">
+          [${selecaoTeste.attrs.map(obterSiglaAtributo).join('+')}] d20:${dadoEscolhido} + Per:${bonusPericia} + Hab:${bonusHabilidade} + Eq:${bonusEquip} + Crít:${critico}
+        </div>
+        <div>
+          ${dadosRolados.map((d, i) => `<span class="die ${i === indiceEscolhido ? 'pk' : ''}">${d}</span>`).join('')}
+        </div>
+      `;
+
+      const desc = `[${selecaoTeste.attrs.map(obterSiglaAtributo).join('+')}]${selecaoTeste.per ? ` · ${selecaoTeste.per}` : ''}${habObj ? ` · ${habObj.nome}` : ''}`;
+      const det = `Dados [${dadosRolados.join(',')}] · Per +${bonusPericia} · Hab +${bonusHabilidade} · Eq +${bonusEquip} · Crít ${critico}`;
       await registrarRolagemMesa(total, desc, det);
     };
 
-    document.getElementById('btn-rolar-livre').onclick = async () => {
-      const qtd = Math.max(1, Math.min(20, parseInt(document.getElementById('livre-qtd').value) || 1));
-      const faces = parseInt(document.getElementById('livre-faces').value) || 6;
-      const mod = parseInt(document.getElementById('livre-mod').value) || 0;
-      const modo = document.getElementById('livre-modo').value;
+    window.rolarDanoArmaSelecionada = async () => {
+      const eq = (fichaDoc.inventario || []).find(i => i.uid === getEl('#sel-equip-teste').value);
+      if (!eq || eq.categoria !== 'arma') return;
 
-      const dados = Array.from({ length: qtd }, () => Math.floor(Math.random() * faces) + 1);
-      const base = modo === 'soma' ? dados.reduce((a, b) => a + b, 0) : (modo === 'maior' ? Math.max(...dados) : Math.min(...dados));
-      const total = base + mod;
-      const modStr = mod !== 0 ? (mod > 0 ? ` + ${mod}` : ` - ${Math.abs(mod)}`) : '';
+      const ehCrit = confirm(`O ataque com ${eq.nome} foi CRÍTICO (×${eq.criticoMult || 2})?\n\nOK = Dano Crítico\nCancelar = Dano Normal`);
+      const m = String(eq.dano || '1d6').match(/^(\d+)d(\d+)([+-]\d+)?$/i);
+      const qtd = m ? parseInt(m[1]) : 1, faces = m ? parseInt(m[2]) : 6, b = m ? parseInt(m[3] || 0) : 0;
+      const dados = Array.from({ length: qtd }, () => 1 + Math.floor(Math.random() * faces));
+      const mult = ehCrit ? (parseInt(eq.criticoMult) || 2) : 1;
+      const pot = computado.attr.potencia || 0;
+      const total = ((dados.reduce((a, x) => a + x, 0) + b) * mult) + pot;
 
-      await registrarRolagemMesa(
-        total,
-        `Dado Livre: ${qtd}d${faces} (${modo})${modStr}`,
-        `Dados: [${dados.join(', ')}]${modStr}`
-      );
+      await registrarRolagemMesa(total, `Dano ${ehCrit ? 'CRÍTICO ' : ''}(${eq.nome})`, `${eq.dano} [${dados.join(',')}]${ehCrit ? ` ×${mult}` : ''} + POT(${pot})`);
     };
 
-    function rolarExpressaoDados(expr) {
-      const m = String(expr).trim().match(/^(\d+)d(\d+)([+-]\d+)?$/i);
-      if (!m) return { total: 1, dados: [1] };
-      const qtd = parseInt(m[1]), faces = parseInt(m[2]), bonus = parseInt(m[3] || 0);
-      const dados = Array.from({ length: qtd }, () => Math.floor(Math.random() * faces) + 1);
-      return { total: dados.reduce((a, b) => a + b, 0) + bonus, dados };
-    }
+    window.executarDadoLivre = async () => {
+      const qtd = Math.max(1, Math.min(20, parseInt(getEl('#lv-qtd').value) || 1));
+      const faces = parseInt(getEl('#lv-faces').value) || 6;
+      const mod = parseInt(getEl('#lv-mod').value) || 0;
+      const modo = getEl('#lv-modo').value;
+      const dados = Array.from({ length: qtd }, () => 1 + Math.floor(Math.random() * faces));
+      const base = modo === 'soma' ? dados.reduce((a, b) => a + b, 0) : (modo === 'maior' ? Math.max(...dados) : Math.min(...dados));
+      const total = base + mod;
+      await registrarRolagemMesa(total, `Dado Livre: ${qtd}d${faces} (${modo})`, `[${dados.join(',')}]${mod ? ` + (${mod})` : ''}`);
+    };
 
     async function registrarRolagemMesa(total, descricao, detalhes) {
       await addDoc(collection(db, "rolagens"), {
         mesaId,
         fichaId,
-        personagemNome: fichaDados.nome || 'Personagem',
+        personagemNome: fichaDoc.nome || 'Personagem',
         total,
         descricao,
         detalhes,
@@ -1241,692 +1691,398 @@
       });
     }
 
-    /* ========================================================= */
-    /* BLOCO 4: PERÍCIAS & CONVERSÃO DE MAESTRIA                 */
-    /* ========================================================= */
-    function renderizarPericias() {
-      const cont = document.getElementById('lista-pericias-ficha');
-      const entries = Object.entries(computado.periciasMap);
-
-      if (!entries.length) {
-        cont.innerHTML = `<p class="text-stone-500 italic col-span-3">Nenhuma perícia adquirida ainda. Preencha os Passatempos Infantis ou desbloqueie nós nas Árvores.</p>`;
-        return;
-      }
-
-      cont.innerHTML = entries.map(([nome, info]) => {
-        const podeConverter = info.valor >= 5;
-        return `
-          <div class="bg-stone-950 border border-stone-800 rounded-lg p-2.5 flex flex-col justify-between gap-1.5">
-            <div class="flex justify-between items-center">
-              <strong class="font-cinzel text-sky-300">${nome}</strong>
-              <span class="px-2 py-0.5 rounded bg-sky-950 border border-sky-700 text-sky-200 font-mono font-bold">+${info.valor}</span>
-            </div>
-            <div class="text-[10px] text-stone-400">${info.fontes.join(' · ')}</div>
-            ${podeConverter ? `
-              <button data-conv-pericia="${nome}" class="mt-1 w-full py-1 rounded bg-purple-950 hover:bg-purple-900 border border-purple-600 text-purple-200 font-cinzel text-[10px] font-bold">
-                ✨ Converter 5 pts → +1 Atributo
-              </button>
-            ` : ''}
-          </div>
-        `;
-      }).join('');
-
-      cont.querySelectorAll('[data-conv-pericia]').forEach(btn => {
-        btn.onclick = async () => {
-          const pericia = btn.dataset.convPericia;
-          const opcoes = LISTA_ATRIBUTOS
-            .filter(a => (computado.attrTotais[a.key] || 0) < computado.tetoAtributo)
-            .map(a => `${a.key} (${a.nome} - atual ${computado.attrTotais[a.key]})`);
-
-          if (!opcoes.length) {
-            return alert(`Todos os seus atributos já atingiram o teto biológico atual (${computado.tetoAtributo})!`);
-          }
-
-          const escolhido = prompt(
-            `Sacrificar 5 pontos de "${pericia}" para aumentar +1 em qual atributo? (Teto atual: ${computado.tetoAtributo})\n\nDigite a chave:\n${opcoes.join('\n')}`
-          );
-          if (!escolhido) return;
-          const key = escolhido.trim().toLowerCase();
-          const attrObj = LISTA_ATRIBUTOS.find(a => a.key === key);
-          if (!attrObj) return alert("Atributo inválido.");
-          if ((computado.attrTotais[key] || 0) >= computado.tetoAtributo) {
-            return alert(`O atributo ${attrObj.nome} já está no teto máximo deste estágio (${computado.tetoAtributo}).`);
-          }
-
-          const atuais = [...(fichaDados.conversoesMaestria || []), { pericia, atributo: key }];
-          await updateDoc(doc(db, "fichas", fichaId), { conversoesMaestria: atuais });
-        };
-      });
-    }
-
-    /* ========================================================= */
-    /* BLOCO 5: HABILIDADES UNIFICADAS (ÁRVORES + ITENS)         */
-    /* ========================================================= */
-    function renderizarHabilidades() {
-      const cont = document.getElementById('lista-habilidades-ficha');
-      const lista = computado.habilidadesLista;
-
-      if (!lista.length) {
-        cont.innerHTML = `<p class="text-stone-500 italic col-span-2">Nenhuma habilidade desbloqueada ainda. Abra as Árvores de Evolução ou equipe itens com habilidades.</p>`;
-        return;
-      }
-
-      cont.innerHTML = lista.map(h => {
-        const temCusto = h.pef > 0 || h.pem > 0;
-        const custoLabel = h.custoTexto || [h.pef ? `${h.pef} PE-F` : '', h.pem ? `${h.pem} PE-M` : ''].filter(Boolean).join(' + ');
-
-        return `
-          <div class="bg-stone-950 border ${h.singularAtiva ? 'border-gold-500/70' : 'border-stone-800'} rounded-lg p-3 flex flex-col justify-between gap-2">
-            <div>
-              <div class="flex justify-between items-start gap-2">
-                <strong class="font-cinzel text-gold-300">${h.nome}</strong>
-                <span class="px-1.5 py-0.5 rounded bg-stone-900 text-stone-400 font-mono text-[10px] uppercase">${h.origem}</span>
-              </div>
-              <p class="text-stone-300 text-[11px] mt-1">${h.descricao || 'Sem descrição.'}</p>
-            </div>
-
-            ${temCusto ? `
-              <div class="pt-1.5 border-t border-stone-900 flex justify-between items-center">
-                <span class="font-mono text-[11px] text-amber-300">Custo: ${custoLabel}</span>
-                <button data-usar-hab="${h.pef}:${h.pem}:${h.nome}" class="px-2.5 py-1 rounded bg-amber-950 hover:bg-amber-800 border border-amber-600 text-amber-200 font-cinzel text-[10px] font-bold">
-                  Usar (-PE)
-                </button>
-              </div>
-            ` : (h.custoTexto ? `<div class="text-[10px] font-mono text-amber-300">Custo: ${h.custoTexto}</div>` : '')}
-          </div>
-        `;
-      }).join('');
-
-      cont.querySelectorAll('[data-usar-hab]').forEach(btn => {
-        btn.onclick = async () => {
-          const [pefStr, pemStr, nomeHab] = btn.dataset.usarHab.split(':');
-          const gastoPef = parseInt(pefStr) || 0;
-          const gastoPem = parseInt(pemStr) || 0;
-
-          const curPef = fichaDados.recursosAtuais?.pef ?? computado.pefMax;
-          const curPem = fichaDados.recursosAtuais?.pem ?? computado.pemMax;
-
-          if (curPef < gastoPef || curPem < gastoPem) {
-            return alert("Energia (PE-F ou PE-M) insuficiente para ativar esta habilidade!");
-          }
-
-          await updateDoc(doc(db, "fichas", fichaId), {
-            recursosAtuais: {
-              hp: fichaDados.recursosAtuais?.hp ?? computado.hpMax,
-              san: fichaDados.recursosAtuais?.san ?? computado.sanMax,
-              pef: curPef - gastoPef,
-              pem: curPem - gastoPem
-            }
-          });
-          alert(`Habilidade "${nomeHab}" ativada!`);
-        };
-      });
-    }
-
-    /* ========================================================= */
-    /* BLOCO 6: INVENTÁRIO & CAPACIDADE DE CARGA                 */
-    /* ========================================================= */
-    function renderizarInventario() {
-      const vig = computado.attrTotais.vigor || 0;
-      const cap = { pesado: vig, medio: vig + 1, leve: vig + 2, miudeza: 10 };
-      const inv = fichaDados.inventario || [];
-
-      const usados = { pesado: 0, medio: 0, leve: 0, miudeza: 0 };
-      inv.forEach(it => {
-        if (usados[it.peso] !== undefined) usados[it.peso]++;
-      });
-
-      document.getElementById('resumo-slots-carga').innerHTML = `
-        <div><span class="text-[10px] text-stone-400 block">Pesado (VIG)</span><strong class="${usados.pesado > cap.pesado ? 'text-red-400' : 'text-stone-200'}">${usados.pesado}/${cap.pesado}</strong></div>
-        <div><span class="text-[10px] text-stone-400 block">Médio (VIG+1)</span><strong class="${usados.medio > cap.medio ? 'text-red-400' : 'text-stone-200'}">${usados.medio}/${cap.medio}</strong></div>
-        <div><span class="text-[10px] text-stone-400 block">Leve (VIG+2)</span><strong class="${usados.leve > cap.leve ? 'text-red-400' : 'text-stone-200'}">${usados.leve}/${cap.leve}</strong></div>
-        <div><span class="text-[10px] text-stone-400 block">Miudezas</span><strong class="${usados.miudeza > cap.miudeza ? 'text-red-400' : 'text-stone-200'}">${usados.miudeza}/${cap.miudeza}</strong></div>
-      `;
-
-      // Preenche Catálogo da Mesa
-      const selCat = document.getElementById('sel-catalogo-mesa');
-      const catalogo = mesaDados?.catalogoItens || [];
-      selCat.innerHTML = `<option value="">-- Selecionar Item do Catálogo da Mesa (${catalogo.length}) --</option>` +
-        catalogo.map(it => `<option value="${it.id}">${it.nome} [${it.categoria.toUpperCase()} · ${it.peso}]</option>`).join('');
-
-      const cont = document.getElementById('lista-inventario-ficha');
-      if (!inv.length) {
-        cont.innerHTML = `<p class="text-stone-500 italic col-span-2">Mochila vazia. Adicione itens do catálogo da mesa acima.</p>`;
-        return;
-      }
-
-      cont.innerHTML = inv.map(it => {
-        const podeEquipar = ['arma', 'escudo', 'armadura'].includes(it.categoria);
-        return `
-          <div class="bg-stone-950 border ${it.equipado ? 'border-emerald-600/80' : 'border-stone-800'} rounded-lg p-3 flex flex-col justify-between gap-2">
-            <div>
-              <div class="flex justify-between items-start gap-2">
-                <strong class="font-cinzel text-gold-300">${it.nome}</strong>
-                <span class="px-1.5 py-0.5 rounded bg-stone-900 text-stone-400 font-mono text-[10px] uppercase">${it.peso}</span>
-              </div>
-              <p class="text-[11px] text-stone-400 mt-1">${it.descricao || ''}</p>
-              ${it.categoria === 'cura' ? `<div class="text-[11px] text-emerald-300 font-mono mt-1">Cura: ${it.curaFormula} · Usos: ${it.usosAtuais ?? it.usosMax}/${it.usosMax}</div>` : ''}
-            </div>
-
-            <div class="pt-1.5 border-t border-stone-900 flex justify-between items-center gap-2">
-              ${podeEquipar ? `
-                <button data-equip-uid="${it.uid}" class="px-2.5 py-1 rounded ${it.equipado ? 'bg-emerald-950 border border-emerald-600 text-emerald-300' : 'bg-stone-900 border border-stone-700 text-stone-300'} font-cinzel text-[10px] font-bold">
-                  ${it.equipado ? '✓ Equipado' : 'Equipar'}
-                </button>
-              ` : (it.categoria === 'cura' ? `
-                <button data-usar-cura="${it.uid}" class="px-2.5 py-1 rounded bg-emerald-950 border border-emerald-600 text-emerald-300 font-cinzel text-[10px] font-bold">
-                  🩹 Usar Cura
-                </button>
-              ` : '<span></span>')}
-              <button data-rem-item="${it.uid}" class="text-stone-500 hover:text-red-400 text-xs">Remover</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      cont.querySelectorAll('[data-equip-uid]').forEach(btn => {
-        btn.onclick = async () => {
-          const novaInv = (fichaDados.inventario || []).map(it =>
-            it.uid === btn.dataset.equipUid ? { ...it, equipado: !it.equipado } : it
-          );
-          await updateDoc(doc(db, "fichas", fichaId), { inventario: novaInv });
-        };
-      });
-
-      cont.querySelectorAll('[data-usar-cura]').forEach(btn => {
-        btn.onclick = async () => {
-          const invAtual = [...(fichaDados.inventario || [])];
-          const idx = invAtual.findIndex(it => it.uid === btn.dataset.usarCura);
-          if (idx < 0) return;
-          const item = invAtual[idx];
-          const usos = item.usosAtuais ?? item.usosMax ?? 1;
-          if (usos <= 0) return alert("Este item não possui mais usos!");
-
-          const res = rolarExpressaoDados(item.curaFormula || '1d4');
-          const curHp = fichaDados.recursosAtuais?.hp ?? computado.hpMax;
-          const novoHp = Math.min(computado.hpMax, curHp + res.total);
-
-          item.usosAtuais = usos - 1;
-          await updateDoc(doc(db, "fichas", fichaId), {
-            inventario: invAtual,
-            recursosAtuais: {
-              hp: novoHp,
-              san: fichaDados.recursosAtuais?.san ?? computado.sanMax,
-              pef: fichaDados.recursosAtuais?.pef ?? computado.pefMax,
-              pem: fichaDados.recursosAtuais?.pem ?? computado.pemMax
-            }
-          });
-          await registrarRolagemMesa(res.total, `Cura (${item.nome})`, `Dados [${res.dados.join(', ')}] → HP: ${novoHp}/${computado.hpMax}`);
-        };
-      });
-
-      cont.querySelectorAll('[data-rem-item]').forEach(btn => {
-        btn.onclick = async () => {
-          const novaInv = (fichaDados.inventario || []).filter(it => it.uid !== btn.dataset.remItem);
-          await updateDoc(doc(db, "fichas", fichaId), { inventario: novaInv });
-        };
-      });
-    }
-
-    document.getElementById('btn-pegar-item-catalogo').onclick = async () => {
-      const catId = document.getElementById('sel-catalogo-mesa').value;
-      if (!catId) return;
-      const base = (mesaDados?.catalogoItens || []).find(i => i.id === catId);
-      if (!base) return;
-
-      const novoItem = {
-        ...JSON.parse(JSON.stringify(base)),
-        uid: 'inv_' + Date.now(),
-        equipado: false,
-        usosAtuais: base.usosMax || 1
-      };
-      const inv = [...(fichaDados.inventario || []), novoItem];
-      await updateDoc(doc(db, "fichas", fichaId), { inventario: inv });
+    window.salvarSelecaoComoMacro = async () => {
+      if (!selecaoTeste.attrs.length) return mostrarToast('Adicione ao menos um atributo.');
+      const nomeMacro = prompt('Nome da macro:', `${selecaoTeste.attrs.map(obterSiglaAtributo).join(' + ')} (${selecaoTeste.per || 'Geral'})`);
+      if (!nomeMacro) return;
+      const macros = [...(fichaDoc.macros || []), { nome: nomeMacro, attrs: [...selecaoTeste.attrs], per: selecaoTeste.per, hab: selecaoTeste.hab }];
+      await updateDoc(doc(db, "fichas", fichaId), { macros });
     };
 
-    /* ========================================================= */
-    /* VISUALIZADOR INTERATIVO DE ÁRVORES (GASTAR PONTOS)        */
-    /* ========================================================= */
+    function renderizarMacros() {
+      const lista = fichaDoc.macros || [];
+      getEl('#macros').innerHTML = lista.length ? '' : '<span class="mut">Nenhuma macro salva.</span>';
+
+      lista.forEach((macro, i) => {
+        const div = document.createElement('div');
+        div.className = 'mrow';
+        div.innerHTML = `
+          <div style="min-width:0">
+            <div class="cz" style="font-size:12px; font-weight:700">${macro.nome}</div>
+            <div class="mut" style="font-style:normal; font-family:monospace; font-size:10px">
+              ${macro.attrs.map(obterSiglaAtributo).join('+')}${macro.per ? ' | ' + macro.per : ''}
+            </div>
+          </div>
+          <span style="display:flex; gap:6px; align-items:center">
+            <button class="btn pri">Rolar</button>
+            <button class="x" title="Excluir">🗑</button>
+          </span>
+        `;
+        div.querySelector('.pri').onclick = () => {
+          selecaoTeste = {
+            attrs: [...macro.attrs],
+            per: macro.per && macro.per in computado.pericias ? macro.per : null,
+            hab: macro.hab && computado.habilidades.some(h => h.id === macro.hab) ? macro.hab : null
+          };
+          renderizarSelecaoTeste();
+          executarRolarDado();
+        };
+        div.querySelector('.x').onclick = async () => {
+          const novas = [...lista];
+          novas.splice(i, 1);
+          await updateDoc(doc(db, "fichas", fichaId), { macros: novas });
+        };
+        getEl('#macros').appendChild(div);
+      });
+    }
+
+    /* ---------- Descanso ---------- */
+    window.abrirModalDescanso = () => {
+      abrirModal('Realizar Descanso', `
+        <div style="display:grid; gap:8px">
+          <button class="btn" style="text-align:left; padding:8px" onclick="executarDescanso('curto')">
+            <b class="cz" style="color:var(--acc)">⏳ Pausa Curta</b><br>
+            <span class="mut" style="font-style:normal">Recupera 1d6 + Vigor (PE-F) e 1d6 + Ímpeto (PE-M).</span>
+          </button>
+          <button class="btn" style="text-align:left; padding:8px" onclick="executarDescanso('longo')">
+            <b class="cz" style="color:#4cc36f">🌙 Descanso Longo</b><br>
+            <span class="mut" style="font-style:normal">Restaura PE-F e PE-M ao máximo, e recupera 1d4 + Vigor (HP) e 1d4 + Ímpeto (SAN).</span>
+          </button>
+        </div>
+      `);
+    };
+
+    window.executarDescanso = async (tipo) => {
+      const cur = obterRecursosAtuais();
+      if (tipo === 'curto') {
+        const r1 = (1 + Math.floor(Math.random() * 6)) + (computado.attr.vigor || 0);
+        const r2 = (1 + Math.floor(Math.random() * 6)) + (computado.attr.impeto || 0);
+        cur.pef = Math.min(maximosRecursos.pef, cur.pef + r1);
+        cur.pem = Math.min(maximosRecursos.pem, cur.pem + r2);
+        await updateDoc(doc(db, "fichas", fichaId), { recursosAtuais: cur });
+        await registrarRolagemMesa(r1 + r2, 'Pausa Curta', `+${r1} PE-F e +${r2} PE-M`);
+      } else {
+        const rHp = (1 + Math.floor(Math.random() * 4)) + (computado.attr.vigor || 0);
+        const rSan = (1 + Math.floor(Math.random() * 4)) + (computado.attr.impeto || 0);
+        cur.hp = Math.min(maximosRecursos.hp, cur.hp + rHp);
+        cur.san = Math.min(maximosRecursos.san, cur.san + rSan);
+        cur.pef = maximosRecursos.pef;
+        cur.pem = maximosRecursos.pem;
+        await updateDoc(doc(db, "fichas", fichaId), { recursosAtuais: cur });
+        await registrarRolagemMesa(rHp + rSan, 'Descanso Longo', `PEs restaurados · +${rHp} HP e +${rSan} SAN`);
+      }
+      fecharModal();
+    };
+
+    /* ---------- Visualizador de Árvores na Ficha ---------- */
     function obterArvoresAcessiveis() {
       const todas = mesaDados?.arvores || [];
-      const h = fichaDados?.raizesHeranca || {};
+      const h = fichaDoc?.raizesHeranca || {};
       const permitidas = new Set();
-
-      if (h.tipo === 'auto') {
-        permitidas.add('Órfão');
-      } else {
+      if (h.tipo === 'auto') permitidas.add('Órfão');
+      else {
         if (h.r1) permitidas.add(h.r1);
         if (h.tipo === 'dupla' && h.r2) permitidas.add(h.r2);
       }
-      (fichaDados?.raizesExtras || []).forEach(r => permitidas.add(r));
-
+      (fichaDoc?.raizesExtras || []).forEach(r => permitidas.add(r));
       return todas.filter(a => permitidas.has(a.raizAssociada));
     }
 
-    document.getElementById('btn-abrir-arvores').onclick = () => {
+    window.abrirModalArvores = () => {
       const acessiveis = obterArvoresAcessiveis();
-      if (!acessiveis.length) {
-        return alert("Nenhuma árvore de evolução foi vinculada às suas raízes pelo Mestre ainda.");
+      if (!acessiveis.length) return mostrarToast('Nenhuma árvore vinculada às suas raízes.');
+
+      if (!arvoreAtivaId || !acessiveis.some(a => a.id === arvoreAtivaId)) {
+        arvoreAtivaId = acessiveis[0].id;
       }
 
-      const sel = document.getElementById('sel-arvore-personagem');
-      sel.innerHTML = acessiveis.map(a => `<option value="${a.id}">${a.nome} (${a.raizAssociada})</option>`).join('');
-      if (!arvoreSelecionadaId || !acessiveis.some(a => a.id === arvoreSelecionadaId)) {
-        arvoreSelecionadaId = acessiveis[0].id;
-      }
-      sel.value = arvoreSelecionadaId;
+      const selHtml = `<select id="sel-arv-modal" onchange="trocarArvoreModal(this.value)">${acessiveis.map(a => `<option value="${a.id}" ${a.id === arvoreAtivaId ? 'selected' : ''}>${a.nome} (${a.raizAssociada})</option>`).join('')}</select>`;
+      abrirModal(`Árvores de Evolução · ${selHtml} <span class="chip" id="mod-pt">PT: ${fichaDoc.pontosEvolucao || 0}</span>`, `
+        <div class="tree-view-wrap" id="tv-wrap">
+          <div class="tree-stage" id="tv-stage">
+            <svg id="tv-svg" style="position:absolute;top:0;left:0;pointer-events:none;overflow:visible"></svg>
+            <div class="tree-grid" id="tv-grid"></div>
+          </div>
+          <div style="position:absolute; right:10px; bottom:10px; display:flex; gap:4px; z-index:5">
+            <button class="btn" onclick="zoomArvore(0.85)">−</button>
+            <button class="btn" onclick="zoomArvore(1.18)">+</button>
+            <button class="btn" onclick="resetZoomArvore()">↺</button>
+          </div>
+        </div>
+        <div id="tv-detalhes" class="card" style="margin:8px 0 0; padding:8px" hidden></div>
+      `, true);
 
-      const modal = document.getElementById('modal-arvores');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      renderizarCanvasArvoreFicha();
+      iniciarPanZoomArvore();
+      renderizarArvoreNoModal();
     };
 
-    document.getElementById('btn-fechar-modal-arvores').onclick = () => {
-      const modal = document.getElementById('modal-arvores');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      document.getElementById('painel-compra-no').classList.add('hidden');
-    };
+    window.trocarArvoreModal = (id) => { arvoreAtivaId = id; renderizarArvoreNoModal(); };
+    window.zoomArvore = (f) => { tZoom = Math.min(2, Math.max(0.35, tZoom * f)); aplicarTransformArvore(); };
+    window.resetZoomArvore = () => { tZoom = 1; tPanX = 0; tPanY = 0; aplicarTransformArvore(); };
+    function aplicarTransformArvore() {
+      const st = getEl('#tv-stage');
+      if (st) st.style.transform = `translate(${tPanX}px, ${tPanY}px) scale(${tZoom})`;
+    }
 
-    document.getElementById('sel-arvore-personagem').onchange = (e) => {
-      arvoreSelecionadaId = e.target.value;
-      noSelecionadoId = null;
-      document.getElementById('painel-compra-no').classList.add('hidden');
-      renderizarCanvasArvoreFicha();
-    };
+    function iniciarPanZoomArvore() {
+      const wrap = getEl('#tv-wrap');
+      if (!wrap) return;
+      let pan = false, sx = 0, sy = 0;
+      wrap.onpointerdown = e => {
+        if (e.target.closest('.tnode, button')) return;
+        pan = true; sx = e.clientX - tPanX; sy = e.clientY - tPanY;
+        wrap.classList.add('panning');
+      };
+      wrap.onpointermove = e => { if (!pan) return; tPanX = e.clientX - sx; tPanY = e.clientY - sy; aplicarTransformArvore(); };
+      window.onpointerup = () => { pan = false; wrap.classList.remove('panning'); };
+    }
 
-    function verificarStatusNo(arvore, node) {
-      const desbloqueados = new Set((fichaDados.nosDesbloqueados || {})[arvore.id] || []);
-      if (desbloqueados.has(node.id)) {
-        return { estado: 'desbloqueado', motivo: 'Já desbloqueado' };
-      }
+    function contarSubarvore(arvore, rootId, desbSet) {
+      if (!desbSet.has(rootId)) return 0;
+      let c = 1;
+      (arvore.nos || []).filter(n => (n.requisitos || []).includes(rootId)).forEach(ch => { c += contarSubarvore(arvore, ch.id, desbSet); });
+      return c;
+    }
 
-      // 1. Pré-requisitos
+    function statusNoArvore(arvore, node) {
+      const desb = new Set((fichaDoc.nosDesbloqueados || {})[arvore.id] || []);
+      if (desb.has(node.id)) return { st: 'done', msg: 'Desbloqueado' };
+
       const reqs = node.requisitos || [];
-      if (reqs.length > 0 && !reqs.every(rId => desbloqueados.has(rId))) {
-        return { estado: 'trancado', motivo: 'Desbloqueie o nó anterior primeiro.' };
-      }
+      if (reqs.length && !reqs.every(r => desb.has(r))) return { st: 'lock', msg: 'Requer nó anterior.' };
 
-      // 2. Ramificações Exclusivas e Restritivas do Nó Pai
-      const ehHerancaDupla = fichaDados.raizesHeranca?.tipo === 'dupla';
+      const ehDupla = fichaDoc.raizesHeranca?.tipo === 'dupla';
       for (const paiId of reqs) {
         const pai = (arvore.nos || []).find(n => n.id === paiId);
         if (!pai) continue;
-
         const irmaos = (arvore.nos || []).filter(n => (n.requisitos || []).includes(paiId));
-        const irmaosComprados = irmaos.filter(ir => desbloqueados.has(ir.id));
-
-        if (pai.tipoRamificacao === 'exclusiva' && irmaosComprados.length > 0) {
-          return { estado: 'bloqueado', motivo: 'Caminho bloqueado por Escolha Exclusiva.' };
-        }
-
-        if (pai.tipoRamificacao === 'restritiva' && !ehHerancaDupla && irmaosComprados.length > 0) {
-          // Conta quantos nós já foram comprados nos caminhos secundários
-          const limite = parseInt(pai.limiteNosSecundarios) || 1;
-          const totalSecundarios = irmaosComprados.reduce((acc, ir) => acc + contarSubarvoreComprada(arvore, ir.id, desbloqueados), 0);
-          if (totalSecundarios >= limite) {
-            return { estado: 'bloqueado', motivo: `Limite de ramificação restritiva (${limite}) atingido.` };
-          }
+        const comp = irmaos.filter(ir => desb.has(ir.id));
+        if (pai.tipoRamificacao === 'exclusiva' && comp.length > 0) return { st: 'block', msg: 'Bloqueado por Escolha Exclusiva.' };
+        if (pai.tipoRamificacao === 'restritiva' && !ehDupla && comp.length > 0) {
+          const lim = parseInt(pai.limiteNosSecundarios) || 1;
+          const tot = comp.reduce((a, ir) => a + contarSubarvore(arvore, ir.id, desb), 0);
+          if (tot >= lim) return { st: 'block', msg: `Limite restritivo (${lim}) atingido.` };
         }
       }
 
-      // 3. Trava de Teto Biológico de Atributo
       if (node.tipoRecompensa === 'atributo') {
         const opts = node.opcoesAmbiguas || [];
-        const algumAbaixoTeto = opts.some(o => o.attr && (computado.attrTotais[o.attr] || 0) < computado.tetoAtributo);
-        if (opts.length && !algumAbaixoTeto) {
-          return { estado: 'bloqueado', motivo: `Teto biológico de atributo (${computado.tetoAtributo}) atingido neste estágio.` };
+        if (opts.length && !opts.some(o => o.attr && (computado.attr[o.attr] || 0) < computado.teto)) {
+          return { st: 'block', msg: `Teto biológico (${computado.teto}) atingido.` };
         }
       }
 
-      // 4. Pontos de Evolução
       const custo = parseInt(node.custoPontos) || 1;
-      const ptAtual = fichaDados.pontosEvolucao || 0;
-      if (ptAtual < custo) {
-        return { estado: 'trancado', motivo: `Requer ${custo} PT (você possui ${ptAtual} PT).` };
-      }
-
-      return { estado: 'disponivel', motivo: `Disponível por ${custo} PT` };
+      if ((fichaDoc.pontosEvolucao || 0) < custo) return { st: 'lock', msg: `Requer ${custo} PT.` };
+      return { st: 'avail', msg: `Comprar por ${custo} PT` };
     }
 
-    function contarSubarvoreComprada(arvore, rootId, desbloqueados) {
-      if (!desbloqueados.has(rootId)) return 0;
-      let count = 1;
-      const filhos = (arvore.nos || []).filter(n => (n.requisitos || []).includes(rootId));
-      filhos.forEach(f => { count += contarSubarvoreComprada(arvore, f.id, desbloqueados); });
-      return count;
-    }
+    function renderizarArvoreNoModal() {
+      const arvore = (mesaDados?.arvores || []).find(a => a.id === arvoreAtivaId);
+      const grid = getEl('#tv-grid');
+      if (!arvore || !grid) return;
 
-    function renderizarCanvasArvoreFicha() {
-      const arvore = (mesaDados?.arvores || []).find(a => a.id === arvoreSelecionadaId);
-      if (!arvore) return;
-
-      document.getElementById('modal-pt-disponivel').textContent = fichaDados.pontosEvolucao || 0;
-      const grid = document.getElementById('ficha-tree-grid');
+      getEl('#mod-pt').textContent = `PT: ${fichaDoc.pontosEvolucao || 0}`;
       grid.innerHTML = '';
 
-      // Layout hierárquico
       const nodeMap = new Map((arvore.nos || []).map(n => [n.id, n]));
       const children = new Map((arvore.nos || []).map(n => [n.id, []]));
-      const primaryParent = new Map();
-
-      (arvore.nos || []).forEach(node => {
-        const valid = (node.requisitos || []).filter(id => nodeMap.has(id));
-        if (valid.length) {
-          primaryParent.set(node.id, valid[0]);
-          children.get(valid[0]).push(node);
-        }
+      const parent = new Map();
+      (arvore.nos || []).forEach(n => {
+        const v = (n.requisitos || []).filter(id => nodeMap.has(id));
+        if (v.length) { parent.set(n.id, v[0]); children.get(v[0]).push(n); }
       });
 
-      const roots = (arvore.nos || []).filter(n => !primaryParent.has(n.id));
-      const positions = new Map();
-      const visited = new Set();
-      const cardStep = 230;
-
-      function place(node, depth, cursor) {
-        if (visited.has(node.id)) return cursor;
-        visited.add(node.id);
-        const kids = children.get(node.id) || [];
-        let center;
-        if (!kids.length) {
-          center = cursor + cardStep / 2;
-          cursor += cardStep;
-        } else {
-          const centers = [];
-          kids.forEach(ch => {
-            const res = place(ch, depth + 1, cursor);
-            cursor = res.cursor;
-            centers.push(res.center);
-          });
-          center = (centers[0] + centers[centers.length - 1]) / 2;
+      const roots = (arvore.nos || []).filter(n => !parent.has(n.id));
+      const pos = new Map(), vis = new Set(), step = 210;
+      function place(n, d, cur) {
+        if (vis.has(n.id)) return { cur, c: 0 };
+        vis.add(n.id);
+        const kids = children.get(n.id) || [];
+        let c;
+        if (!kids.length) { c = cur + step / 2; cur += step; }
+        else {
+          const cs = [];
+          kids.forEach(k => { const r = place(k, d + 1, cur); cur = r.cur; cs.push(r.c); });
+          c = (cs[0] + cs[cs.length - 1]) / 2;
         }
-        positions.set(node.id, { x: center, depth });
-        return { cursor, center };
+        pos.set(n.id, { x: c, d });
+        return { cur, c };
       }
 
-      let cursor = 0;
-      roots.forEach(r => { cursor = place(r, 0, cursor).cursor + cardStep * 0.35; });
-      (arvore.nos || []).forEach(n => { if (!visited.has(n.id)) cursor = place(n, 0, cursor).cursor + cardStep * 0.35; });
+      let cur = 0;
+      roots.forEach(r => { cur = place(r, 0, cur).cur + 60; });
+      (arvore.nos || []).forEach(n => { if (!vis.has(n.id)) cur = place(n, 0, cur).cur + 60; });
 
-      const maxDepth = Math.max(0, ...[...positions.values()].map(p => p.depth));
-      const levels = Array.from({ length: maxDepth + 1 }, () => []);
-      (arvore.nos || []).forEach(n => {
-        const p = positions.get(n.id);
-        if (p) levels[p.depth].push(n);
-      });
+      const maxD = Math.max(0, ...[...pos.values()].map(p => p.d));
+      const levels = Array.from({ length: maxD + 1 }, () => []);
+      (arvore.nos || []).forEach(n => { const p = pos.get(n.id); if (p) levels[p.d].push(n); });
+      grid.style.width = `${Math.max(800, cur)}px`;
 
-      const width = Math.max(900, cursor);
-      grid.style.width = `${width}px`;
-
-      for (let d = maxDepth; d >= 0; d--) {
+      for (let d = maxD; d >= 0; d--) {
         const row = document.createElement('div');
-        row.className = 'f-tree-level';
-
-        (levels[d] || []).forEach(node => {
-          const st = verificarStatusNo(arvore, node);
-          const card = document.createElement('div');
-          card.id = `f-card-${node.id}`;
-          card.style.left = `${positions.get(node.id).x}px`;
-
-          let estiloEstado = 'bg-stone-900/90 border-stone-700 opacity-65';
-          if (st.estado === 'desbloqueado') estiloEstado = 'bg-emerald-950/90 border-emerald-500 shadow-lg shadow-emerald-950/50';
-          if (st.estado === 'disponivel') estiloEstado = 'bg-amber-950/80 border-amber-400 shadow-lg shadow-amber-950/40';
-          if (st.estado === 'bloqueado') estiloEstado = 'bg-red-950/60 border-red-800 opacity-60';
-
-          card.className = `f-node-card p-2.5 rounded-lg border cursor-pointer ${estiloEstado} flex flex-col justify-between`;
-          card.innerHTML = `
-            <span class="absolute -top-2 -right-2 bg-stone-950 text-gold-400 border border-gold-600/60 font-mono text-[10px] font-bold px-1.5 rounded-full">
-              ${st.estado === 'desbloqueado' ? '✓' : `${node.custoPontos || 1} PT`}
-            </span>
-            <div class="text-xs font-cinzel font-bold text-stone-100 truncate">${node.titulo}</div>
-            <div class="text-[10px] text-stone-300 line-clamp-2">${node.conteudo?.descricao || ''}</div>
+        row.className = 'tree-lvl';
+        (levels[d] || []).forEach(n => {
+          const st = statusNoArvore(arvore, n);
+          const el = document.createElement('div');
+          el.id = `tv-n-${n.id}`;
+          el.className = `tnode ${st.st}`;
+          el.style.left = `${pos.get(n.id).x}px`;
+          el.innerHTML = `
+            <div style="display:flex; justify-content:space-between; font-weight:700" class="cz">
+              <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${n.titulo}</span>
+              <span class="tag">${st.st === 'done' ? '✓' : `${n.custoPontos || 1}PT`}</span>
+            </div>
+            <div class="mut" style="font-style:normal; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${n.conteudo?.descricao || ''}</div>
           `;
-
-          card.onclick = () => abrirPainelCompraNo(arvore, node, st);
-          row.appendChild(card);
+          el.onclick = () => selecionarNoParaCompra(arvore, n, st);
+          row.appendChild(el);
         });
         grid.appendChild(row);
       }
 
-      const stage = document.getElementById('ficha-tree-stage');
-      stage.style.width = `${width + 800}px`;
-      stage.style.height = `${(maxDepth + 1) * 180 + 800}px`;
-
-      setTimeout(() => desenharLinhasArvoreFicha(arvore, grid), 30);
-    }
-
-    function desenharLinhasArvoreFicha(arvore, grid) {
-      const svg = document.getElementById('ficha-svg-lines');
-      svg.setAttribute('width', grid.offsetWidth + 800);
-      svg.setAttribute('height', grid.offsetHeight + 800);
-      svg.innerHTML = '';
-
-      const desb = new Set((fichaDados.nosDesbloqueados || {})[arvore.id] || []);
-
-      (arvore.nos || []).forEach(node => {
-        const target = document.getElementById(`f-card-${node.id}`);
-        if (!target) return;
-        (node.requisitos || []).forEach(reqId => {
-          const source = document.getElementById(`f-card-${reqId}`);
-          if (!source) return;
-
-          const x1 = grid.offsetLeft + source.offsetLeft;
-          const y1 = grid.offsetTop + source.parentElement.offsetTop + source.offsetTop;
-          const x2 = grid.offsetLeft + target.offsetLeft;
-          const y2 = grid.offsetTop + target.parentElement.offsetTop + target.offsetTop + target.offsetHeight;
-
-          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-          const d = Math.abs(x1 - x2) < 5
-            ? `M ${x1} ${y1} L ${x2} ${y2}`
-            : `M ${x1} ${y1} C ${x1} ${y1 - 35}, ${x2} ${y2 + 35}, ${x2} ${y2}`;
-
-          const ativa = desb.has(node.id) && desb.has(reqId);
-          path.setAttribute('d', d);
-          path.setAttribute('stroke', ativa ? '#10b981' : '#57534e');
-          path.setAttribute('stroke-width', ativa ? '3' : '2');
-          path.setAttribute('fill', 'none');
-          svg.appendChild(path);
+      setTimeout(() => {
+        const svg = getEl('#tv-svg');
+        if (!svg) return;
+        svg.setAttribute('width', grid.offsetWidth + 640);
+        svg.setAttribute('height', grid.offsetHeight + 640);
+        svg.innerHTML = '';
+        const desb = new Set((fichaDoc.nosDesbloqueados || {})[arvore.id] || []);
+        (arvore.nos || []).forEach(n => {
+          const tEl = getEl(`#tv-n-${n.id}`);
+          if (!tEl) return;
+          (n.requisitos || []).forEach(rId => {
+            const sEl = getEl(`#tv-n-${rId}`);
+            if (!sEl) return;
+            const x1 = grid.offsetLeft + sEl.offsetLeft, y1 = grid.offsetTop + sEl.parentElement.offsetTop + sEl.offsetTop;
+            const x2 = grid.offsetLeft + tEl.offsetLeft, y2 = grid.offsetTop + tEl.parentElement.offsetTop + tEl.offsetTop + tEl.offsetHeight;
+            const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            p.setAttribute('d', `M ${x1} ${y1} C ${x1} ${y1 - 30}, ${x2} ${y2 + 30}, ${x2} ${y2}`);
+            p.setAttribute('stroke', desb.has(n.id) && desb.has(rId) ? '#4cc36f' : '#665');
+            p.setAttribute('stroke-width', '2');
+            p.setAttribute('fill', 'none');
+            svg.appendChild(p);
+          });
         });
-      });
+      }, 30);
     }
 
-    function abrirPainelCompraNo(arvore, node, status) {
-      noSelecionadoId = node.id;
-      const painel = document.getElementById('painel-compra-no');
-      painel.classList.remove('hidden');
+    function selecionarNoParaCompra(arvore, node, st) {
+      const box = getEl('#tv-detalhes');
+      box.hidden = false;
+      const temOpcoes = (node.tipoRecompensa === 'atributo' || node.tipoRecompensa === 'ambiguo') && node.opcoesAmbiguas?.length >= 2;
 
-      document.getElementById('det-no-tipo').textContent = `${node.tipoRecompensa} · Custo: ${node.custoPontos || 1} PT`;
-      document.getElementById('det-no-titulo').textContent = node.titulo;
-      document.getElementById('det-no-desc').textContent = node.conteudo?.descricao || '';
-
-      // Herança Singular
-      const h = fichaDados.raizesHeranca || {};
-      const temSingular = h.tipo === 'singular' && h.r1 === arvore.raizAssociada && node.herancaSingular;
-      const boxSing = document.getElementById('det-no-singular');
-      if (temSingular) {
-        boxSing.classList.remove('hidden');
-        document.getElementById('det-no-singular-txt').textContent =
-          node.herancaSingular.descricao || `Bônus extra: +${node.herancaSingular.bonusExtra || 0}`;
-      } else {
-        boxSing.classList.add('hidden');
-      }
-
-      // Opções Ambíguas / Atributo
-      const boxOpcoes = document.getElementById('det-no-opcoes');
-      if ((node.tipoRecompensa === 'atributo' || node.tipoRecompensa === 'ambiguo') && node.opcoesAmbiguas?.length >= 2) {
-        boxOpcoes.classList.remove('hidden');
-        document.getElementById('lbl-opt-a').textContent = node.opcoesAmbiguas[0].efeito || 'Opção A';
-        document.getElementById('lbl-opt-b').textContent = node.opcoesAmbiguas[1].efeito || 'Opção B';
-      } else {
-        boxOpcoes.classList.add('hidden');
-      }
-
-      const msg = document.getElementById('det-no-status-msg');
-      const btnComprar = document.getElementById('btn-comprar-no');
-      msg.textContent = status.motivo;
-
-      if (status.estado === 'disponivel') {
-        msg.className = "text-[11px] text-center font-semibold text-emerald-400";
-        btnComprar.disabled = false;
-        btnComprar.textContent = `Desbloquear (-${node.custoPontos || 1} PT)`;
-      } else {
-        msg.className = "text-[11px] text-center font-semibold text-amber-400";
-        btnComprar.disabled = true;
-        btnComprar.textContent = status.estado === 'desbloqueado' ? '✓ Desbloqueado' : 'Indisponível';
-      }
-
-      btnComprar.onclick = async () => {
-        const custo = parseInt(node.custoPontos) || 1;
-        const ptAtual = fichaDados.pontosEvolucao || 0;
-        if (ptAtual < custo) return;
-
-        const updates = {
-          pontosEvolucao: ptAtual - custo,
-          [`nosDesbloqueados.${arvore.id}`]: [...((fichaDados.nosDesbloqueados || {})[arvore.id] || []), node.id]
-        };
-
-        if (!boxOpcoes.classList.contains('hidden')) {
-          const marcada = document.querySelector('input[name="escolha-no-ambiguo"]:checked')?.value || 'a';
-          const opt = node.opcoesAmbiguas.find(o => o.idOpcao === marcada);
-          if (opt?.attr && (computado.attrTotais[opt.attr] || 0) >= computado.tetoAtributo) {
-            return alert(`O atributo escolhido já atingiu o teto biológico deste estágio (${computado.tetoAtributo})!`);
-          }
-          updates[`escolhasAmbiguas.${node.id}`] = marcada;
-        }
-
-        await updateDoc(doc(db, "fichas", fichaId), updates);
-        painel.classList.add('hidden');
-      };
-    }
-
-    // Zoom & Pan do Modal de Árvores
-    (function setupFichaTreePanZoom() {
-      const wrapper = document.getElementById('ficha-tree-wrapper');
-      const stage = document.getElementById('ficha-tree-stage');
-      const valEl = document.getElementById('f-zoom-val');
-
-      const apply = () => {
-        stage.style.transform = `translate(${fPanX}px, ${fPanY}px) scale(${fZoom})`;
-        valEl.textContent = `${Math.round(fZoom * 100)}%`;
-      };
-
-      wrapper.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        fZoom = Math.min(2.2, Math.max(0.3, fZoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12)));
-        apply();
-      }, { passive: false });
-
-      let panning = false, sx = 0, sy = 0;
-      wrapper.addEventListener('pointerdown', (e) => {
-        if (e.target.closest('.f-node-card, button')) return;
-        panning = true;
-        sx = e.clientX - fPanX;
-        sy = e.clientY - fPanY;
-        wrapper.classList.add('is-panning');
-      });
-      wrapper.addEventListener('pointermove', (e) => {
-        if (!panning) return;
-        fPanX = e.clientX - sx;
-        fPanY = e.clientY - sy;
-        apply();
-      });
-      window.addEventListener('pointerup', () => { panning = false; wrapper.classList.remove('is-panning'); });
-
-      document.getElementById('f-zoom-in').onclick = () => { fZoom = Math.min(2.2, fZoom * 1.2); apply(); };
-      document.getElementById('f-zoom-out').onclick = () => { fZoom = Math.max(0.3, fZoom / 1.2); apply(); };
-      document.getElementById('f-zoom-reset').onclick = () => { fZoom = 1; fPanX = 0; fPanY = 0; apply(); };
-    })();
-
-    /* ========================================================= */
-    /* BLOCOS MINIMIZÁVEIS, SIDEBAR RECOLHÍVEL, SIGLAS & DESCANSO*/
-    /* ========================================================= */
-    document.querySelectorAll('[data-collapse]').forEach(btn => {
-      btn.onclick = () => {
-        const target = document.getElementById(btn.dataset.collapse);
-        const fechado = target.classList.toggle('hidden');
-        btn.querySelector('span').textContent = fechado ? '[+]' : '[−]';
-      };
-    });
-
-    const sidebar = document.getElementById('sidebar-historico');
-    const colPrincipal = document.getElementById('coluna-principal');
-    function alternarSidebar() {
-      const oculta = sidebar.classList.toggle('hidden');
-      colPrincipal.classList.toggle('lg:col-span-8', !oculta);
-      colPrincipal.classList.toggle('lg:col-span-12', oculta);
-    }
-    document.getElementById('btn-toggle-sidebar').onclick = alternarSidebar;
-    document.getElementById('btn-fechar-sidebar').onclick = alternarSidebar;
-
-    // Modal Siglas
-    const modalSiglas = document.getElementById('modal-siglas');
-    document.getElementById('btn-legenda-siglas').onclick = () => { modalSiglas.classList.remove('hidden'); modalSiglas.classList.add('flex'); };
-    document.getElementById('btn-fechar-siglas').onclick = () => { modalSiglas.classList.add('hidden'); modalSiglas.classList.remove('flex'); };
-
-    // Modal Descanso
-    const modalDescanso = document.getElementById('modal-descanso');
-    document.getElementById('btn-descanso').onclick = () => { modalDescanso.classList.remove('hidden'); modalDescanso.classList.add('flex'); };
-    document.getElementById('btn-fechar-descanso').onclick = () => { modalDescanso.classList.add('hidden'); modalDescanso.classList.remove('flex'); };
-
-    document.getElementById('btn-pausa-curta').onclick = async () => {
-      const r1 = Math.floor(Math.random() * 6) + 1 + (computado.attrTotais.vigor || 0);
-      const r2 = Math.floor(Math.random() * 6) + 1 + (computado.attrTotais.impeto || 0);
-      const curPef = fichaDados.recursosAtuais?.pef ?? computado.pefMax;
-      const curPem = fichaDados.recursosAtuais?.pem ?? computado.pemMax;
-
-      await updateDoc(doc(db, "fichas", fichaId), {
-        recursosAtuais: {
-          hp: fichaDados.recursosAtuais?.hp ?? computado.hpMax,
-          san: fichaDados.recursosAtuais?.san ?? computado.sanMax,
-          pef: Math.min(computado.pefMax, curPef + r1),
-          pem: Math.min(computado.pemMax, curPem + r2)
-        }
-      });
-      await registrarRolagemMesa(r1 + r2, 'Pausa Curta', `Recuperou +${r1} PE-F e +${r2} PE-M`);
-      modalDescanso.classList.add('hidden');
-      modalDescanso.classList.remove('flex');
-    };
-
-    document.getElementById('btn-descanso-longo').onclick = async () => {
-      const recHp = Math.floor(Math.random() * 4) + 1 + (computado.attrTotais.vigor || 0);
-      const recSan = Math.floor(Math.random() * 4) + 1 + (computado.attrTotais.impeto || 0);
-      const curHp = fichaDados.recursosAtuais?.hp ?? computado.hpMax;
-      const curSan = fichaDados.recursosAtuais?.san ?? computado.sanMax;
-
-      await updateDoc(doc(db, "fichas", fichaId), {
-        recursosAtuais: {
-          hp: Math.min(computado.hpMax, curHp + recHp),
-          san: Math.min(computado.sanMax, curSan + recSan),
-          pef: computado.pefMax,
-          pem: computado.pemMax
-        }
-      });
-      await registrarRolagemMesa(recHp + recSan, 'Descanso Longo', `PE-F e PE-M restaurados · +${recHp} HP e +${recSan} SAN`);
-      modalDescanso.classList.add('hidden');
-      modalDescanso.classList.remove('flex');
-    };
-
-    /* ========================================================= */
-    /* HISTÓRICO DE ROLAGENS LATERAL                             */
-    /* ========================================================= */
-    function renderizarHistoricoLateral(lista) {
-      const feed = document.getElementById('feed-rolagens-ficha');
-      if (!lista.length) {
-        feed.innerHTML = `<p class="text-stone-500 italic text-center mt-8">Nenhuma rolagem registrada ainda.</p>`;
-        return;
-      }
-      feed.innerHTML = lista.map(r => `
-        <div class="bg-stone-950 border ${r.ehMestre ? 'border-gold-700/50' : 'border-stone-800'} rounded p-2 space-y-0.5">
-          <div class="flex justify-between items-baseline">
-            <strong class="font-cinzel ${r.ehMestre ? 'text-amber-400' : 'text-gold-300'}">${r.personagemNome || 'Personagem'}</strong>
-            <span class="font-cinzel font-bold text-base text-gold-400">${r.total}</span>
+      box.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap">
+          <div>
+            <b class="cz" style="color:var(--acc)">${node.titulo}</b> <span class="tag">${node.custoPontos || 1} PT</span>
+            <p style="margin:2px 0; font-size:12px">${node.conteudo?.descricao || ''}</p>
+            ${node.herancaSingular?.descricao ? `<p style="margin:2px 0; font-size:11px; color:var(--acc)">★ Herança Singular: ${node.herancaSingular.descricao}</p>` : ''}
           </div>
-          <div class="text-[11px] text-stone-300">${r.descricao || ''}</div>
-          <div class="font-mono text-[10px] text-stone-500">${r.detalhes || ''}</div>
+          <div style="display:flex; gap:6px; align-items:center">
+            ${temOpcoes ? `
+              <select id="sel-opt-amb">
+                <option value="a">${node.opcoesAmbiguas[0].efeito}</option>
+                <option value="b">${node.opcoesAmbiguas[1].efeito}</option>
+              </select>
+            ` : ''}
+            <button class="btn pri" id="btn-exec-compra" ${st.st !== 'avail' ? 'disabled' : ''}>${st.msg}</button>
+          </div>
         </div>
-      `).join('');
+      `;
+
+      if (st.st === 'avail') {
+        getEl('#btn-exec-compra').onclick = async () => {
+          const custo = parseInt(node.custoPontos) || 1;
+          const upd = {
+            pontosEvolucao: (fichaDoc.pontosEvolucao || 0) - custo,
+            [`nosDesbloqueados.${arvore.id}`]: [...((fichaDoc.nosDesbloqueados || {})[arvore.id] || []), node.id]
+          };
+          if (temOpcoes) {
+            const esc = getEl('#sel-opt-amb').value;
+            const opt = node.opcoesAmbiguas.find(o => o.idOpcao === esc);
+            if (opt?.attr && (computado.attr[opt.attr] || 0) >= computado.teto) {
+              return mostrarToast(`Atributo já atingiu o teto (${computado.teto})!`);
+            }
+            upd[`escolhasAmbiguas.${node.id}`] = esc;
+          }
+          await updateDoc(doc(db, "fichas", fichaId), upd);
+          box.hidden = true;
+          mostrarToast(`"${node.titulo}" desbloqueado!`);
+        };
+      }
     }
+
+    /* ---------- Histórico Lateral ---------- */
+    function renderizarHistoricoLateral(lista) {
+      const cont = getEl('#hist-list');
+      cont.innerHTML = lista.length ? lista.map(r => `
+        <div class="hist-item">
+          <div style="display:flex; justify-content:space-between; align-items:baseline">
+            <b class="cz" style="color:var(--acc); font-size:11px">${r.personagemNome || 'Personagem'}</b>
+            <b class="cz" style="font-size:16px; color:var(--acc)">${r.total}</b>
+          </div>
+          <div style="font-size:11px">${r.descricao || ''}</div>
+          <div class="mut" style="font-style:normal; font-family:monospace; font-size:10px">${r.detalhes || ''}</div>
+        </div>
+      `).join('') : '<span class="mut">Nenhuma rolagem ainda.</span>';
+    }
+
+    /* ---------- Inicialização e Listeners Tempo Real ---------- */
+    function sincronizarTelaCompleta() {
+      if (!mesaDados || !fichaDoc) return;
+      RAIZES = mesaDados.raizesDisponiveis || {};
+      regras = {
+        ...REGRAS_PADRAO,
+        ...(mesaDados.regras || {}),
+        tetosPorEstagio: { ...REGRAS_PADRAO.tetosPorEstagio, ...(mesaDados.regras?.tetosPorEstagio || {}) }
+      };
+      computado = calcularEstadoFicha();
+      maximosRecursos = computado.maxRec;
+
+      aplicarVisual();
+      construirCabecalho();
+      atualizarValoresRecursos();
+      construirRodaAtributos();
+      renderizarPericias();
+      renderizarHabilidades();
+      renderizarInventario();
+      renderizarMacros();
+      renderizarSelecaoTeste();
+
+      if (!getEl('#modal').hidden && getEl('#modal-box').classList.contains('mod-tree')) {
+        renderizarArvoreNoModal();
+      }
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) return window.location.href = '../index.html';
+      usuarioAtual = user;
+
+      construirInterfaceRecursos();
+      montarColunasLayout();
+      inicializarDragAndDrop();
+
+      onSnapshot(doc(db, "mesas", mesaId), (snap) => {
+        if (!snap.exists()) return window.location.href = '../index.html';
+        mesaDados = snap.data();
+        sincronizarTelaCompleta();
+      });
+
+      onSnapshot(doc(db, "fichas", fichaId), (snap) => {
+        if (!snap.exists()) return window.location.href = `mesa.html?id=${mesaId}`;
+        fichaDoc = snap.data();
+        sincronizarTelaCompleta();
+      });
+
+      const qRolagens = query(collection(db, "rolagens"), where("mesaId", "==", mesaId));
+      onSnapshot(qRolagens, (snap) => {
+        const lista = [];
+        snap.forEach(d => lista.push(d.data()));
+        lista.sort((a, b) => (b.criadoEm?.toMillis?.() || Date.now()) - (a.criadoEm?.toMillis?.() || Date.now()));
+        renderizarHistoricoLateral(lista.slice(0, 25));
+      });
+    });
   </script>
 </body>
 
