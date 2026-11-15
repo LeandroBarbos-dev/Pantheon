@@ -631,7 +631,7 @@
 
   <!-- Firebase & Lógica da Mesa -->
   <script type="module">
-    import { auth, db } from './js/firebase-config.js';
+    import { auth, db } from '../js/firebase-config.js';
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import {
       doc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, where, orderBy, limit, serverTimestamp
@@ -644,7 +644,7 @@
       PASSATEMPOS_PADRAO,
       ITENS_PADRAO,
       ARVORES_PADRAO
-    } from './js/sistema-padrao.js';
+    } from '../js/sistema-padrao.js';
 
     const params = new URLSearchParams(window.location.search);
     const mesaId = params.get('id');
