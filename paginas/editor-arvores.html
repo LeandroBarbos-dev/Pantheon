@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PANTHEON · Editor de Árvores de Evolução</title>
+  <link rel="icon" href="data:,">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -161,6 +162,9 @@
 
 <body class="min-h-screen flex flex-col selection:bg-gold-700 selection:text-white overflow-hidden">
 
+  <!-- Datalist global com as Perícias Oficiais do Livro -->
+  <datalist id="datalist-pericias"></datalist>
+
   <!-- HEADER -->
   <header class="border-b-2 border-gold-600/60 bg-parchment-dark/95 px-6 py-3 flex flex-wrap justify-between items-center gap-3 z-40 backdrop-blur-md">
     <div class="flex items-center space-x-3">
@@ -187,6 +191,9 @@
       <button id="btn-exportar-json" class="px-3 py-1.5 rounded border border-stone-700 bg-stone-900 hover:border-gold-500 hover:text-gold-300 text-xs font-cinzel transition-all flex items-center gap-1.5">
         <i class="fa-solid fa-code text-gold-400"></i> Exportar
       </button>
+      <button id="btn-publicar-arvore-mod" class="hidden px-3 py-1.5 rounded border border-purple-600/70 bg-purple-950/70 hover:border-purple-400 text-purple-200 text-xs font-cinzel transition-all items-center gap-1.5" title="Compartilhar esta árvore na Biblioteca de Mods">
+        <i class="fa-solid fa-share-nodes text-purple-400"></i> Publicar Mod
+      </button>
       <button id="btn-excluir-arvore-mesa" class="hidden px-2.5 py-1.5 rounded border border-red-900 bg-red-950/60 hover:border-red-500 text-red-400 text-xs font-cinzel" title="Excluir esta árvore da mesa">
         <i class="fa-solid fa-trash"></i>
       </button>
@@ -208,7 +215,7 @@
 
       <div class="space-y-1.5">
         <label class="block font-cinzel text-xs text-gold-400 font-bold uppercase tracking-wider">Raiz Associada</label>
-        <input type="text" id="tree-root-input" placeholder="Ex: Mercador, Ferreiro, Órfão..." class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-gold-500">
+        <input type="text" id="tree-root-input" placeholder="Ex: Mercador, Ferreiro, Padrão..." class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-gold-500">
         <select id="tree-root-select" class="hidden w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-xs text-gold-300 focus:outline-none focus:border-gold-500"></select>
       </div>
 
@@ -240,10 +247,10 @@
       </div>
 
       <div id="canvas-zoom-controls">
-        <button type="button" id="zoom-out">−</button>
+        <button type="button" id="zoom-out" title="Diminuir Zoom">−</button>
         <span id="canvas-zoom-value">100%</span>
-        <button type="button" id="zoom-in">+</button>
-        <button type="button" id="zoom-reset">↺</button>
+        <button type="button" id="zoom-in" title="Aumentar Zoom">+</button>
+        <button type="button" id="zoom-reset" title="Centralizar Árvore">↺</button>
       </div>
     </main>
 
@@ -368,7 +375,7 @@
 
             <!-- Sub-bloco Opção B = Perícia -->
             <div id="attr-optb-box-pericia" class="grid grid-cols-3 gap-1">
-              <input type="text" id="attr-optb-per-nome" placeholder="Nome da Perícia" class="col-span-2 bg-stone-950 border border-stone-700 rounded px-2 py-1 text-stone-200">
+              <input type="text" list="datalist-pericias" id="attr-optb-per-nome" placeholder="Nome da Perícia" class="col-span-2 bg-stone-950 border border-stone-700 rounded px-2 py-1 text-stone-200">
               <input type="number" id="attr-optb-per-val" min="1" max="10" value="1" class="bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-sky-300 text-center font-bold">
             </div>
 
@@ -475,10 +482,21 @@
         <h3 id="json-modal-title" class="font-cinzel text-gold-400 font-bold text-lg glow-gold">Código JSON</h3>
         <button id="btn-close-json" class="text-stone-400 hover:text-gold-400"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <textarea id="json-textarea" rows="12" class="w-full bg-stone-950 border border-stone-800 rounded p-3 font-mono text-xs text-gold-300 focus:outline-none focus:border-gold-500"></textarea>
-      <div class="flex justify-end gap-3 pt-2">
-        <button id="btn-cancel-json" class="px-4 py-2 bg-stone-900 border border-stone-700 text-stone-300 text-xs font-cinzel rounded">Cancelar</button>
-        <button id="json-action-btn" class="px-5 py-2 bg-gold-700 hover:bg-gold-600 text-stone-950 font-cinzel font-bold text-xs rounded shadow-lg">Confirmar</button>
+      <textarea id="json-textarea" rows="12" placeholder="Cole o código JSON da árvore aqui ou use os botões de arquivo abaixo..." class="w-full bg-stone-950 border border-stone-800 rounded p-3 font-mono text-xs text-gold-300 focus:outline-none focus:border-gold-500"></textarea>
+      <div class="flex flex-wrap justify-between items-center gap-3 pt-2">
+        <div class="flex items-center gap-2">
+          <button type="button" id="btn-baixar-arquivo-json" class="px-3 py-2 bg-stone-900 border border-emerald-700/70 hover:border-emerald-400 text-emerald-300 text-xs font-cinzel rounded flex items-center gap-1.5">
+            <i class="fa-solid fa-download"></i> Baixar .json
+          </button>
+          <button type="button" id="btn-carregar-arquivo-json" class="px-3 py-2 bg-stone-900 border border-sky-700/70 hover:border-sky-400 text-sky-300 text-xs font-cinzel rounded flex items-center gap-1.5">
+            <i class="fa-solid fa-upload"></i> Abrir .json
+          </button>
+          <input type="file" id="input-file-arvore-json" accept=".json,application/json" hidden>
+        </div>
+        <div class="flex gap-2">
+          <button id="btn-cancel-json" class="px-4 py-2 bg-stone-900 border border-stone-700 text-stone-300 text-xs font-cinzel rounded">Cancelar</button>
+          <button id="json-action-btn" class="px-5 py-2 bg-gold-700 hover:bg-gold-600 text-stone-950 font-cinzel font-bold text-xs rounded shadow-lg">Confirmar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -486,8 +504,14 @@
   <script type="module">
     import {
       auth, db, onAuthStateChanged,
-      doc, getDoc, updateDoc
+      doc, getDoc, updateDoc, addDoc, collection, serverTimestamp
     } from '../js/firebase-config.js';
+
+    import { PERICIAS_LIVRO } from '../js/sistema-padrao.js';
+
+    // Popula o datalist de perícias oficiais para autocompletar
+    document.getElementById('datalist-pericias').innerHTML =
+      PERICIAS_LIVRO.map(p => `<option value="${p}">`).join('');
 
     const params = new URLSearchParams(window.location.search);
     const mesaId = params.get('mesaId');
@@ -497,6 +521,7 @@
       percepcao: 'PER', erudicao: 'ERU', autoridade: 'AUT', impeto: 'ÍMP'
     };
 
+    let usuarioAtual = null;
     let mesaDados = null;
     let treeData = {
       id: `arvore_${Date.now()}`,
@@ -523,11 +548,13 @@
     let currentZoom = 1, panX = 0, panY = 0;
 
     onAuthStateChanged(auth, async (user) => {
+      usuarioAtual = user;
       if (mesaId && user) {
         await carregarContextoMesa(user);
       }
       loadTreeIntoInputs();
       renderTreeVisual();
+      centralizarCanvas();
     });
 
     async function carregarContextoMesa(user) {
@@ -547,6 +574,11 @@
       const btnSalvar = document.getElementById('btn-salvar-mesa');
       btnSalvar.classList.remove('hidden');
       btnSalvar.classList.add('flex');
+
+      const btnPubMod = document.getElementById('btn-publicar-arvore-mod');
+      btnPubMod.classList.remove('hidden');
+      btnPubMod.classList.add('flex');
+
       document.getElementById('btn-excluir-arvore-mesa').classList.remove('hidden');
 
       const rootInput = document.getElementById('tree-root-input');
@@ -589,6 +621,7 @@
           loadTreeIntoInputs();
           closeInspector();
           renderTreeVisual();
+          centralizarCanvas();
         }
       }
     };
@@ -621,6 +654,33 @@
       }
     };
 
+    document.getElementById('btn-publicar-arvore-mod').onclick = async () => {
+      if (!usuarioAtual) return;
+      const titulo = prompt("Nome do Mod para publicar esta árvore na Biblioteca:", treeData.nome || "Nova Árvore");
+      if (!titulo || !titulo.trim()) return;
+
+      const vis = confirm("Clique em OK para tornar PÚBLICO na comunidade, ou Cancelar para salvar como PRIVADO (só para você).")
+        ? "publico"
+        : "privado";
+
+      try {
+        await addDoc(collection(db, "mods"), {
+          titulo: titulo.trim(),
+          descricao: treeData.descricao || `Árvore de evolução (${treeData.raizAssociada || 'Geral'}) com ${treeData.nos.length} nós.`,
+          autorId: usuarioAtual.uid,
+          autorNome: usuarioAtual.displayName || usuarioAtual.email?.split('@')[0] || 'Mestre',
+          visibilidade: vis,
+          mesaIdOrigem: mesaId || null,
+          tiposInclusos: ['arvores'],
+          conteudo: { arvores: [treeData] },
+          criadoEm: serverTimestamp()
+        });
+        alert(`Árvore "${titulo.trim()}" publicada na Biblioteca de Mods (${vis === 'publico' ? 'Pública' : 'Privada'})!`);
+      } catch (err) {
+        alert("Erro ao publicar Mod: " + err.message);
+      }
+    };
+
     document.getElementById('btn-excluir-arvore-mesa').onclick = async () => {
       if (!mesaId) return;
       const existe = (mesaDados?.arvores || []).some(a => a.id === treeData.id);
@@ -650,6 +710,22 @@
     /* ========================================================= */
     /* ZOOM & PAN                                                */
     /* ========================================================= */
+    function centralizarCanvas() {
+      const wrapper = document.getElementById('tree-canvas-wrapper');
+      const grid = document.getElementById('tree-grid');
+      const stage = document.getElementById('tree-stage');
+      const zoomDisplay = document.getElementById('canvas-zoom-value');
+      if (!wrapper || !grid || !stage) return;
+
+      currentZoom = 1;
+      const gridCenterX = grid.offsetLeft + (grid.offsetWidth / 2);
+      const gridBottomY = grid.offsetTop + grid.offsetHeight;
+      panX = (wrapper.clientWidth / 2) - gridCenterX;
+      panY = (wrapper.clientHeight - 80) - gridBottomY;
+      stage.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+      zoomDisplay.textContent = '100%';
+    }
+
     function setupZoomAndPan() {
       const wrapper = document.getElementById('tree-canvas-wrapper');
       const stage = document.getElementById('tree-stage');
@@ -699,7 +775,7 @@
 
       document.getElementById('zoom-in').onclick = () => setZoom(currentZoom * 1.2);
       document.getElementById('zoom-out').onclick = () => setZoom(currentZoom / 1.2);
-      document.getElementById('zoom-reset').onclick = () => { currentZoom = 1; panX = 0; panY = 0; applyTransform(); };
+      document.getElementById('zoom-reset').onclick = centralizarCanvas;
       applyTransform();
     }
 
@@ -946,7 +1022,7 @@
 
       container.innerHTML = entries.map(([nome, val], idx) => `
         <div class="grid grid-cols-12 gap-1 items-center per-row-item">
-          <input type="text" data-per-nome="${idx}" value="${nome}" placeholder="Perícia (ex: Persuasão)" class="col-span-8 bg-stone-950 border border-stone-700 rounded px-2 py-1 text-stone-200">
+          <input type="text" list="datalist-pericias" data-per-nome="${idx}" value="${nome}" placeholder="Perícia (ex: Diplomacia)" class="col-span-8 bg-stone-950 border border-stone-700 rounded px-2 py-1 text-stone-200">
           <input type="number" data-per-val="${idx}" value="${val}" min="1" max="10" class="col-span-3 bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-sky-300 font-bold text-center">
           <button type="button" data-per-del="${idx}" class="col-span-1 text-stone-500 hover:text-red-400 text-center">✕</button>
         </div>
@@ -980,8 +1056,8 @@
       if (!node) return;
       if (!node.conteudo) node.conteudo = {};
       if (!node.conteudo.bonusPericia) node.conteudo.bonusPericia = {};
-      const chaveBase = `Perícia ${Object.keys(node.conteudo.bonusPericia).length + 1}`;
-      node.conteudo.bonusPericia[chaveBase] = 1;
+      const sugestao = PERICIAS_LIVRO.find(p => !(p in node.conteudo.bonusPericia)) || `Perícia ${Object.keys(node.conteudo.bonusPericia).length + 1}`;
+      node.conteudo.bonusPericia[sugestao] = 1;
       renderizarListaPericiasNo(node);
       renderTreeVisual();
     };
@@ -1003,7 +1079,7 @@
       } else if (tipo === 'pericia') {
         container.innerHTML = `
           <div class="grid grid-cols-3 gap-1">
-            <input type="text" id="${prefixo}-per-nome" value="${optObj?.periciaNome || ''}" placeholder="Nome da Perícia" class="col-span-2 bg-stone-950 border border-stone-700 rounded px-2 py-1 text-stone-200">
+            <input type="text" list="datalist-pericias" id="${prefixo}-per-nome" value="${optObj?.periciaNome || ''}" placeholder="Nome da Perícia" class="col-span-2 bg-stone-950 border border-stone-700 rounded px-2 py-1 text-stone-200">
             <input type="number" id="${prefixo}-per-val" min="1" max="10" value="${optObj?.periciaVal || 1}" class="bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-sky-300 text-center font-bold">
           </div>
         `;
@@ -1082,7 +1158,6 @@
       document.getElementById('attr-opta-key').value = optA.attr || 'potencia';
       document.getElementById('attr-opta-val').value = optA.val || 1;
 
-      // Migração automática caso exista JSON antigo com 2 atributos
       const tipoOptB = (optB.tipo === 'habilidade') ? 'habilidade' : 'pericia';
       document.getElementById('attr-optb-tipo').value = tipoOptB;
       document.getElementById('attr-optb-per-nome').value = optB.periciaNome || '';
@@ -1284,11 +1359,12 @@
       loadTreeIntoInputs();
       closeInspector();
       renderTreeVisual();
+      centralizarCanvas();
     }
 
     document.getElementById('btn-nova-arvore').onclick = criarNovaArvore;
 
-    // Modal JSON
+    // Modal JSON + Suporte a download/upload de arquivo
     document.getElementById('btn-exportar-json').onclick = () => {
       jsonModalMode = 'export';
       document.getElementById('json-modal-title').textContent = "Exportar JSON da Árvore";
@@ -1303,6 +1379,36 @@
       document.getElementById('json-textarea').value = "";
       document.getElementById('json-action-btn').textContent = "Carregar Árvore";
       document.getElementById('json-modal').classList.remove('hidden');
+    };
+
+    document.getElementById('btn-baixar-arquivo-json').onclick = () => {
+      const conteudo = JSON.stringify(treeData, null, 2);
+      const blob = new Blob([conteudo], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `arvore-${(treeData.nome || 'pantheon').toLowerCase().replace(/\s+/g, '-')}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    const inputFileArvore = document.getElementById('input-file-arvore-json');
+    document.getElementById('btn-carregar-arquivo-json').onclick = () => {
+      inputFileArvore.value = '';
+      inputFileArvore.click();
+    };
+
+    inputFileArvore.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const texto = await file.text();
+        document.getElementById('json-textarea').value = texto;
+        jsonModalMode = 'import';
+        document.getElementById('json-action-btn').textContent = "Carregar Árvore";
+      } catch (err) {
+        alert("Erro ao ler o arquivo: " + err.message);
+      }
     };
 
     document.getElementById('btn-close-json').onclick =
@@ -1323,6 +1429,7 @@
           loadTreeIntoInputs();
           closeInspector();
           renderTreeVisual();
+          centralizarCanvas();
           document.getElementById('json-modal').classList.add('hidden');
         } catch (e) {
           alert("Erro no JSON: " + e.message);
