@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PANTHEON · Ficha</title>
-  <link rel="icon" href="data:,">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Faustina:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
@@ -730,13 +729,14 @@
     } from '../js/firebase-config.js';
 
     import {
+      REGRAS_PADRAO,
       PERICIAS_LIVRO,
+      RAIZES_PADRAO,
       PROFISSOES_LIVRO,
-      PASSATEMPOS_LIVRO_DB,
-      RAIZES_PADRAO_SISTEMA
+      PASSATEMPOS_PADRAO,
+      ITENS_PADRAO,
+      ARVORES_PADRAO
     } from '../js/sistema-padrao.js';
-
-    const BONUS_ORFAO = RAIZES_PADRAO_SISTEMA['Órfão'] || [1, 1, 1, 1];
 
     const params = new URLSearchParams(window.location.search);
     const mesaId = params.get('mesaId');
@@ -763,21 +763,13 @@
       ['pem', 'PE-M (Energia Mental)', '#3da5d9']
     ];
 
+    const BONUS_ORFAO = RAIZES_PADRAO["Órfão"] || [2, -2, 2, 2];
+
     const LAYOUT_PADRAO = [
       ['recursos', 'atributos'],
       ['teste', 'macros'],
       ['pericias', 'habilidades', 'inventario']
     ];
-
-    const REGRAS_PADRAO = {
-      pontosAtributoIniciais: 5,
-      estagioInicial: 1,
-      tetosPorEstagio: { 1: 2, 2: 3, 3: 4, 4: 5 },
-      pontosEvolucaoIniciais: 0,
-      passatemposFocados: 1,
-      passatemposMistos: 1,
-      travaAscendenteCarga: true
-    };
 
     const ICONE_CAT = { arma: '⚔️', escudo: '🛡️', armadura: '🦺', cura: '🩹', utilitario: '🎒' };
 
@@ -785,7 +777,7 @@
     let mesaDados = null;
     let fichaDoc = null;
     let regras = { ...REGRAS_PADRAO };
-    let RAIZES = {};
+    let RAIZES = { ...RAIZES_PADRAO };
     let computado = null;
 
     // Preferências visuais locais
@@ -841,16 +833,52 @@
 
     const obterSiglaAtributo = chave => ATRIBUTOS.find(a => a[0] === chave)?.[1] || chave.toUpperCase();
 
-    function obterInfoProfissao(nomeRaiz) {
-      if (!nomeRaiz) return null;
-      return mesaDados?.profissoesCustomizadas?.[nomeRaiz] || PROFISSOES_LIVRO[nomeRaiz] || null;
-    }
-
     function ehArvorePadrao(arv) {
       if (!arv) return false;
       if (arv.isPadrao) return true;
       const raizNorm = String(arv.raizAssociada || '').trim().toLowerCase();
       return ['padrão', 'padrao', 'comum', 'geral'].includes(raizNorm);
+    }
+
+    /* ============================================================ */
+    /* MESCLAGEM: BASE DO SISTEMA + ADICIONAIS DA MESA              */
+    /* ============================================================ */
+    function obterProfissoesMescladas() {
+      return {
+        ...PROFISSOES_LIVRO,
+        ...(mesaDados?.profissoesDisponiveis || {})
+      };
+    }
+
+    function obterArvoresMescladas() {
+      const daMesa = mesaDados?.arvores || [];
+      const idsMesa = new Set(daMesa.map(a => a.id));
+      const baseFaltantes = ARVORES_PADRAO.filter(a => !idsMesa.has(a.id));
+      return [...baseFaltantes, ...daMesa];
+    }
+
+    function obterCatalogoItensMesclado() {
+      const daMesa = mesaDados?.catalogoItens || [];
+      const idsMesa = new Set(daMesa.map(i => i.id));
+      const baseFaltantes = ITENS_PADRAO.filter(i => !idsMesa.has(i.id));
+      return [...baseFaltantes, ...daMesa];
+    }
+
+    function obterCatalogoPassatempos() {
+      const mapa = new Map(PASSATEMPOS_PADRAO.map(p => [p.nome, p]));
+      const listaMesa = mesaDados?.passatemposDisponiveis || [];
+
+      listaMesa.forEach(item => {
+        if (typeof item === 'string') {
+          if (!mapa.has(item)) {
+            mapa.set(item, { nome: item, tipo: 'focado', pericias: [item], desc: `+2 ${item}` });
+          }
+        } else if (item && item.nome) {
+          mapa.set(item.nome, item);
+        }
+      });
+
+      return [...mapa.values()];
     }
 
     /* ---------- Aparência, Minimização e Histórico ---------- */
@@ -1014,20 +1042,7 @@
       });
     }
 
-    /* ---------- Catálogo e Lista Unificada de Passatempos ---------- */
-    function obterCatalogoPassatempos() {
-      const mapa = new Map(PASSATEMPOS_LIVRO_DB.map(p => [p.nome, p]));
-      const listaMesa = mesaDados?.passatemposDisponiveis;
-
-      if (Array.isArray(listaMesa) && listaMesa.length > 0) {
-        return listaMesa.map(nome => {
-          if (mapa.has(nome)) return mapa.get(nome);
-          return { nome, tipo: 'focado', pericias: [nome], desc: `+2 ${nome}` };
-        });
-      }
-      return PASSATEMPOS_LIVRO_DB;
-    }
-
+    /* ---------- Lista Unificada de Passatempos ---------- */
     function obterListaPassatemposSelecionados() {
       const pass = fichaDoc?.passatempos || {};
       if (Array.isArray(pass.lista)) {
@@ -1080,6 +1095,7 @@
       const h = f.raizesHeranca || { tipo: 'heranca', r1: '', r2: '', secEscolhida: '', secEscolhida2: '' };
       const estagio = f.estagioBiologico || 1;
       const teto = f.tetoIndividualOverride || regras.tetosPorEstagio[estagio] || 2;
+      const profissoes = obterProfissoesMescladas();
 
       const attrBase = {
         potencia: 0, vigor: 0, destreza: 0, percepcao: 0, erudicao: 0, autoridade: 0, impeto: 0,
@@ -1110,8 +1126,8 @@
         addPericia('Reflexo', 2, 'Órfão');
         addPericia('Intuição', 2, 'Órfão');
       } else {
-        const prof1 = obterInfoProfissao(h.r1);
-        if (h.r1 && prof1) {
+        if (h.r1 && profissoes[h.r1]) {
+          const prof1 = profissoes[h.r1];
           const sec1 = prof1.sec.includes(h.secEscolhida) ? h.secEscolhida : prof1.sec[0];
 
           if (h.tipo === 'singular') {
@@ -1132,8 +1148,8 @@
           }
         }
 
-        const prof2 = h.tipo === 'singular' ? obterInfoProfissao(h.r2) : null;
-        if (prof2) {
+        if (h.tipo === 'singular' && h.r2 && profissoes[h.r2]) {
+          const prof2 = profissoes[h.r2];
           const sec2 = prof2.sec.includes(h.secEscolhida2) ? h.secEscolhida2 : prof2.sec[0];
           addPericia(prof2.main[0], 2, `Raiz 2 (${h.r2})`);
           addPericia(prof2.main[1], 2, `Raiz 2 (${h.r2})`);
@@ -1166,7 +1182,7 @@
         }
       });
 
-      // 3. Árvores de Evolução
+      // 3. Árvores de Evolução (Base + Mesa)
       const addHabilidadeDeObj = (id, titulo, c, singAtiva, herancaSing) => {
         const bonusSing = singAtiva ? (parseInt(herancaSing?.bonusExtra) || 0) : 0;
         const redPeSing = singAtiva ? (parseInt(herancaSing?.reducaoPe) || 0) : 0;
@@ -1188,9 +1204,9 @@
         });
       };
 
-      const arvoresMesa = mesaDados?.arvores || [];
+      const arvoresDisponiveis = obterArvoresMescladas();
       Object.entries(f.nosDesbloqueados || {}).forEach(([arvId, nosIds]) => {
-        const arv = arvoresMesa.find(a => a.id === arvId);
+        const arv = arvoresDisponiveis.find(a => a.id === arvId);
         if (!arv) return;
         const temSingular = h.tipo === 'heranca' && h.r1 === arv.raizAssociada;
 
@@ -1292,6 +1308,7 @@
       const f = fichaDoc;
       const travado = Boolean(f.criacaoFinalizada);
       const h = f.raizesHeranca || { tipo: 'heranca', r1: '', r2: '', secEscolhida: '', secEscolhida2: '' };
+      const profissoes = obterProfissoesMescladas();
 
       getEl('#nome').value = f.nome || '';
       getEl('#pt-badge').textContent = f.pontosEvolucao || 0;
@@ -1309,7 +1326,7 @@
       if (h.tipo === 'auto') {
         chipsRaizHtml = `<span class="chip acc">Autodidata / Órfão</span>`;
       } else {
-        const prof1 = obterInfoProfissao(h.r1);
+        const prof1 = profissoes[h.r1];
         const sec1 = prof1?.sec?.includes(h.secEscolhida) ? h.secEscolhida : (prof1?.sec?.[0] || '');
         const ptsSec1 = h.tipo === 'heranca' ? '+2' : '+1';
 
@@ -1326,7 +1343,7 @@
         `;
 
         if (h.tipo === 'singular') {
-          const prof2 = obterInfoProfissao(h.r2);
+          const prof2 = profissoes[h.r2];
           const sec2 = prof2?.sec?.includes(h.secEscolhida2) ? h.secEscolhida2 : (prof2?.sec?.[0] || '');
           chipsRaizHtml += `
             <span class="chip" style="border-color:#4fb0e0">
@@ -1387,16 +1404,17 @@
       const listaPass = obterListaPassatemposSelecionados();
       const lim = calcularLimitesPassatempos();
       const catPass = new Map(obterCatalogoPassatempos().map(p => [p.nome, p]));
+      const listaPericias = mesaDados?.periciasDisponiveis || PERICIAS_LIVRO;
 
       const chipsPassHtml = listaPass.length
         ? listaPass.map((item, idx) => {
             const obj = catPass.get(item.nome);
             const bonusTxt = obj ? obj.desc : (item.tipo === 'focado' ? '+2' : '+1/+1');
-            const ehEscolha = item.nome === 'Estudo Dirigido';
+            const ehEscolha = obj?.pericias?.includes('ESCOLHA') || item.nome === 'Estudo Dirigido';
             const selEscolhaHtml = ehEscolha ? `
               <select data-pass-esc="${idx}" ${travado ? 'disabled' : ''} style="padding:1px 5px; font-size:11px">
                 <option value="">+1 Escolha...</option>
-                ${PERICIAS_LIVRO.filter(p => p !== 'Erudição').map(p => `<option value="${p}" ${p === item.escolha ? 'selected' : ''}>+1 ${p}</option>`).join('')}
+                ${listaPericias.filter(p => p !== 'Erudição').map(p => `<option value="${p}" ${p === item.escolha ? 'selected' : ''}>+1 ${p}</option>`).join('')}
               </select>
             ` : '';
 
@@ -1445,13 +1463,12 @@
     window.finalizarCriacaoFicha = async () => {
       if (!confirm("Finalizar a criação da ficha? Atributos iniciais, raízes, perícias secundárias e passatempos ficarão travados permanentemente.")) return;
       const h = fichaDoc.raizesHeranca || {};
-      const prof1 = obterInfoProfissao(h.r1);
-      const prof2 = obterInfoProfissao(h.r2);
-      const sec1 = prof1?.sec?.includes(h.secEscolhida)
+      const profissoes = obterProfissoesMescladas();
+      const sec1 = profissoes[h.r1]?.sec?.includes(h.secEscolhida)
         ? h.secEscolhida
-        : (prof1?.sec?.[0] || '');
-      const sec2 = h.tipo === 'singular' && prof2
-        ? (prof2.sec.includes(h.secEscolhida2) ? h.secEscolhida2 : prof2.sec[0])
+        : (profissoes[h.r1]?.sec?.[0] || '');
+      const sec2 = h.tipo === 'singular' && profissoes[h.r2]
+        ? (profissoes[h.r2].sec.includes(h.secEscolhida2) ? h.secEscolhida2 : profissoes[h.r2].sec[0])
         : '';
 
       await updateDoc(doc(db, "fichas", fichaId), {
@@ -1470,10 +1487,12 @@
       const h = fichaDoc.raizesHeranca || { tipo: 'heranca', r1: '', r2: '' };
       const listaRaizes = Object.keys(RAIZES).filter(r => r !== 'Órfão');
       const ehSingular = h.tipo === 'singular';
+      const profissoes = obterProfissoesMescladas();
+      const arvores = obterArvoresMescladas();
 
       const cardsHtml = listaRaizes.map(nomeRaiz => {
         const bonusRec = RAIZES[nomeRaiz] || [0, 0, 0, 0];
-        const prof = obterInfoProfissao(nomeRaiz);
+        const prof = profissoes[nomeRaiz];
         const isPri = h.r1 === nomeRaiz;
         const isSec = ehSingular && h.r2 === nomeRaiz;
 
@@ -1484,7 +1503,7 @@
           ? `Principais: <b>${prof.main.join(', ')}</b><br>Mundo: <b>${prof.world}</b> · Sec: <b>${prof.sec.join(' / ')}</b>`
           : 'Perícias customizadas da mesa';
 
-        const arvRaiz = (mesaDados?.arvores || []).find(a => a.raizAssociada === nomeRaiz);
+        const arvRaiz = arvores.find(a => a.raizAssociada === nomeRaiz);
 
         return `
           <div class="raiz-card ${isPri ? 'r-pri' : isSec ? 'r-sec' : ''}">
@@ -1524,8 +1543,8 @@
 
     window.definirRaizPersonagem = async (slot, nomeRaiz) => {
       const h = fichaDoc.raizesHeranca || {};
-      const prof = obterInfoProfissao(nomeRaiz);
-      const primeiraSec = prof?.sec?.[0] || '';
+      const profissoes = obterProfissoesMescladas();
+      const primeiraSec = profissoes[nomeRaiz]?.sec?.[0] || '';
       const upd = {};
 
       if (slot === 1) {
@@ -2170,8 +2189,8 @@
     };
 
     window.abrirModalCatalogoItens = () => {
-      const cat = mesaDados?.catalogoItens || [];
-      abrirModal('Catálogo de Itens da Mesa', cat.length ? cat.map(it => `
+      const cat = obterCatalogoItensMesclado();
+      abrirModal('Catálogo de Itens (Sistema & Mesa)', cat.length ? cat.map(it => `
         <div class="hcard" style="display:flex; gap:10px; align-items:center">
           ${it.imagem
             ? `<img src="${it.imagem}" alt="${it.nome}" style="width:44px; height:44px; object-fit:cover; border-radius:6px; border:1px solid var(--line)">`
@@ -2183,11 +2202,11 @@
           </div>
           <button class="btn pri" onclick="adicionarItemDaMesa('${it.id}')">+ Pegar</button>
         </div>
-      `).join('') : '<span class="mut">O Mestre ainda não cadastrou itens no catálogo desta mesa.</span>');
+      `).join('') : '<span class="mut">Nenhum item disponível no catálogo.</span>');
     };
 
     window.adicionarItemDaMesa = async (catId) => {
-      const base = (mesaDados?.catalogoItens || []).find(i => i.id === catId);
+      const base = obterCatalogoItensMesclado().find(i => i.id === catId);
       if (!base) return;
       const inv = [...(fichaDoc.inventario || []), { ...JSON.parse(JSON.stringify(base)), uid: 'inv_' + Date.now(), equipado: false, usosAtuais: base.usosMax || 1 }];
       await updateDoc(doc(db, "fichas", fichaId), { inventario: inv });
@@ -2466,7 +2485,7 @@
 
     /* ---------- Visualizador de Árvores ---------- */
     function obterArvoresParaModal(modo) {
-      const todas = mesaDados?.arvores || [];
+      const todas = obterArvoresMescladas();
       if (!fichaDoc?.criacaoFinalizada || modo === 'explorar') {
         return todas;
       }
@@ -2482,7 +2501,7 @@
     }
 
     window.abrirModalArvorePadrao = () => {
-      const padrao = (mesaDados?.arvores || []).find(a => ehArvorePadrao(a));
+      const padrao = obterArvoresMescladas().find(a => ehArvorePadrao(a));
       if (!padrao) {
         return abrirModal('🧭 Árvore de Evolução Padrão', `
           <div style="padding:14px; text-align:center">
@@ -2513,6 +2532,7 @@
         arvoreAtivaId = acessiveis[0].id;
       }
 
+      tZoom = 1; tPanX = 0; tPanY = 0;
       noInspecionadoId = null;
 
       const selHtml = `<select id="sel-arv-modal" onchange="trocarArvoreModal(this.value)">${acessiveis.map(a =>
@@ -2549,34 +2569,19 @@
 
       iniciarPanZoomArvore();
       renderizarArvoreNoModal();
-      requestAnimationFrame(resetZoomArvore);
     };
 
     window.trocarArvoreModal = (id) => {
       arvoreAtivaId = id;
       noInspecionadoId = null;
+      resetZoomArvore();
       const det = getEl('#tv-detalhes');
       if (det) det.hidden = true;
       renderizarArvoreNoModal();
-      requestAnimationFrame(resetZoomArvore);
     };
 
     window.zoomArvore = (f) => { tZoom = Math.min(2, Math.max(0.35, tZoom * f)); aplicarTransformArvore(); };
-    window.resetZoomArvore = () => {
-      const wrap = getEl('#tv-wrap');
-      const grid = getEl('#tv-grid');
-      tZoom = 1;
-      if (wrap && grid) {
-        const gridCenterX = grid.offsetLeft + (grid.offsetWidth / 2);
-        const gridBottomY = grid.offsetTop + grid.offsetHeight;
-        tPanX = (wrap.clientWidth / 2) - gridCenterX;
-        tPanY = (wrap.clientHeight - 40) - gridBottomY;
-      } else {
-        tPanX = 0;
-        tPanY = 0;
-      }
-      aplicarTransformArvore();
-    };
+    window.resetZoomArvore = () => { tZoom = 1; tPanX = 0; tPanY = 0; aplicarTransformArvore(); };
     function aplicarTransformArvore() {
       const st = getEl('#tv-stage');
       if (st) st.style.transform = `translate(${tPanX}px, ${tPanY}px) scale(${tZoom})`;
@@ -2672,7 +2677,7 @@
     }
 
     function renderizarArvoreNoModal() {
-      const arvore = (mesaDados?.arvores || []).find(a => a.id === arvoreAtivaId);
+      const arvore = obterArvoresMescladas().find(a => a.id === arvoreAtivaId);
       const grid = getEl('#tv-grid');
       const stage = getEl('#tv-stage');
       if (!arvore || !grid || !stage) return;
@@ -2898,9 +2903,10 @@
     /* ---------- Inicialização e Listeners Tempo Real ---------- */
     function sincronizarTelaCompleta() {
       if (!mesaDados || !fichaDoc) return;
-      RAIZES = (mesaDados.raizesDisponiveis && Object.keys(mesaDados.raizesDisponiveis).length > 0)
-        ? mesaDados.raizesDisponiveis
-        : { ...RAIZES_PADRAO_SISTEMA };
+      RAIZES = {
+        ...RAIZES_PADRAO,
+        ...(mesaDados.raizesDisponiveis || {})
+      };
       regras = {
         ...REGRAS_PADRAO,
         ...(mesaDados.regras || {}),
@@ -2919,6 +2925,7 @@
       renderizarMacros();
       renderizarSelecaoTeste();
 
+      // Atualiza modais dinâmicos abertos em tempo real
       if (!getEl('#modal').hidden) {
         if (modalContextoAtual === 'arvore') renderizarArvoreNoModal();
         else if (modalContextoAtual === 'passatempos') abrirModalPassatempos();
