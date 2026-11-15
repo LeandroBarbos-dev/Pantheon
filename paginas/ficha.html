@@ -427,17 +427,18 @@
       border-radius: 8px;
       cursor: grab;
       user-select: none;
+      touch-action: none;
     }
     .tree-view-wrap.panning { cursor: grabbing; }
-    .tree-stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+    .tree-stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
     .tree-grid { position: absolute; left: 320px; top: 320px; display: flex; flex-direction: column; gap: 82px; padding: 30px 0; }
-    .tree-lvl { position: relative; height: 72px; width: 100%; }
+    .tree-lvl { position: relative; height: 74px; width: 100%; }
     .tnode {
       position: absolute;
       top: 0;
       transform: translateX(-50%);
-      width: 175px;
-      min-height: 56px;
+      width: 185px;
+      min-height: 60px;
       padding: 6px 8px;
       border-radius: 8px;
       border: 1px solid var(--line);
@@ -449,6 +450,7 @@
     .tnode.avail { border-color: var(--acc); box-shadow: 0 0 10px color-mix(in srgb, var(--acc) 35%, transparent); }
     .tnode.lock { opacity: 0.52; }
     .tnode.block { border-color: #e05555; opacity: 0.55; }
+    .tnode.selected { outline: 2px solid var(--acc); outline-offset: 2px; }
 
     .sw { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; }
     .sw.on { border-color: var(--txt); }
@@ -486,7 +488,8 @@
       <input class="nome-personagem" id="nome" placeholder="Nome do personagem" style="flex:1; min-width:180px">
       <span class="chip" id="badge-etapa">Carregando...</span>
       <button class="btn pri" id="btn-finalizar" hidden onclick="finalizarCriacaoFicha()">🔒 Finalizar Criação</button>
-      <button class="btn on" id="btn-arvores" onclick="abrirModalArvores()">🌳 Árvores (<span id="pt-badge">0</span> PT)</button>
+      <button class="btn on" id="btn-arvores" onclick="abrirModalArvores('raiz')">🌳 Raízes (<span id="pt-badge">0</span> PT)</button>
+      <button class="btn" id="btn-arvore-padrao" onclick="abrirModalArvorePadrao()" title="Árvore de evolução comum a todos os personagens da mesa">🧭 Evolução Padrão</button>
       <button class="btn" onclick="abrirModalDescanso()" title="Descanso">🏕 Descanso</button>
       <button class="btn" onclick="abrirLegendaSiglas()" title="Legenda das siglas">? Siglas</button>
       <button class="btn" id="btn-toggle-hist" onclick="alternarHistoricoLateral()">📜 Histórico</button>
@@ -762,6 +765,7 @@
     let sinalRecursos = { hp: -1, san: -1, pef: -1, pem: -1 };
     let maximosRecursos = {};
     let arvoreAtivaId = null;
+    let noInspecionadoId = null;
     let tZoom = 1, tPanX = 0, tPanY = 0;
 
     try {
@@ -796,6 +800,13 @@
     }
 
     const obterSiglaAtributo = chave => ATRIBUTOS.find(a => a[0] === chave)?.[1] || chave.toUpperCase();
+
+    function ehArvorePadrao(arv) {
+      if (!arv) return false;
+      if (arv.isPadrao) return true;
+      const raizNorm = String(arv.raizAssociada || '').trim().toLowerCase();
+      return ['padrão', 'padrao', 'comum', 'geral'].includes(raizNorm);
+    }
 
     /* ---------- Aparência, Minimização e Histórico ---------- */
     const PALETAS_CORES = { ouro: 40, carmesim: 355, esmeralda: 150, safira: 210, violeta: 270 };
@@ -873,6 +884,7 @@
     window.fecharModal = () => {
       getEl('#modal').hidden = true;
       getEl('#modal-box').classList.remove('mod-tree');
+      noInspecionadoId = null;
     };
     getEl('#modal').onclick = e => { if (e.target.id === 'modal') fecharModal(); };
 
@@ -957,7 +969,35 @@
       const habilidades = [];
       const bonusRecArvore = { hp: 0, san: 0, pef: 0, pem: 0 };
 
-      // 1. Nós desbloqueados nas Árvores
+      const addPericia = (pNome, pVal, fonte) => {
+        if (!pNome) return;
+        if (!pericias[pNome]) pericias[pNome] = { val: 0, fontes: [] };
+        pericias[pNome].val += pVal;
+        pericias[pNome].fontes.push(`${fonte} (+${pVal})`);
+      };
+
+      const addHabilidadeDeObj = (id, titulo, c, singAtiva, herancaSing) => {
+        const bonusSing = singAtiva ? (parseInt(herancaSing?.bonusExtra) || 0) : 0;
+        const redPeSing = singAtiva ? (parseInt(herancaSing?.reducaoPe) || 0) : 0;
+
+        if (c.efTipo && ['hp', 'san', 'pef', 'pem'].includes(c.efTipo)) {
+          bonusRecArvore[c.efTipo] += (parseInt(c.efVal) || 0) + bonusSing;
+        }
+        habilidades.push({
+          id,
+          nome: titulo,
+          cat: c.cat || 'passivo',
+          f: Math.max(0, (parseInt(c.f) || 0) - redPeSing),
+          m: Math.max(0, (parseInt(c.m) || 0) - redPeSing),
+          ef: c.efTipo === 'teste' ? { k: 'teste', v: (parseInt(c.efVal) || 0) + bonusSing } : null,
+          critMod: parseInt(c.critMod) || 0,
+          desc: singAtiva && herancaSing?.descricao
+            ? `${c.descricao || ''} [★ Herança: ${herancaSing.descricao}]`
+            : (c.descricao || '')
+        });
+      };
+
+      // 1. Nós desbloqueados nas Árvores (Raízes + Árvore Padrão)
       const arvoresMesa = mesaDados?.arvores || [];
       Object.entries(f.nosDesbloqueados || {}).forEach(([arvId, nosIds]) => {
         const arv = arvoresMesa.find(a => a.id === arvId);
@@ -970,69 +1010,40 @@
 
           const singAtiva = temSingular && Boolean(no.herancaSingular);
           const bonusSing = singAtiva ? (parseInt(no.herancaSingular?.bonusExtra) || 0) : 0;
-          const redPeSing = singAtiva ? (parseInt(no.herancaSingular?.reducaoPe) || 0) : 0;
 
           if (no.tipoRecompensa === 'atributo' || no.tipoRecompensa === 'ambiguo') {
             const esc = (f.escolhasAmbiguas || {})[no.id] || 'a';
             const opt = (no.opcoesAmbiguas || []).find(o => o.idOpcao === esc) || no.opcoesAmbiguas?.[0];
-            if (opt?.attr && attrArvore[opt.attr] !== undefined) {
-              attrArvore[opt.attr] += (parseInt(opt.val) || 1) + bonusSing;
+            if (opt) {
+              const tipoOpt = opt.tipo || (opt.attr ? 'atributo' : (opt.periciaNome ? 'pericia' : (opt.habilidade ? 'habilidade' : 'narrativo')));
+              if (tipoOpt === 'atributo' && opt.attr && attrArvore[opt.attr] !== undefined) {
+                attrArvore[opt.attr] += (parseInt(opt.val) || 1) + bonusSing;
+              } else if (tipoOpt === 'pericia' && opt.periciaNome) {
+                addPericia(opt.periciaNome, (parseInt(opt.periciaVal) || 1) + bonusSing, no.titulo);
+              } else if (tipoOpt === 'habilidade' && opt.habilidade) {
+                addHabilidadeDeObj(`${no.id}_${esc}`, opt.habilidade.nome || no.titulo, opt.habilidade, singAtiva, no.herancaSingular);
+              }
             }
           }
 
           if (no.conteudo?.bonusPericia) {
             Object.entries(no.conteudo.bonusPericia).forEach(([pNome, pVal]) => {
-              if (!pericias[pNome]) pericias[pNome] = { val: 0, fontes: [] };
-              const add = (parseInt(pVal) || 0) + bonusSing;
-              pericias[pNome].val += add;
-              pericias[pNome].fontes.push(`${no.titulo} (+${add})`);
+              addPericia(pNome, (parseInt(pVal) || 0) + bonusSing, no.titulo);
             });
           }
 
           if (no.tipoRecompensa === 'habilidade') {
-            const c = no.conteudo || {};
-            if (c.efTipo && ['hp', 'san', 'pef', 'pem'].includes(c.efTipo)) {
-              bonusRecArvore[c.efTipo] += (parseInt(c.efVal) || 0) + bonusSing;
-            }
-            habilidades.push({
-              id: no.id,
-              nome: no.titulo,
-              cat: c.cat || 'passivo',
-              f: Math.max(0, (parseInt(c.f) || 0) - redPeSing),
-              m: Math.max(0, (parseInt(c.m) || 0) - redPeSing),
-              ef: c.efTipo === 'teste' ? { k: 'teste', v: (parseInt(c.efVal) || 0) + bonusSing } : null,
-              critMod: parseInt(c.critMod) || 0,
-              desc: singAtiva && no.herancaSingular?.descricao
-                ? `${c.descricao || ''} [★ Herança: ${no.herancaSingular.descricao}]`
-                : (c.descricao || '')
-            });
+            addHabilidadeDeObj(no.id, no.titulo, no.conteudo || {}, singAtiva, no.herancaSingular);
           }
         });
       });
 
       // 2. Passatempos Infantis
       const pass = f.passatempos || { focados: [], mistos: [], extrasOrfao: [] };
-      (pass.focados || []).forEach(pNome => {
-        if (!pNome) return;
-        if (!pericias[pNome]) pericias[pNome] = { val: 0, fontes: [] };
-        pericias[pNome].val += 2;
-        pericias[pNome].fontes.push('Focado (+2)');
-      });
-      (pass.mistos || []).forEach(par => {
-        (par || []).forEach(pNome => {
-          if (!pNome) return;
-          if (!pericias[pNome]) pericias[pNome] = { val: 0, fontes: [] };
-          pericias[pNome].val += 1;
-          pericias[pNome].fontes.push('Misto (+1)');
-        });
-      });
+      (pass.focados || []).forEach(pNome => addPericia(pNome, 2, 'Focado'));
+      (pass.mistos || []).forEach(par => (par || []).forEach(pNome => addPericia(pNome, 1, 'Misto')));
       if (h.tipo === 'auto') {
-        (pass.extrasOrfao || []).forEach(pNome => {
-          if (!pNome) return;
-          if (!pericias[pNome]) pericias[pNome] = { val: 0, fontes: [] };
-          pericias[pNome].val += 1;
-          pericias[pNome].fontes.push('Órfão (+1)');
-        });
+        (pass.extrasOrfao || []).forEach(pNome => addPericia(pNome, 1, 'Órfão'));
       }
 
       // 3. Conversão de Maestria (-5 perícia -> +1 atributo)
@@ -1433,7 +1444,6 @@
         cont.appendChild(div);
       });
 
-      // Atualiza seletor de equipamento no Motor de Teste
       const selEq = getEl('#sel-equip-teste');
       const prev = selEq.value;
       const equips = inv.filter(i => i.equipado && (i.categoria === 'arma' || i.categoria === 'escudo'));
@@ -1619,7 +1629,6 @@
       const eq = (fichaDoc.inventario || []).find(i => i.uid === getEl('#sel-equip-teste').value);
       const modoEq = getEl('#sel-modo-equip').value;
 
-      // Margem de crítico: base da arma (ou 20) + modificador da habilidade selecionada
       const margemBase = eq?.categoria === 'arma' ? (parseInt(eq.criticoMargem) || 20) : 20;
       const margemCrit = Math.max(2, margemBase + (habObj?.critMod || 0));
 
@@ -1774,8 +1783,8 @@
       fecharModal();
     };
 
-    /* ---------- Visualizador de Árvores na Ficha ---------- */
-    function obterArvoresAcessiveis() {
+    /* ---------- Visualizador de Árvores na Ficha (Raízes + Árvore Padrão) ---------- */
+    function obterArvoresAcessiveis(incluirPadrao = true) {
       const todas = mesaDados?.arvores || [];
       const h = fichaDoc?.raizesHeranca || {};
       const permitidas = new Set();
@@ -1785,19 +1794,44 @@
         if (h.tipo === 'dupla' && h.r2) permitidas.add(h.r2);
       }
       (fichaDoc?.raizesExtras || []).forEach(r => permitidas.add(r));
-      return todas.filter(a => permitidas.has(a.raizAssociada));
+      return todas.filter(a => (incluirPadrao && ehArvorePadrao(a)) || permitidas.has(a.raizAssociada));
     }
 
-    window.abrirModalArvores = () => {
-      const acessiveis = obterArvoresAcessiveis();
+    window.abrirModalArvorePadrao = () => {
+      const padrao = (mesaDados?.arvores || []).find(a => ehArvorePadrao(a));
+      if (!padrao) {
+        return abrirModal('🧭 Árvore de Evolução Padrão', `
+          <div style="padding:12px; text-align:center">
+            <p class="cz" style="color:var(--acc); font-size:14px; margin:0 0 6px">Árvore Comum em Construção</p>
+            <p class="mut" style="font-style:normal">Esta árvore compartilhada por todos os personagens da mesa ainda não foi cadastrada pelo Mestre.<br>Assim que uma árvore com raiz <b>"Padrão"</b> for salva na mesa, ela aparecerá automaticamente aqui.</p>
+          </div>
+        `);
+      }
+      arvoreAtivaId = padrao.id;
+      abrirModalArvores('padrao');
+    };
+
+    window.abrirModalArvores = (modo = 'raiz') => {
+      const acessiveis = obterArvoresAcessiveis(true);
       if (!acessiveis.length) return mostrarToast('Nenhuma árvore vinculada às suas raízes.');
 
-      if (!arvoreAtivaId || !acessiveis.some(a => a.id === arvoreAtivaId)) {
+      if (modo === 'raiz') {
+        const deRaiz = acessiveis.filter(a => !ehArvorePadrao(a));
+        if (!arvoreAtivaId || !acessiveis.some(a => a.id === arvoreAtivaId)) {
+          arvoreAtivaId = (deRaiz[0] || acessiveis[0]).id;
+        }
+      } else if (!arvoreAtivaId || !acessiveis.some(a => a.id === arvoreAtivaId)) {
         arvoreAtivaId = acessiveis[0].id;
       }
 
-      const selHtml = `<select id="sel-arv-modal" onchange="trocarArvoreModal(this.value)">${acessiveis.map(a => `<option value="${a.id}" ${a.id === arvoreAtivaId ? 'selected' : ''}>${a.nome} (${a.raizAssociada})</option>`).join('')}</select>`;
-      abrirModal(`Árvores de Evolução · ${selHtml} <span class="chip" id="mod-pt">PT: ${fichaDoc.pontosEvolucao || 0}</span>`, `
+      tZoom = 1; tPanX = 0; tPanY = 0;
+      noInspecionadoId = null;
+
+      const selHtml = `<select id="sel-arv-modal" onchange="trocarArvoreModal(this.value)">${acessiveis.map(a =>
+        `<option value="${a.id}" ${a.id === arvoreAtivaId ? 'selected' : ''}>${ehArvorePadrao(a) ? '🧭 [Padrão] ' : '🌳 '}${a.nome}${a.raizAssociada ? ` (${a.raizAssociada})` : ''}</option>`
+      ).join('')}</select>`;
+
+      abrirModal(`Evolução · ${selHtml} <span class="chip" id="mod-pt">PT: ${fichaDoc.pontosEvolucao || 0}</span>`, `
         <div class="tree-view-wrap" id="tv-wrap">
           <div class="tree-stage" id="tv-stage">
             <svg id="tv-svg" style="position:absolute;top:0;left:0;pointer-events:none;overflow:visible"></svg>
@@ -1816,7 +1850,15 @@
       renderizarArvoreNoModal();
     };
 
-    window.trocarArvoreModal = (id) => { arvoreAtivaId = id; renderizarArvoreNoModal(); };
+    window.trocarArvoreModal = (id) => {
+      arvoreAtivaId = id;
+      noInspecionadoId = null;
+      resetZoomArvore();
+      const det = getEl('#tv-detalhes');
+      if (det) det.hidden = true;
+      renderizarArvoreNoModal();
+    };
+
     window.zoomArvore = (f) => { tZoom = Math.min(2, Math.max(0.35, tZoom * f)); aplicarTransformArvore(); };
     window.resetZoomArvore = () => { tZoom = 1; tPanX = 0; tPanY = 0; aplicarTransformArvore(); };
     function aplicarTransformArvore() {
@@ -1829,12 +1871,15 @@
       if (!wrap) return;
       let pan = false, sx = 0, sy = 0;
       wrap.onpointerdown = e => {
-        if (e.target.closest('.tnode, button')) return;
+        if (e.target.closest('.tnode, button, select')) return;
         pan = true; sx = e.clientX - tPanX; sy = e.clientY - tPanY;
         wrap.classList.add('panning');
+        wrap.setPointerCapture(e.pointerId);
       };
       wrap.onpointermove = e => { if (!pan) return; tPanX = e.clientX - sx; tPanY = e.clientY - sy; aplicarTransformArvore(); };
-      window.onpointerup = () => { pan = false; wrap.classList.remove('panning'); };
+      const stopPan = () => { pan = false; wrap.classList.remove('panning'); };
+      wrap.onpointerup = stopPan;
+      wrap.onpointercancel = stopPan;
     }
 
     function contarSubarvore(arvore, rootId, desbSet) {
@@ -1842,6 +1887,15 @@
       let c = 1;
       (arvore.nos || []).filter(n => (n.requisitos || []).includes(rootId)).forEach(ch => { c += contarSubarvore(arvore, ch.id, desbSet); });
       return c;
+    }
+
+    function opcaoEstaDisponivel(opt) {
+      if (!opt) return false;
+      const tipo = opt.tipo || (opt.attr ? 'atributo' : 'outro');
+      if (tipo === 'atributo' && opt.attr) {
+        return (computado.attr[opt.attr] || 0) < computado.teto;
+      }
+      return true;
     }
 
     function statusNoArvore(arvore, node) {
@@ -1865,10 +1919,10 @@
         }
       }
 
-      if (node.tipoRecompensa === 'atributo') {
+      if (node.tipoRecompensa === 'atributo' || node.tipoRecompensa === 'ambiguo') {
         const opts = node.opcoesAmbiguas || [];
-        if (opts.length && !opts.some(o => o.attr && (computado.attr[o.attr] || 0) < computado.teto)) {
-          return { st: 'block', msg: `Teto biológico (${computado.teto}) atingido.` };
+        if (opts.length && !opts.some(opcaoEstaDisponivel)) {
+          return { st: 'block', msg: `Atributo no teto biológico (${computado.teto}).` };
         }
       }
 
@@ -1877,10 +1931,21 @@
       return { st: 'avail', msg: `Comprar por ${custo} PT` };
     }
 
+    function resumirSubtituloNo(n) {
+      if ((n.tipoRecompensa === 'atributo' || n.tipoRecompensa === 'ambiguo') && n.opcoesAmbiguas?.length >= 2) {
+        return `${n.opcoesAmbiguas[0].efeito || 'A'} / ${n.opcoesAmbiguas[1].efeito || 'B'}`;
+      }
+      if (n.tipoRecompensa === 'pericia' && n.conteudo?.bonusPericia) {
+        return Object.entries(n.conteudo.bonusPericia).map(([k, v]) => `+${v} ${k}`).join(' · ');
+      }
+      return n.conteudo?.descricao || '';
+    }
+
     function renderizarArvoreNoModal() {
       const arvore = (mesaDados?.arvores || []).find(a => a.id === arvoreAtivaId);
       const grid = getEl('#tv-grid');
-      if (!arvore || !grid) return;
+      const stage = getEl('#tv-stage');
+      if (!arvore || !grid || !stage) return;
 
       getEl('#mod-pt').textContent = `PT: ${fichaDoc.pontosEvolucao || 0}`;
       grid.innerHTML = '';
@@ -1894,7 +1959,7 @@
       });
 
       const roots = (arvore.nos || []).filter(n => !parent.has(n.id));
-      const pos = new Map(), vis = new Set(), step = 210;
+      const pos = new Map(), vis = new Set(), step = 225;
       function place(n, d, cur) {
         if (vis.has(n.id)) return { cur, c: 0 };
         vis.add(n.id);
@@ -1911,13 +1976,17 @@
       }
 
       let cur = 0;
-      roots.forEach(r => { cur = place(r, 0, cur).cur + 60; });
-      (arvore.nos || []).forEach(n => { if (!vis.has(n.id)) cur = place(n, 0, cur).cur + 60; });
+      roots.forEach(r => { cur = place(r, 0, cur).cur + 65; });
+      (arvore.nos || []).forEach(n => { if (!vis.has(n.id)) cur = place(n, 0, cur).cur + 65; });
 
       const maxD = Math.max(0, ...[...pos.values()].map(p => p.d));
       const levels = Array.from({ length: maxD + 1 }, () => []);
       (arvore.nos || []).forEach(n => { const p = pos.get(n.id); if (p) levels[p.d].push(n); });
-      grid.style.width = `${Math.max(800, cur)}px`;
+
+      const gridW = Math.max(820, cur);
+      grid.style.width = `${gridW}px`;
+      stage.style.width = `${gridW + 640}px`;
+      stage.style.height = `${(maxD + 1) * 160 + 640}px`;
 
       for (let d = maxD; d >= 0; d--) {
         const row = document.createElement('div');
@@ -1926,14 +1995,14 @@
           const st = statusNoArvore(arvore, n);
           const el = document.createElement('div');
           el.id = `tv-n-${n.id}`;
-          el.className = `tnode ${st.st}`;
+          el.className = `tnode ${st.st}${noInspecionadoId === n.id ? ' selected' : ''}`;
           el.style.left = `${pos.get(n.id).x}px`;
           el.innerHTML = `
-            <div style="display:flex; justify-content:space-between; font-weight:700" class="cz">
+            <div style="display:flex; justify-content:space-between; font-weight:700; gap:4px" class="cz">
               <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${n.titulo}</span>
               <span class="tag">${st.st === 'done' ? '✓' : `${n.custoPontos || 1}PT`}</span>
             </div>
-            <div class="mut" style="font-style:normal; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${n.conteudo?.descricao || ''}</div>
+            <div class="mut" style="font-style:normal; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${resumirSubtituloNo(n)}</div>
           `;
           el.onclick = () => selecionarNoParaCompra(arvore, n, st);
           row.appendChild(el);
@@ -1941,7 +2010,7 @@
         grid.appendChild(row);
       }
 
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         const svg = getEl('#tv-svg');
         if (!svg) return;
         svg.setAttribute('width', grid.offsetWidth + 640);
@@ -1954,42 +2023,68 @@
           (n.requisitos || []).forEach(rId => {
             const sEl = getEl(`#tv-n-${rId}`);
             if (!sEl) return;
-            const x1 = grid.offsetLeft + sEl.offsetLeft, y1 = grid.offsetTop + sEl.parentElement.offsetTop + sEl.offsetTop;
-            const x2 = grid.offsetLeft + tEl.offsetLeft, y2 = grid.offsetTop + tEl.parentElement.offsetTop + tEl.offsetTop + tEl.offsetHeight;
+            const x1 = grid.offsetLeft + sEl.offsetLeft;
+            const y1 = grid.offsetTop + sEl.parentElement.offsetTop + sEl.offsetTop;
+            const x2 = grid.offsetLeft + tEl.offsetLeft;
+            const y2 = grid.offsetTop + tEl.parentElement.offsetTop + tEl.offsetTop + tEl.offsetHeight;
+            const deltaY = Math.max(24, Math.abs(y2 - y1) / 2);
             const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            p.setAttribute('d', `M ${x1} ${y1} C ${x1} ${y1 - 30}, ${x2} ${y2 + 30}, ${x2} ${y2}`);
+            p.setAttribute('d', Math.abs(x1 - x2) < 5
+              ? `M ${x1} ${y1} L ${x2} ${y2}`
+              : `M ${x1} ${y1} C ${x1} ${y1 - deltaY}, ${x2} ${y2 + deltaY}, ${x2} ${y2}`);
             p.setAttribute('stroke', desb.has(n.id) && desb.has(rId) ? '#4cc36f' : '#665');
             p.setAttribute('stroke-width', '2');
             p.setAttribute('fill', 'none');
             svg.appendChild(p);
           });
         });
-      }, 30);
+      });
     }
 
     function selecionarNoParaCompra(arvore, node, st) {
+      noInspecionadoId = node.id;
+      document.querySelectorAll('.tnode').forEach(el => el.classList.toggle('selected', el.id === `tv-n-${node.id}`));
+
       const box = getEl('#tv-detalhes');
       box.hidden = false;
       const temOpcoes = (node.tipoRecompensa === 'atributo' || node.tipoRecompensa === 'ambiguo') && node.opcoesAmbiguas?.length >= 2;
+      const jaDesbloqueado = st.st === 'done';
+      const escolhaSalva = (fichaDoc.escolhasAmbiguas || {})[node.id];
+
+      let seletorHtml = '';
+      if (temOpcoes) {
+        if (jaDesbloqueado) {
+          const optEsc = node.opcoesAmbiguas.find(o => o.idOpcao === escolhaSalva) || node.opcoesAmbiguas[0];
+          seletorHtml = `<span class="chip">Escolhido: ${optEsc.efeito}</span>`;
+        } else {
+          const optsHtml = node.opcoesAmbiguas.map(o => {
+            const disp = opcaoEstaDisponivel(o);
+            return `<option value="${o.idOpcao}" ${!disp ? 'disabled' : ''}>${o.efeito}${!disp ? ` (Teto ${computado.teto})` : ''}</option>`;
+          }).join('');
+          seletorHtml = `<select id="sel-opt-amb">${optsHtml}</select>`;
+        }
+      }
 
       box.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap">
-          <div>
+          <div style="flex:1; min-width:220px">
             <b class="cz" style="color:var(--acc)">${node.titulo}</b> <span class="tag">${node.custoPontos || 1} PT</span>
             <p style="margin:2px 0; font-size:12px">${node.conteudo?.descricao || ''}</p>
             ${node.herancaSingular?.descricao ? `<p style="margin:2px 0; font-size:11px; color:var(--acc)">★ Herança Singular: ${node.herancaSingular.descricao}</p>` : ''}
           </div>
-          <div style="display:flex; gap:6px; align-items:center">
-            ${temOpcoes ? `
-              <select id="sel-opt-amb">
-                <option value="a">${node.opcoesAmbiguas[0].efeito}</option>
-                <option value="b">${node.opcoesAmbiguas[1].efeito}</option>
-              </select>
-            ` : ''}
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap">
+            ${seletorHtml}
             <button class="btn pri" id="btn-exec-compra" ${st.st !== 'avail' ? 'disabled' : ''}>${st.msg}</button>
           </div>
         </div>
       `;
+
+      // Pré-seleciona automaticamente a primeira opção válida (caso Opção A esteja no teto)
+      if (temOpcoes && !jaDesbloqueado) {
+        const sel = getEl('#sel-opt-amb');
+        const primeiraValida = node.opcoesAmbiguas.find(opcaoEstaDisponivel);
+        if (sel && primeiraValida) sel.value = primeiraValida.idOpcao;
+      }
 
       if (st.st === 'avail') {
         getEl('#btn-exec-compra').onclick = async () => {
@@ -2001,13 +2096,14 @@
           if (temOpcoes) {
             const esc = getEl('#sel-opt-amb').value;
             const opt = node.opcoesAmbiguas.find(o => o.idOpcao === esc);
-            if (opt?.attr && (computado.attr[opt.attr] || 0) >= computado.teto) {
-              return mostrarToast(`Atributo já atingiu o teto (${computado.teto})!`);
+            if (!opcaoEstaDisponivel(opt)) {
+              return mostrarToast(`Atributo já atingiu o teto (${computado.teto})! Escolha a alternativa.`);
             }
             upd[`escolhasAmbiguas.${node.id}`] = esc;
           }
           await updateDoc(doc(db, "fichas", fichaId), upd);
           box.hidden = true;
+          noInspecionadoId = null;
           mostrarToast(`"${node.titulo}" desbloqueado!`);
         };
       }
