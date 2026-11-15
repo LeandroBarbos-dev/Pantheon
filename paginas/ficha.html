@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PANTHEON · Ficha</title>
+  <link rel="icon" href="data:,">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Faustina:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
@@ -728,6 +729,14 @@
       collection, query, where, onSnapshot, serverTimestamp
     } from '../js/firebase-config.js';
 
+    import {
+      PERICIAS_LIVRO,
+      PROFISSOES_LIVRO,
+      PASSATEMPOS_LIVRO_DB,
+      BONUS_ORFAO,
+      RAIZES_PADRAO_SISTEMA
+    } from '../js/sistema-padrao.js';
+
     const params = new URLSearchParams(window.location.search);
     const mesaId = params.get('mesaId');
     const fichaId = params.get('fichaId');
@@ -752,61 +761,6 @@
       ['pef', 'PE-F (Energia Física)', '#e0a030'],
       ['pem', 'PE-M (Energia Mental)', '#3da5d9']
     ];
-
-    /* ============================================================ */
-    /* DADOS OFICIAIS DO LIVRO (RAÍZES + PASSATEMPOS + PERÍCIAS)     */
-    /* ============================================================ */
-    const PERICIAS_LIVRO = [
-      'Sobrevivência', 'Furtividade', 'Encontrar', 'Atletismo', 'Tenacidade',
-      'Luta', 'Pontaria', 'Defesa', 'Reflexo',
-      'Investigação', 'Erudição', 'Doutrina', 'Sigilos',
-      'Ferramentas', 'Medicina', 'Culinária', 'Improviso',
-      'Persuasão', 'Enganação', 'Intimidação', 'Intuição', 'Vontade'
-    ];
-
-    const PROFISSOES_LIVRO = {
-      "Caçador":              { main: ["Sobrevivência", "Pontaria"], world: "Encontrar",    sec: ["Furtividade", "Reflexo"] },
-      "Lenhador":             { main: ["Atletismo", "Tenacidade"],   world: "Luta",         sec: ["Ferramentas", "Defesa"] },
-      "Ferreiro":             { main: ["Ferramentas", "Tenacidade"], world: "Erudição",     sec: ["Luta", "Improviso"] },
-      "Carpinteiro":          { main: ["Ferramentas", "Improviso"],  world: "Encontrar",    sec: ["Atletismo", "Erudição"] },
-      "Curandeiro":           { main: ["Medicina", "Erudição"],      world: "Intuição",     sec: ["Culinária", "Sigilos"] },
-      "Cozinheiro / Padeiro": { main: ["Culinária", "Tenacidade"],   world: "Persuasão",    sec: ["Encontrar", "Medicina"] },
-      "Pastor / Criador":     { main: ["Sobrevivência", "Tenacidade"], world: "Intuição",   sec: ["Encontrar", "Atletismo"] },
-      "Mercador":             { main: ["Persuasão", "Enganação"],    world: "Erudição",     sec: ["Intuição", "Investigação"] },
-      "Escriba / Devoto":     { main: ["Doutrina", "Erudição"],      world: "Investigação", sec: ["Persuasão", "Sigilos"] },
-      "Guarda / Vigia":       { main: ["Defesa", "Encontrar"],       world: "Intimidação",  sec: ["Luta", "Tenacidade"] }
-    };
-
-    const PASSATEMPOS_LIVRO_DB = [
-      // 12 Focados (+2)
-      { nome: "Pique-Pega",        tipo: "focado", pericias: ["Atletismo"],                  desc: "+2 Atletismo" },
-      { nome: "Rezar até Passar",  tipo: "focado", pericias: ["Vontade"],                    desc: "+2 Vontade" },
-      { nome: "Briga de Rua",      tipo: "focado", pericias: ["Luta"],                       desc: "+2 Luta" },
-      { nome: "Tiro ao Alvo",      tipo: "focado", pericias: ["Pontaria"],                   desc: "+2 Pontaria" },
-      { nome: "Ficar de Vigia",    tipo: "focado", pericias: ["Encontrar"],                  desc: "+2 Encontrar" },
-      { nome: "Caça ao Tesouro",   tipo: "focado", pericias: ["Investigação"],               desc: "+2 Investigação" },
-      { nome: "Ler Livros",        tipo: "focado", pericias: ["Erudição"],                   desc: "+2 Erudição" },
-      { nome: "Ajudar na Cozinha", tipo: "focado", pericias: ["Culinária"],                  desc: "+2 Culinária" },
-      { nome: "Trabalhar Duro",    tipo: "focado", pericias: ["Tenacidade"],                 desc: "+2 Tenacidade" },
-      { nome: "Contar Histórias",  tipo: "focado", pericias: ["Persuasão"],                  desc: "+2 Persuasão" },
-      { nome: "Desviar de Pedras", tipo: "focado", pericias: ["Reflexo"],                    desc: "+2 Reflexo" },
-      { nome: "Mentir",            tipo: "focado", pericias: ["Enganação"],                  desc: "+2 Enganação" },
-      // 12 Mistos (+1 / +1)
-      { nome: "Explorar o Mato",   tipo: "misto",  pericias: ["Sobrevivência", "Encontrar"], desc: "+1 Sobrevivência, +1 Encontrar" },
-      { nome: "Subir em Telhados", tipo: "misto",  pericias: ["Atletismo", "Reflexo"],       desc: "+1 Atletismo, +1 Reflexo" },
-      { nome: "Brincar de Guarda", tipo: "misto",  pericias: ["Defesa", "Intimidação"],      desc: "+1 Defesa, +1 Intimidação" },
-      { nome: "Ouvir os Velhos",   tipo: "misto",  pericias: ["Doutrina", "Intuição"],       desc: "+1 Doutrina, +1 Intuição" },
-      { nome: "Fazer Gambiarras",  tipo: "misto",  pericias: ["Improviso", "Ferramentas"],   desc: "+1 Improviso, +1 Ferramentas" },
-      { nome: "Primeiros Socorros",tipo: "misto",  pericias: ["Medicina", "Vontade"],        desc: "+1 Medicina, +1 Vontade" },
-      { nome: "Pique-Esconde",     tipo: "misto",  pericias: ["Furtividade", "Encontrar"],   desc: "+1 Furtividade, +1 Encontrar" },
-      { nome: "Jogo de Queimado",  tipo: "misto",  pericias: ["Reflexo", "Pontaria"],        desc: "+1 Reflexo, +1 Pontaria" },
-      { nome: "Estudo Dirigido",   tipo: "misto",  pericias: ["Erudição", "ESCOLHA"],        desc: "+1 Erudição, +1 à Escolha" },
-      { nome: "Ajudar no Templo",  tipo: "misto",  pericias: ["Doutrina", "Vontade"],        desc: "+1 Doutrina, +1 Vontade" },
-      { nome: "Lidar com Bichos",  tipo: "misto",  pericias: ["Sobrevivência", "Intuição"],  desc: "+1 Sobrevivência, +1 Intuição" },
-      { nome: "Malandragem",       tipo: "misto",  pericias: ["Enganação", "Intuição"],      desc: "+1 Enganação, +1 Intuição" }
-    ];
-
-    const BONUS_ORFAO = [2, -2, 2, 2];
 
     const LAYOUT_PADRAO = [
       ['recursos', 'atributos'],
@@ -885,6 +839,11 @@
     }
 
     const obterSiglaAtributo = chave => ATRIBUTOS.find(a => a[0] === chave)?.[1] || chave.toUpperCase();
+
+    function obterInfoProfissao(nomeRaiz) {
+      if (!nomeRaiz) return null;
+      return mesaDados?.profissoesCustomizadas?.[nomeRaiz] || PROFISSOES_LIVRO[nomeRaiz] || null;
+    }
 
     function ehArvorePadrao(arv) {
       if (!arv) return false;
@@ -1068,13 +1027,11 @@
       return PASSATEMPOS_LIVRO_DB;
     }
 
-    // Normaliza os passatempos da ficha em uma lista unificada [{ nome, tipo, escolha }]
     function obterListaPassatemposSelecionados() {
       const pass = fichaDoc?.passatempos || {};
       if (Array.isArray(pass.lista)) {
         return pass.lista;
       }
-      // Compatibilidade com formato legado (focados/mistos/extrasOrfao)
       const cat = new Map(obterCatalogoPassatempos().map(p => [p.nome, p]));
       const out = [];
       (pass.focados || []).filter(Boolean).forEach(nome => out.push({ nome, tipo: 'focado', escolha: '' }));
@@ -1102,7 +1059,6 @@
       const totalMax = baseFoc + baseMis + coringas;
       const totalUsado = lista.length;
 
-      // Quantos slots ainda cabem de cada tipo (levando em conta os 2 coringas livres do Autodidata)
       const maxFocPermitido = baseFoc + coringas - Math.max(0, usadosMis - baseMis);
       const maxMisPermitido = baseMis + coringas - Math.max(0, usadosFoc - baseFoc);
 
@@ -1153,24 +1109,21 @@
         addPericia('Reflexo', 2, 'Órfão');
         addPericia('Intuição', 2, 'Órfão');
       } else {
-        if (h.r1 && PROFISSOES_LIVRO[h.r1]) {
-          const prof1 = PROFISSOES_LIVRO[h.r1];
+        const prof1 = obterInfoProfissao(h.r1);
+        if (h.r1 && prof1) {
           const sec1 = prof1.sec.includes(h.secEscolhida) ? h.secEscolhida : prof1.sec[0];
 
           if (h.tipo === 'singular') {
-            // Raiz Singular (Misto): Primária dá +2/+2 principais, +1 sec escolhida, +1 visão de mundo
             addPericia(prof1.main[0], 2, `Raiz 1 (${h.r1})`);
             addPericia(prof1.main[1], 2, `Raiz 1 (${h.r1})`);
             if (sec1) addPericia(sec1, 1, `Sec. Raiz 1 (${h.r1})`);
             addPericia(prof1.world, 1, `Mundo Raiz 1 (${h.r1})`);
           } else if (h.tipo === 'heranca') {
-            // Herança Singular: +3/+2 principais, +2 sec escolhida, +2 visão de mundo
             addPericia(prof1.main[0], 3, `Herança (${h.r1})`);
             addPericia(prof1.main[1], 2, `Herança (${h.r1})`);
             if (sec1) addPericia(sec1, 2, `Secundária (${h.r1})`);
             addPericia(prof1.world, 2, `Mundo (${h.r1})`);
           } else if (h.tipo === 'dupla') {
-            // Raiz Dupla: +2/+2 principais, +1/+1 ambas secundárias, +1 visão de mundo
             addPericia(prof1.main[0], 2, `Raiz Dupla (${h.r1})`);
             addPericia(prof1.main[1], 2, `Raiz Dupla (${h.r1})`);
             prof1.sec.forEach(s => addPericia(s, 1, `Secundária (${h.r1})`));
@@ -1178,9 +1131,8 @@
           }
         }
 
-        // Raiz Secundária (na condição Raiz Singular): também concede suas perícias (+2/+2 principais, +1 sec escolhida, +1 mundo)!
-        if (h.tipo === 'singular' && h.r2 && PROFISSOES_LIVRO[h.r2]) {
-          const prof2 = PROFISSOES_LIVRO[h.r2];
+        const prof2 = h.tipo === 'singular' ? obterInfoProfissao(h.r2) : null;
+        if (prof2) {
           const sec2 = prof2.sec.includes(h.secEscolhida2) ? h.secEscolhida2 : prof2.sec[0];
           addPericia(prof2.main[0], 2, `Raiz 2 (${h.r2})`);
           addPericia(prof2.main[1], 2, `Raiz 2 (${h.r2})`);
@@ -1288,7 +1240,6 @@
         attr[k] = (attrBase[k] || 0) + (attrArvore[k] || 0) + (attrMaestria[k] || 0);
       });
 
-      // Recursos são definidos APENAS pela Raiz Primária (ou Órfão)
       const b = h.tipo === 'auto' ? BONUS_ORFAO : (RAIZES[h.r1] || [0, 0, 0, 0]);
       const maxRec = {
         hp: 10 + attr.vigor * 3 + (b[0] || 0) + bonusRecArvore.hp,
@@ -1348,7 +1299,6 @@
       badge.textContent = travado ? '🔒 Ficha Ativa' : '✏ Em Criação';
       getEl('#btn-finalizar').hidden = travado;
 
-      // Linha 2: Condição Familiar + Raiz Primária/Secundária com suas perícias secundárias
       const bonus = h.tipo === 'auto' ? BONUS_ORFAO : (RAIZES[h.r1] || [0, 0, 0, 0]);
       const nomesStatus = ['HP', 'SAN', 'PE-F', 'PE-M'];
       const txtBonusStatus = (h.tipo === 'auto' ? 'Órfão: ' : 'Recursos: ') +
@@ -1358,7 +1308,7 @@
       if (h.tipo === 'auto') {
         chipsRaizHtml = `<span class="chip acc">Autodidata / Órfão</span>`;
       } else {
-        const prof1 = PROFISSOES_LIVRO[h.r1];
+        const prof1 = obterInfoProfissao(h.r1);
         const sec1 = prof1?.sec?.includes(h.secEscolhida) ? h.secEscolhida : (prof1?.sec?.[0] || '');
         const ptsSec1 = h.tipo === 'heranca' ? '+2' : '+1';
 
@@ -1375,7 +1325,7 @@
         `;
 
         if (h.tipo === 'singular') {
-          const prof2 = PROFISSOES_LIVRO[h.r2];
+          const prof2 = obterInfoProfissao(h.r2);
           const sec2 = prof2?.sec?.includes(h.secEscolhida2) ? h.secEscolhida2 : (prof2?.sec?.[0] || '');
           chipsRaizHtml += `
             <span class="chip" style="border-color:#4fb0e0">
@@ -1432,7 +1382,7 @@
         }
       }
 
-      // Linha 3: Chips Simples de Passatempos Infantis (estilo filtros selecionados)
+      // Linha 3: Chips Simples de Passatempos Infantis
       const listaPass = obterListaPassatemposSelecionados();
       const lim = calcularLimitesPassatempos();
       const catPass = new Map(obterCatalogoPassatempos().map(p => [p.nome, p]));
@@ -1494,11 +1444,13 @@
     window.finalizarCriacaoFicha = async () => {
       if (!confirm("Finalizar a criação da ficha? Atributos iniciais, raízes, perícias secundárias e passatempos ficarão travados permanentemente.")) return;
       const h = fichaDoc.raizesHeranca || {};
-      const sec1 = PROFISSOES_LIVRO[h.r1]?.sec?.includes(h.secEscolhida)
+      const prof1 = obterInfoProfissao(h.r1);
+      const prof2 = obterInfoProfissao(h.r2);
+      const sec1 = prof1?.sec?.includes(h.secEscolhida)
         ? h.secEscolhida
-        : (PROFISSOES_LIVRO[h.r1]?.sec?.[0] || '');
-      const sec2 = h.tipo === 'singular' && PROFISSOES_LIVRO[h.r2]
-        ? (PROFISSOES_LIVRO[h.r2].sec.includes(h.secEscolhida2) ? h.secEscolhida2 : PROFISSOES_LIVRO[h.r2].sec[0])
+        : (prof1?.sec?.[0] || '');
+      const sec2 = h.tipo === 'singular' && prof2
+        ? (prof2.sec.includes(h.secEscolhida2) ? h.secEscolhida2 : prof2.sec[0])
         : '';
 
       await updateDoc(doc(db, "fichas", fichaId), {
@@ -1520,7 +1472,7 @@
 
       const cardsHtml = listaRaizes.map(nomeRaiz => {
         const bonusRec = RAIZES[nomeRaiz] || [0, 0, 0, 0];
-        const prof = PROFISSOES_LIVRO[nomeRaiz];
+        const prof = obterInfoProfissao(nomeRaiz);
         const isPri = h.r1 === nomeRaiz;
         const isSec = ehSingular && h.r2 === nomeRaiz;
 
@@ -1571,7 +1523,8 @@
 
     window.definirRaizPersonagem = async (slot, nomeRaiz) => {
       const h = fichaDoc.raizesHeranca || {};
-      const primeiraSec = PROFISSOES_LIVRO[nomeRaiz]?.sec?.[0] || '';
+      const prof = obterInfoProfissao(nomeRaiz);
+      const primeiraSec = prof?.sec?.[0] || '';
       const upd = {};
 
       if (slot === 1) {
@@ -1603,7 +1556,6 @@
       const nomesJaEscolhidos = new Set(selecionados.map(s => s.nome));
       const lim = calcularLimitesPassatempos();
 
-      // Filtra: remove os já selecionados + remove os tipos que não têm mais vagas disponíveis
       const disponiveis = catalogo.filter(p => {
         if (nomesJaEscolhidos.has(p.nome)) return false;
         if (p.tipo === 'focado' && !lim.podeMaisFocado) return false;
@@ -1854,9 +1806,6 @@
       const cap = { pesado: vig, medio: vig + 1, leve: vig + 2, miudeza: 10 };
       const inv = fichaDoc.inventario || [];
 
-      // Cria os blocos originais
-      // Um bloco Pesado ocupado por item menor vira [1 Médio (Amarelo), 1 Leve (Verde)]
-      // Um bloco Médio ocupado por item Leve vira [1 Leve (Verde), 1 Leve (Verde)]
       const blocosBase = {
         pesado:  Array.from({ length: cap.pesado },  (_, i) => ({ origKey: `pesado_${i}`,  origPeso: 'pesado',  modo: 'orig', slots: [{ peso: 'pesado', item: null }] })),
         medio:   Array.from({ length: cap.medio },   (_, i) => ({ origKey: `medio_${i}`,   origPeso: 'medio',   modo: 'orig', slots: [{ peso: 'medio',  item: null }] })),
@@ -1882,7 +1831,6 @@
         return false;
       };
 
-      // 1º Passo: Alocar itens que já têm posição explícita (origKey + subIdx)
       inv.forEach(it => {
         if (it.slotKey && typeof it.subIdx === 'number') {
           const blk = todosBlocos.find(b => b.origKey === it.slotKey);
@@ -1900,9 +1848,7 @@
         naoAlocados.push(it);
       });
 
-      // 2º Passo: Auto-encaixar itens sem posição fixa (primeiro em blocos nativos, depois convertendo blocos maiores)
       naoAlocados.forEach(it => {
-        // Tenta vaga livre já existente do mesmo peso
         for (const blk of todosBlocos) {
           const s = blk.slots.find(x => !x.item && x.peso === it.peso);
           if (s) {
@@ -1911,7 +1857,6 @@
           }
         }
 
-        // Se for Médio, converte um bloco Pesado vazio em [1 Médio + 1 Leve]
         if (it.peso === 'medio') {
           const blkP = blocosBase.pesado.find(b => b.modo === 'orig' && !b.slots[0].item);
           if (blkP && ativarConversaoBloco(blkP)) {
@@ -1920,7 +1865,6 @@
           }
         }
 
-        // Se for Leve, converte um bloco Médio vazio em [2 Leves], ou um bloco Pesado vazio em [1 Médio + 1 Leve]
         if (it.peso === 'leve') {
           const blkM = blocosBase.medio.find(b => b.modo === 'orig' && !b.slots[0].item);
           if (blkM && ativarConversaoBloco(blkM)) {
@@ -1937,7 +1881,6 @@
         excedentes.push(it);
       });
 
-      // Se um bloco convertido ficou completamente vazio, volta automaticamente à forma original!
       todosBlocos.forEach(blk => {
         if (blk.modo === 'conv' && blk.slots.every(s => !s.item)) {
           blk.modo = 'orig';
@@ -2019,7 +1962,6 @@
             `;
           }
 
-          // Renderiza cada bloco (ou os 2 blocos duplicados na mesma linha se foi convertido!)
           const cardsHtml = g.lista.map(blk => {
             return blk.slots.map((sl, subIdx) => {
               const labelTopo = sl.peso === 'pesado' ? 'PESADO'
@@ -2111,7 +2053,6 @@
           const slotAlvo = blk.slots[subIdx];
           if (!slotAlvo) return;
 
-          // Caso 1: O slot já é exatamente do peso do item arrastado
           if (slotAlvo.peso === item.peso) {
             if (slotAlvo.item && slotAlvo.item.uid !== uid) {
               return mostrarToast('Já existe um item neste bloco!');
@@ -2120,7 +2061,6 @@
             return;
           }
 
-          // Caso 2: Arrastou item menor para cima de um bloco maior vazio -> converte e duplica o bloco!
           const vazio = blk.slots.every(s => !s.item || s.item.uid === uid);
           if (!vazio) {
             return mostrarToast(`Este bloco aceita apenas item "${slotAlvo.peso.toUpperCase()}"!`);
@@ -2572,7 +2512,6 @@
         arvoreAtivaId = acessiveis[0].id;
       }
 
-      tZoom = 1; tPanX = 0; tPanY = 0;
       noInspecionadoId = null;
 
       const selHtml = `<select id="sel-arv-modal" onchange="trocarArvoreModal(this.value)">${acessiveis.map(a =>
@@ -2609,19 +2548,34 @@
 
       iniciarPanZoomArvore();
       renderizarArvoreNoModal();
+      requestAnimationFrame(resetZoomArvore);
     };
 
     window.trocarArvoreModal = (id) => {
       arvoreAtivaId = id;
       noInspecionadoId = null;
-      resetZoomArvore();
       const det = getEl('#tv-detalhes');
       if (det) det.hidden = true;
       renderizarArvoreNoModal();
+      requestAnimationFrame(resetZoomArvore);
     };
 
     window.zoomArvore = (f) => { tZoom = Math.min(2, Math.max(0.35, tZoom * f)); aplicarTransformArvore(); };
-    window.resetZoomArvore = () => { tZoom = 1; tPanX = 0; tPanY = 0; aplicarTransformArvore(); };
+    window.resetZoomArvore = () => {
+      const wrap = getEl('#tv-wrap');
+      const grid = getEl('#tv-grid');
+      tZoom = 1;
+      if (wrap && grid) {
+        const gridCenterX = grid.offsetLeft + (grid.offsetWidth / 2);
+        const gridBottomY = grid.offsetTop + grid.offsetHeight;
+        tPanX = (wrap.clientWidth / 2) - gridCenterX;
+        tPanY = (wrap.clientHeight - 40) - gridBottomY;
+      } else {
+        tPanX = 0;
+        tPanY = 0;
+      }
+      aplicarTransformArvore();
+    };
     function aplicarTransformArvore() {
       const st = getEl('#tv-stage');
       if (st) st.style.transform = `translate(${tPanX}px, ${tPanY}px) scale(${tZoom})`;
@@ -2943,7 +2897,9 @@
     /* ---------- Inicialização e Listeners Tempo Real ---------- */
     function sincronizarTelaCompleta() {
       if (!mesaDados || !fichaDoc) return;
-      RAIZES = mesaDados.raizesDisponiveis || {};
+      RAIZES = (mesaDados.raizesDisponiveis && Object.keys(mesaDados.raizesDisponiveis).length > 0)
+        ? mesaDados.raizesDisponiveis
+        : { ...RAIZES_PADRAO_SISTEMA };
       regras = {
         ...REGRAS_PADRAO,
         ...(mesaDados.regras || {}),
@@ -2962,7 +2918,6 @@
       renderizarMacros();
       renderizarSelecaoTeste();
 
-      // Atualiza modais dinâmicos abertos em tempo real
       if (!getEl('#modal').hidden) {
         if (modalContextoAtual === 'arvore') renderizarArvoreNoModal();
         else if (modalContextoAtual === 'passatempos') abrirModalPassatempos();
