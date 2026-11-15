@@ -50,7 +50,7 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <!-- Botões exclusivos do Mestre (usando classe 'hidden' do Tailwind) -->
+        <!-- Botões exclusivos do Mestre -->
         <button id="btn-toggle-regras" class="hidden items-center gap-2 px-3 py-2 rounded bg-stone-900 border border-gold-600/60 hover:border-gold-400 text-gold-300 font-cinzel text-xs font-bold">
           <i class="fa-solid fa-sliders"></i> Regras da Mesa
         </button>
@@ -82,7 +82,7 @@
             <h2 class="font-cinzel text-lg font-bold text-gold-400 flex items-center gap-2">
               <i class="fa-solid fa-crown text-gold-500"></i> Configurações da Campanha
             </h2>
-            <p class="text-xs text-stone-400">Parâmetros de criação, estágios biológicos, regras de carga e raízes.</p>
+            <p class="text-xs text-stone-400">Parâmetros de criação, estágios biológicos, regras de carga, raízes e passatempos.</p>
           </div>
           <div class="flex items-center gap-2">
             <button id="btn-salvar-regras" class="px-4 py-2 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
@@ -173,7 +173,7 @@
           </div>
         </div>
 
-        <!-- 4. Raízes da Mesa -->
+        <!-- 5. Raízes da Mesa -->
         <div class="space-y-3 pt-2 border-t border-stone-800">
           <div class="flex flex-wrap justify-between items-center gap-2">
             <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">5. Raízes / Origens da Mesa</h3>
@@ -195,6 +195,28 @@
 
           <div id="lista-raizes-mesa" class="flex flex-wrap gap-2"></div>
         </div>
+
+        <!-- 6. Passatempos Infantis Disponíveis na Mesa -->
+        <div class="space-y-3 pt-2 border-t border-stone-800">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <div>
+              <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">6. Passatempos Infantis Disponíveis</h3>
+              <p class="text-[11px] text-stone-400">Define quais perícias os jogadores podem selecionar como Passatempos na criação da ficha.</p>
+            </div>
+            <button id="btn-importar-passatempos-livro" class="px-3 py-1.5 rounded bg-stone-900 border border-sky-600/60 hover:border-sky-400 text-sky-300 font-cinzel text-[11px]">
+              <i class="fa-solid fa-book-open"></i> Importar Lista Padrão do Livro
+            </button>
+          </div>
+
+          <div class="flex gap-2 bg-stone-950 p-2.5 rounded border border-stone-800 text-xs">
+            <input type="text" id="novo-passatempo-nome" placeholder="Nome do Passatempo / Perícia (ex: Atletismo, Carpintaria, Furtividade...)" class="flex-1 bg-stone-900 border border-stone-700 rounded px-2.5 py-1.5 text-stone-200">
+            <button id="btn-add-passatempo" class="px-3.5 py-1.5 rounded bg-sky-600 hover:bg-sky-500 text-stone-950 font-cinzel font-bold">
+              + Adicionar
+            </button>
+          </div>
+
+          <div id="lista-passatempos-mesa" class="flex flex-wrap gap-1.5"></div>
+        </div>
       </section>
 
       <!-- GAVETA 2: CATÁLOGO OFICIAL DE ITENS DA MESA (EXCLUSIVA DO MESTRE) -->
@@ -204,7 +226,7 @@
             <h2 class="font-cinzel text-lg font-bold text-emerald-400 flex items-center gap-2">
               <i class="fa-solid fa-suitcase"></i> Catálogo Oficial de Itens da Mesa
             </h2>
-            <p class="text-xs text-stone-400">Cadastre ou importe itens do livro e arquivos JSON para distribuir nas fichas.</p>
+            <p class="text-xs text-stone-400">Cadastre ou importe itens com imagem para o inventário visual dos jogadores.</p>
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
@@ -242,11 +264,29 @@
             <div>
               <label class="text-stone-400 text-[10px] font-cinzel block">Peso (Slot de Carga)</label>
               <select id="item-peso" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2.5 py-1.5 text-stone-200">
-                <option value="miudeza">Miudeza (Bolso)</option>
-                <option value="leve" selected>Leve (Base 1)</option>
-                <option value="medio">Médio (Base 2)</option>
-                <option value="pesado">Pesado (Base 3)</option>
+                <option value="miudeza">Miudeza (Azul)</option>
+                <option value="leve" selected>Leve (Verde · Base 1)</option>
+                <option value="medio">Médio (Amarelo · Base 2)</option>
+                <option value="pesado">Pesado (Vermelho · Base 3)</option>
               </select>
+            </div>
+          </div>
+
+          <!-- Upload de Imagem via ImgBB + Preview -->
+          <div class="bg-stone-900/70 p-2.5 rounded border border-stone-800 flex flex-wrap items-center gap-3">
+            <div id="item-img-preview-box" class="w-14 h-14 rounded-lg bg-stone-950 border border-stone-700 flex items-center justify-center overflow-hidden shrink-0 text-xl text-stone-500">
+              🖼️
+            </div>
+            <div class="flex-1 min-w-[200px] space-y-1.5">
+              <div class="flex flex-wrap items-center gap-2">
+                <label class="px-3 py-1 rounded bg-amber-950 border border-amber-600/70 hover:bg-amber-900/60 text-amber-300 font-cinzel text-[11px] font-bold cursor-pointer flex items-center gap-1.5">
+                  <i class="fa-solid fa-cloud-arrow-up"></i> Enviar Imagem (ImgBB)
+                  <input type="file" id="item-img-file" accept="image/*" hidden>
+                </label>
+                <span id="item-img-status" class="text-[11px] text-stone-400 font-mono">Nenhuma imagem selecionada</span>
+                <button type="button" id="btn-limpar-img-item" class="hidden text-[11px] text-red-400 hover:underline">Remover</button>
+              </div>
+              <input type="url" id="item-img-url" placeholder="Ou cole uma URL direta da imagem (opcional)..." class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-[11px] text-stone-300 font-mono">
             </div>
           </div>
 
@@ -466,6 +506,9 @@
     const mesaId = params.get('id');
     if (!mesaId) window.location.href = '../index.html';
 
+    const IMGBB_API_KEY = '6da74d7373d43722422506cdfcf7e9c8';
+    const IMGBB_ENDPOINT = 'https://api.imgbb.com/1/upload';
+
     const REGRAS_PADRAO = {
       pontosAtributoIniciais: 5,
       estagioInicial: 1,
@@ -491,6 +534,15 @@
       "Escriba / Devoto": [0, 6, 0, 2]
     };
 
+    const PASSATEMPOS_DO_LIVRO = [
+      "Acrobacia", "Adestramento", "Artes", "Atletismo", "Atualidades",
+      "Ciências", "Crime", "Diplomacia", "Enganação", "Fortitude",
+      "Furtividade", "Iniciativa", "Intimidação", "Intuição", "Investigação",
+      "Luta", "Medicina", "Ocultismo", "Percepção", "Pilotagem",
+      "Pontaria", "Profissão", "Reflexos", "Religião", "Sobrevivência",
+      "Tática", "Tecnologia", "Vontade"
+    ];
+
     const ITENS_DO_LIVRO = [
       { id: 'livro_armadura_leve', nome: 'Armadura Leve', categoria: 'armadura', peso: 'leve', rd: 2, penalidadeDesl: 0, descricao: 'Couro acolchoado, gibões de pano grosso ou peles simples. Sem penalidades.' },
       { id: 'livro_armadura_media', nome: 'Armadura Média', categoria: 'armadura', peso: 'medio', rd: 4, penalidadeDesl: 0, descricao: 'Couro batido reforçado, brigandina ou cota de malha leve.' },
@@ -514,12 +566,26 @@
     };
 
     const PESO_BASE = { miudeza: 0, leve: 1, medio: 2, pesado: 3 };
+    const BORDA_PESO = {
+      pesado: 'border-red-500',
+      medio: 'border-amber-400',
+      leve: 'border-emerald-500',
+      miudeza: 'border-sky-400'
+    };
+    const ICONE_CATEGORIA = {
+      arma: '⚔️',
+      escudo: '🛡️',
+      armadura: '🦺',
+      cura: '🩹',
+      utilitario: '🎒'
+    };
 
     let usuarioAtual = null;
     let mesaDados = null;
     let souMestre = false;
     let regrasAtuais = { ...REGRAS_PADRAO };
     let formRegrasPreenchido = false;
+    let uploadEmAndamento = false;
 
     function mostrar(el, flex = false) {
       el.classList.remove('hidden');
@@ -591,7 +657,7 @@
         mostrar(btnRegras, true);
         mostrar(btnItens, true);
         mostrar(btnEditor, true);
-        btnEditor.href = `editor-arvores.html?mesaId=${mesaId}`;
+        btnEditor.href = `editor-arvores_3.html?mesaId=${mesaId}`;
         mostrar(btnLimpar);
         mostrar(boxRolador);
         esconder(bannerJogador);
@@ -652,7 +718,7 @@
     document.getElementById('btn-fechar-itens').onclick = () => esconder(gavetaItens);
 
     /* ========================================================= */
-    /* GAVETA 1: REGRAS DA MESA & RAÍZES                         */
+    /* GAVETA 1: REGRAS DA MESA, RAÍZES & PASSATEMPOS            */
     /* ========================================================= */
     function renderizarGavetaRegras() {
       if (!souMestre) return;
@@ -674,36 +740,58 @@
         formRegrasPreenchido = true;
       }
 
+      // Raízes
       const raizes = mesaDados.raizesDisponiveis || {};
       const container = document.getElementById('lista-raizes-mesa');
       const nomes = Object.keys(raizes);
       if (!nomes.length) {
         container.innerHTML = `<span class="text-xs text-stone-500 italic">Nenhuma raiz cadastrada.</span>`;
-        return;
+      } else {
+        container.innerHTML = nomes.map(nome => {
+          const b = raizes[nome];
+          const temArvore = (mesaDados.arvores || []).some(a => a.raizAssociada === nome);
+          return `
+            <div class="flex items-center gap-2 px-2.5 py-1 rounded bg-stone-950 border ${temArvore ? 'border-emerald-700/70' : 'border-stone-800'} text-xs">
+              <strong class="font-cinzel text-gold-300">${nome}</strong>
+              <span class="font-mono text-[10px] text-stone-400">[${b.map(v => (v >= 0 ? '+' + v : v)).join(', ')}]</span>
+              ${temArvore ? '<span class="text-[10px] text-emerald-400" title="Árvore vinculada">🌳</span>' : ''}
+              <button data-del-raiz="${nome}" class="text-stone-500 hover:text-red-400 ml-1">✕</button>
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('[data-del-raiz]').forEach(btn => {
+          btn.onclick = async () => {
+            const alvo = btn.dataset.delRaiz;
+            if (!confirm(`Remover a raiz "${alvo}"?`)) return;
+            const copia = { ...(mesaDados.raizesDisponiveis || {}) };
+            delete copia[alvo];
+            await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: copia });
+          };
+        });
       }
 
-      container.innerHTML = nomes.map(nome => {
-        const b = raizes[nome];
-        const temArvore = (mesaDados.arvores || []).some(a => a.raizAssociada === nome);
-        return `
-          <div class="flex items-center gap-2 px-2.5 py-1 rounded bg-stone-950 border ${temArvore ? 'border-emerald-700/70' : 'border-stone-800'} text-xs">
-            <strong class="font-cinzel text-gold-300">${nome}</strong>
-            <span class="font-mono text-[10px] text-stone-400">[${b.map(v => (v >= 0 ? '+' + v : v)).join(', ')}]</span>
-            ${temArvore ? '<span class="text-[10px] text-emerald-400" title="Árvore vinculada">🌳</span>' : ''}
-            <button data-del-raiz="${nome}" class="text-stone-500 hover:text-red-400 ml-1">✕</button>
-          </div>
-        `;
-      }).join('');
+      // Passatempos Infantis
+      const passatempos = Array.isArray(mesaDados.passatemposDisponiveis) ? mesaDados.passatemposDisponiveis : [];
+      const contPass = document.getElementById('lista-passatempos-mesa');
+      if (!passatempos.length) {
+        contPass.innerHTML = `<span class="text-xs text-stone-500 italic">Nenhum passatempo cadastrado na mesa (a ficha usará a lista padrão do sistema).</span>`;
+      } else {
+        contPass.innerHTML = passatempos.map(p => `
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-stone-950 border border-sky-800/60 text-sky-300 text-xs">
+            ${p}
+            <button data-del-pass="${p}" class="text-stone-500 hover:text-red-400 text-[11px]">✕</button>
+          </span>
+        `).join('');
 
-      container.querySelectorAll('[data-del-raiz]').forEach(btn => {
-        btn.onclick = async () => {
-          const alvo = btn.dataset.delRaiz;
-          if (!confirm(`Remover a raiz "${alvo}"?`)) return;
-          const copia = { ...(mesaDados.raizesDisponiveis || {}) };
-          delete copia[alvo];
-          await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: copia });
-        };
-      });
+        contPass.querySelectorAll('[data-del-pass]').forEach(btn => {
+          btn.onclick = async () => {
+            const alvo = btn.dataset.delPass;
+            const filtrados = (mesaDados.passatemposDisponiveis || []).filter(x => x !== alvo);
+            await updateDoc(doc(db, "mesas", mesaId), { passatemposDisponiveis: filtrados });
+          };
+        });
+      }
     }
 
     document.getElementById('btn-salvar-regras').onclick = async () => {
@@ -749,6 +837,92 @@
       await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: atuais });
       document.getElementById('nova-raiz-nome').value = '';
       ['hp', 'san', 'pef', 'pem'].forEach(k => document.getElementById(`nova-raiz-${k}`).value = '');
+    };
+
+    document.getElementById('btn-importar-passatempos-livro').onclick = async () => {
+      if (!souMestre) return;
+      const atuais = new Set(Array.isArray(mesaDados.passatemposDisponiveis) ? mesaDados.passatemposDisponiveis : []);
+      PASSATEMPOS_DO_LIVRO.forEach(p => atuais.add(p));
+      await updateDoc(doc(db, "mesas", mesaId), { passatemposDisponiveis: [...atuais].sort((a, b) => a.localeCompare(b, 'pt-BR')) });
+    };
+
+    document.getElementById('btn-add-passatempo').onclick = async () => {
+      if (!souMestre) return;
+      const input = document.getElementById('novo-passatempo-nome');
+      const nome = input.value.trim();
+      if (!nome) return alert("Digite o nome do passatempo.");
+      const atuais = Array.isArray(mesaDados.passatemposDisponiveis) ? [...mesaDados.passatemposDisponiveis] : [];
+      if (!atuais.some(p => p.toLowerCase() === nome.toLowerCase())) {
+        atuais.push(nome);
+        atuais.sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        await updateDoc(doc(db, "mesas", mesaId), { passatemposDisponiveis: atuais });
+      }
+      input.value = '';
+    };
+
+    /* ========================================================= */
+    /* UPLOAD DE IMAGEM VIA IMGBB (CATÁLOGO DE ITENS)            */
+    /* ========================================================= */
+    const inputImgFile = document.getElementById('item-img-file');
+    const inputImgUrl = document.getElementById('item-img-url');
+    const previewBox = document.getElementById('item-img-preview-box');
+    const statusImg = document.getElementById('item-img-status');
+    const btnLimparImg = document.getElementById('btn-limpar-img-item');
+
+    function atualizarPreviewImagemItem(url) {
+      if (url) {
+        previewBox.innerHTML = `<img src="${url}" alt="Preview" class="w-full h-full object-cover">`;
+        btnLimparImg.classList.remove('hidden');
+      } else {
+        previewBox.innerHTML = '🖼️';
+        btnLimparImg.classList.add('hidden');
+      }
+    }
+
+    inputImgUrl.oninput = () => {
+      const val = inputImgUrl.value.trim();
+      atualizarPreviewImagemItem(val);
+      statusImg.textContent = val ? 'URL definida' : 'Nenhuma imagem selecionada';
+    };
+
+    btnLimparImg.onclick = () => {
+      inputImgUrl.value = '';
+      inputImgFile.value = '';
+      statusImg.textContent = 'Nenhuma imagem selecionada';
+      atualizarPreviewImagemItem('');
+    };
+
+    inputImgFile.onchange = async (e) => {
+      const arquivo = e.target.files?.[0];
+      if (!arquivo) return;
+
+      uploadEmAndamento = true;
+      statusImg.textContent = '⏳ Enviando para ImgBB...';
+      statusImg.className = 'text-[11px] text-amber-300 font-mono';
+
+      try {
+        const form = new FormData();
+        form.append('image', arquivo);
+
+        const res = await fetch(`${IMGBB_ENDPOINT}?key=${IMGBB_API_KEY}`, {
+          method: 'POST',
+          body: form
+        });
+        const json = await res.json();
+        if (!json.success || !json.data?.url) {
+          throw new Error(json.error?.message || 'Falha no upload ImgBB');
+        }
+
+        inputImgUrl.value = json.data.url;
+        atualizarPreviewImagemItem(json.data.url);
+        statusImg.textContent = '✅ Imagem hospedada!';
+        statusImg.className = 'text-[11px] text-emerald-400 font-mono';
+      } catch (err) {
+        statusImg.textContent = '❌ Erro no upload: ' + err.message;
+        statusImg.className = 'text-[11px] text-red-400 font-mono';
+      } finally {
+        uploadEmAndamento = false;
+      }
     };
 
     /* ========================================================= */
@@ -828,6 +1002,7 @@
             nome: String(raw.nome).trim(),
             categoria: cat,
             peso,
+            imagem: raw.imagem ? String(raw.imagem).trim() : '',
             descricao: raw.descricao ? String(raw.descricao).trim() : ''
           };
 
@@ -873,6 +1048,8 @@
 
     document.getElementById('btn-salvar-item-catalogo').onclick = async () => {
       if (!souMestre) return;
+      if (uploadEmAndamento) return alert("Aguarde o envio da imagem terminar.");
+
       const nome = document.getElementById('item-nome').value.trim();
       if (!nome) return alert("Informe o nome do item.");
 
@@ -885,6 +1062,7 @@
         nome,
         categoria,
         peso,
+        imagem: inputImgUrl.value.trim(),
         descricao: document.getElementById('item-desc').value.trim()
       };
 
@@ -926,6 +1104,7 @@
       document.getElementById('item-hab-custo').value = '';
       document.getElementById('item-hab-efeito').value = '';
       document.getElementById('item-arma-defensiva').checked = false;
+      btnLimparImg.click();
     };
 
     function renderizarCatalogoItens() {
@@ -949,18 +1128,26 @@
           stats = `Cura: <strong class="text-emerald-300">${it.curaFormula}</strong> | Bônus Med: <strong>${it.curaBonus >= 0 ? '+' + it.curaBonus : it.curaBonus}</strong> (${it.usosMax} usos)`;
         }
 
+        const borda = BORDA_PESO[it.peso] || 'border-stone-700';
+        const thumb = it.imagem
+          ? `<img src="${it.imagem}" alt="${it.nome}" class="w-12 h-12 rounded-lg object-cover border-2 ${borda} shrink-0">`
+          : `<div class="w-12 h-12 rounded-lg bg-stone-900 border-2 ${borda} flex items-center justify-center text-xl shrink-0">${ICONE_CATEGORIA[it.categoria] || '🎒'}</div>`;
+
         return `
-          <div class="bg-stone-950 border border-stone-800 rounded p-3 flex justify-between items-start gap-2">
-            <div class="space-y-1">
-              <div class="flex items-center gap-2">
-                <strong class="font-cinzel text-gold-300">${it.nome}</strong>
-                <span class="px-1.5 py-0.5 rounded bg-stone-900 text-stone-400 font-mono text-[10px] uppercase">${it.peso}</span>
+          <div class="bg-stone-950 border border-stone-800 rounded p-3 flex justify-between items-start gap-2.5">
+            <div class="flex items-start gap-2.5 min-w-0">
+              ${thumb}
+              <div class="space-y-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <strong class="font-cinzel text-gold-300 truncate">${it.nome}</strong>
+                  <span class="px-1.5 py-0.5 rounded bg-stone-900 text-stone-400 font-mono text-[10px] uppercase">${it.peso}</span>
+                </div>
+                ${stats ? `<div class="font-mono text-[11px] text-stone-300">${stats}</div>` : ''}
+                ${it.descricao ? `<p class="text-stone-400 text-[11px] line-clamp-2">${it.descricao}</p>` : ''}
+                ${it.habilidade ? `<div class="text-[11px] text-purple-300">✨ <strong>${it.habilidade.nome}</strong> ${it.habilidade.custo ? `(${it.habilidade.custo})` : ''}: ${it.habilidade.efeito}</div>` : ''}
               </div>
-              ${stats ? `<div class="font-mono text-[11px] text-stone-300">${stats}</div>` : ''}
-              ${it.descricao ? `<p class="text-stone-400 text-[11px]">${it.descricao}</p>` : ''}
-              ${it.habilidade ? `<div class="text-[11px] text-purple-300">✨ <strong>${it.habilidade.nome}</strong> ${it.habilidade.custo ? `(${it.habilidade.custo})` : ''}: ${it.habilidade.efeito}</div>` : ''}
             </div>
-            <button data-del-item="${it.id}" class="text-stone-500 hover:text-red-400">✕</button>
+            <button data-del-item="${it.id}" class="text-stone-500 hover:text-red-400 shrink-0">✕</button>
           </div>
         `;
       }).join('');
@@ -1044,7 +1231,7 @@
       };
 
       const docRef = await addDoc(collection(db, "fichas"), novaFicha);
-      window.location.href = `ficha.html?mesaId=${mesaId}&fichaId=${docRef.id}`;
+      window.location.href = `ficha_2.html?mesaId=${mesaId}&fichaId=${docRef.id}`;
     };
 
     function renderizarListaFichas(fichas) {
@@ -1110,7 +1297,7 @@
 
             <!-- Ações -->
             <div class="pt-2 border-t border-stone-900 flex flex-wrap gap-1.5 items-center">
-              <a href="ficha.html?mesaId=${mesaId}&fichaId=${f.id}" class="flex-1 text-center px-3 py-1.5 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
+              <a href="ficha_2.html?mesaId=${mesaId}&fichaId=${f.id}" class="flex-1 text-center px-3 py-1.5 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
                 Abrir Ficha
               </a>
 
@@ -1131,7 +1318,6 @@
         `;
       }).join('');
 
-      // Excluir Ficha
       grid.querySelectorAll('[data-del-ficha]').forEach(b => {
         b.onclick = async () => {
           if (!confirm(`Tem certeza que deseja excluir permanentemente a ficha "${b.dataset.nomeFicha}"?`)) return;

@@ -555,7 +555,9 @@
       if (raizes.length > 0) {
         rootInput.classList.add('hidden');
         rootSelect.classList.remove('hidden');
-        rootSelect.innerHTML = `<option value="">-- Selecione a Raiz --</option>` +
+        rootSelect.innerHTML =
+          `<option value="">-- Selecione a Raiz --</option>` +
+          `<option value="Padrão">🧭 Padrão (Compartilhada por Todos)</option>` +
           raizes.map(r => `<option value="${r}">${r}</option>`).join('');
       }
 
