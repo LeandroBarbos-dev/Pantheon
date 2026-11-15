@@ -733,9 +733,10 @@
       PERICIAS_LIVRO,
       PROFISSOES_LIVRO,
       PASSATEMPOS_LIVRO_DB,
-      BONUS_ORFAO,
       RAIZES_PADRAO_SISTEMA
     } from '../js/sistema-padrao.js';
+
+    const BONUS_ORFAO = RAIZES_PADRAO_SISTEMA['Órfão'] || [1, 1, 1, 1];
 
     const params = new URLSearchParams(window.location.search);
     const mesaId = params.get('mesaId');
