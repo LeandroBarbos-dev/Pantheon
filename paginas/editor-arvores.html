@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PANTHEON - Editor & Visualizador de Árvores de Evolução</title>
+  <title>PANTHEON · Editor de Árvores de Evolução</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,16 +62,16 @@
       border: 2px solid #d69e2e;
       outline: 1px solid #3d3326;
       outline-offset: -4px;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.9), 0 0 15px rgba(214, 158, 46, 0.25);
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9), 0 0 15px rgba(214, 158, 46, 0.25);
     }
     .glow-gold { text-shadow: 0 0 8px rgba(214, 158, 46, 0.6); }
 
     .node-card {
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      width: 175px;
-      min-height: 56px;
+      width: 185px;
+      min-height: 60px;
     }
-    .node-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.9); }
+    .node-card:hover { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.9); }
 
     .type-habilidade { background: linear-gradient(180deg, #1f1a14 0%, #14110d 100%); border-color: #b7791f; }
     .type-pericia { background: linear-gradient(180deg, #0e1a24 0%, #091017 100%); border-color: #38bdf8; }
@@ -122,7 +123,7 @@
       border: 1px solid rgba(202, 138, 4, .45);
       border-radius: 8px;
       background: rgba(12, 10, 9, .92);
-      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
     }
     #canvas-zoom-controls button {
       width: 32px;
@@ -135,7 +136,7 @@
     #canvas-zoom-controls button:hover { background: #44403c; }
     #canvas-zoom-value { min-width: 48px; text-align: center; color: #d6d3d1; font: 11px monospace; }
 
-    .tree-level { position: relative; height: 76px; width: 100%; flex: none; }
+    .tree-level { position: relative; height: 80px; width: 100%; flex: none; }
     .tree-level .node-card { position: absolute; top: 0; transform: translateX(-50%); }
 
     #svg-connections {
@@ -157,10 +158,11 @@
     }
   </style>
 </head>
+
 <body class="min-h-screen flex flex-col selection:bg-gold-700 selection:text-white overflow-hidden">
 
   <!-- HEADER -->
-  <header class="border-b-2 border-gold-600/60 bg-parchment-dark/95 px-6 py-3 flex justify-between items-center z-40 backdrop-blur-md">
+  <header class="border-b-2 border-gold-600/60 bg-parchment-dark/95 px-6 py-3 flex flex-wrap justify-between items-center gap-3 z-40 backdrop-blur-md">
     <div class="flex items-center space-x-3">
       <a id="btn-voltar" href="../index.html" class="px-2.5 py-1.5 rounded border border-stone-700 bg-stone-900 hover:border-gold-500 text-stone-300 text-xs font-cinzel flex items-center gap-1.5">
         <i class="fa-solid fa-arrow-left text-gold-400"></i> <span id="txt-voltar">Lobby</span>
@@ -173,10 +175,8 @@
     </div>
 
     <!-- Controles do Topo -->
-    <div class="flex items-center gap-2">
-      <!-- Seletor de árvores da mesa (aparece quando vinculado a uma mesa) -->
-      <select id="select-arvore-mesa" class="hidden bg-stone-950 border border-gold-600/60 rounded px-2.5 py-1.5 text-xs text-gold-300 font-cinzel">
-      </select>
+    <div class="flex flex-wrap items-center gap-2">
+      <select id="select-arvore-mesa" class="hidden bg-stone-950 border border-gold-600/60 rounded px-2.5 py-1.5 text-xs text-gold-300 font-cinzel"></select>
 
       <button id="btn-nova-arvore" class="px-3 py-1.5 rounded border border-stone-700 bg-stone-900 hover:border-gold-500 hover:text-gold-300 text-xs font-cinzel transition-all flex items-center gap-1.5">
         <i class="fa-solid fa-file-circle-plus text-gold-500"></i> Nova
@@ -187,7 +187,10 @@
       <button id="btn-exportar-json" class="px-3 py-1.5 rounded border border-stone-700 bg-stone-900 hover:border-gold-500 hover:text-gold-300 text-xs font-cinzel transition-all flex items-center gap-1.5">
         <i class="fa-solid fa-code text-gold-400"></i> Exportar
       </button>
-      <button id="btn-salvar-mesa" class="hidden px-4 py-1.5 rounded bg-gradient-to-r from-gold-600 to-gold-700 hover:from-gold-500 hover:to-gold-600 text-stone-950 text-xs font-cinzel font-bold transition-all flex items-center gap-1.5 shadow-lg">
+      <button id="btn-excluir-arvore-mesa" class="hidden px-2.5 py-1.5 rounded border border-red-900 bg-red-950/60 hover:border-red-500 text-red-400 text-xs font-cinzel" title="Excluir esta árvore da mesa">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+      <button id="btn-salvar-mesa" class="hidden px-4 py-1.5 rounded bg-gradient-to-r from-gold-600 to-gold-700 hover:from-gold-500 hover:to-gold-600 text-stone-950 text-xs font-cinzel font-bold transition-all items-center gap-1.5 shadow-lg">
         <i class="fa-solid fa-cloud-arrow-up"></i> Salvar na Mesa
       </button>
     </div>
@@ -205,8 +208,7 @@
 
       <div class="space-y-1.5">
         <label class="block font-cinzel text-xs text-gold-400 font-bold uppercase tracking-wider">Raiz Associada</label>
-        <!-- Input texto livre (modo local) ou Select (modo mesa) -->
-        <input type="text" id="tree-root-input" placeholder="Ex: Ferreiro" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-gold-500">
+        <input type="text" id="tree-root-input" placeholder="Ex: Mercador, Ferreiro, Órfão..." class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-gold-500">
         <select id="tree-root-select" class="hidden w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-xs text-gold-300 focus:outline-none focus:border-gold-500"></select>
       </div>
 
@@ -222,9 +224,11 @@
       </div>
 
       <div class="bg-stone-950/80 p-3 rounded border border-stone-800 space-y-2 text-[11px] text-stone-400">
-        <span class="font-cinzel text-xs text-gold-400 block font-bold">Dicas Rápidas</span>
-        <p class="leading-tight">&bull; <strong>Arraste um nó sobre outro</strong> para definir quem é o nó pai (pré-requisito).</p>
-        <p class="leading-tight">&bull; Clique em um nó para configurar os bônus automáticos de <strong>Atributo, Perícia ou Habilidade</strong>.</p>
+        <span class="font-cinzel text-xs text-gold-400 block font-bold">Regras de Ramificação</span>
+        <p class="leading-tight">&bull; <strong class="text-stone-200">Livre:</strong> Todos os caminhos filhos podem ser comprados.</p>
+        <p class="leading-tight">&bull; <strong class="text-amber-300">Restritiva:</strong> Avança parcialmente nos ramos secundários. <em>Herança Dupla ignora esta trava.</em></p>
+        <p class="leading-tight">&bull; <strong class="text-red-300">Exclusiva:</strong> Escolhe apenas 1 caminho e bloqueia os demais, <em>mesmo com Herança Dupla</em>.</p>
+        <p class="leading-tight pt-1 border-t border-stone-900">&bull; <strong>Arraste um nó sobre outro</strong> para definir quem é o nó pai (pré-requisito).</p>
       </div>
     </aside>
 
@@ -244,7 +248,7 @@
     </main>
 
     <!-- PAINEL LATERAL DIREITO: INSPEÇÃO DO NÓ -->
-    <aside id="node-inspector" class="w-80 bg-parchment-dark/95 border-l border-gold-600/40 p-4 space-y-4 z-30 transform translate-x-full transition-transform duration-300 ease-in-out absolute right-0 top-0 bottom-0 shadow-2xl flex flex-col">
+    <aside id="node-inspector" class="w-80 sm:w-96 bg-parchment-dark/95 border-l border-gold-600/40 p-4 space-y-4 z-30 transform translate-x-full transition-transform duration-300 ease-in-out absolute right-0 top-0 bottom-0 shadow-2xl flex flex-col">
       <div class="flex justify-between items-center border-b border-gold-600/40 pb-2">
         <h3 class="font-cinzel text-gold-400 font-bold text-sm flex items-center gap-2">
           <i class="fa-solid fa-pen-to-square text-gold-500"></i> Configurar Nó
@@ -276,13 +280,14 @@
           </div>
         </div>
 
-        <!-- CONFIGURAÇÃO ESPECÍFICA PARA PERÍCIA -->
-        <div id="sec-config-pericia" class="bg-sky-950/30 p-2.5 rounded border border-sky-700/40 space-y-2 hidden">
-          <span class="font-cinzel text-sky-300 font-bold block">Bônus de Perícia Concedido</span>
-          <div class="grid grid-cols-3 gap-1.5">
-            <input type="text" id="inspector-per-nome" placeholder="Nome (Ex: Erudição)" class="col-span-2 bg-stone-950 border border-stone-700 rounded px-2 py-1 text-stone-200">
-            <input type="number" id="inspector-per-valor" value="1" min="1" max="10" class="bg-stone-950 border border-stone-700 rounded px-2 py-1 text-sky-300 font-bold text-center">
+        <!-- CONFIGURAÇÃO DE PERÍCIAS CONCEDIDAS (Perícia ou Habilidade com Perícia) -->
+        <div id="sec-config-pericia" class="bg-sky-950/30 p-2.5 rounded border border-sky-700/40 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="font-cinzel text-sky-300 font-bold">Bônus de Perícia(s)</span>
+            <button type="button" id="btn-add-pericia-no" class="px-2 py-0.5 rounded bg-sky-900/80 hover:bg-sky-800 text-sky-200 text-[10px] font-bold">+ Perícia</button>
           </div>
+          <div id="lista-pericias-no" class="space-y-1.5"></div>
+          <p class="text-[10px] text-stone-400">Opcional em Habilidades (ex: Lábia de Feira dá +1 Persuasão).</p>
         </div>
 
         <!-- CONFIGURAÇÃO ESPECÍFICA PARA HABILIDADE -->
@@ -298,16 +303,27 @@
             <input type="number" id="inspector-hab-pef" placeholder="PE-F" min="0" class="bg-stone-950 border border-stone-700 rounded px-2 py-1 text-amber-300 text-center" title="Custo PE Físico">
             <input type="number" id="inspector-hab-pem" placeholder="PE-M" min="0" class="bg-stone-950 border border-stone-700 rounded px-2 py-1 text-sky-300 text-center" title="Custo PE Mental">
           </div>
+
           <div class="grid grid-cols-2 gap-1.5">
             <select id="inspector-hab-ef-tipo" class="bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-stone-300 text-[11px]">
               <option value="nenhum">Sem bônus numérico</option>
-              <option value="teste">Bônus em Teste (+X)</option>
+              <option value="teste">Bônus no Teste (+X)</option>
               <option value="hp">HP Máximo (+X)</option>
               <option value="san">SAN Máxima (+X)</option>
               <option value="pef">PE-F Máximo (+X)</option>
               <option value="pem">PE-M Máximo (+X)</option>
             </select>
             <input type="number" id="inspector-hab-ef-val" value="0" class="bg-stone-950 border border-stone-700 rounded px-2 py-1 text-gold-300 text-center" placeholder="Valor">
+          </div>
+
+          <!-- Modificador de Crítico (Apenas quando esta habilidade estiver em uso) -->
+          <div class="pt-1 border-t border-stone-800/80 flex items-center justify-between gap-2">
+            <label class="text-[11px] text-red-300 font-semibold">Redução Margem Crítico:</label>
+            <select id="inspector-hab-crit-mod" class="bg-stone-950 border border-stone-700 rounded px-2 py-1 font-mono text-red-300 text-[11px]">
+              <option value="0">0 (Padrão)</option>
+              <option value="-1">-1 (Ex: 20 → 19-20)</option>
+              <option value="-2">-2 (Ex: 20 → 18-20)</option>
+            </select>
           </div>
         </div>
 
@@ -325,11 +341,13 @@
                 <option value="erudicao">Erudição (ERU)</option>
                 <option value="autoridade">Autoridade (AUT)</option>
                 <option value="impeto">Ímpeto (ÍMP)</option>
+                <option value="narrativo">Ramo / Narrativo</option>
               </select>
               <input type="number" id="inspector-opta-val" value="1" class="bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-purple-300 text-center">
             </div>
+            <input type="text" id="inspector-opta-texto" placeholder="Texto exibido (ex: +1 POT ou Ramo X)" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-[11px] text-stone-200">
           </div>
-          <div class="space-y-1">
+          <div class="space-y-1 pt-1 border-t border-purple-900/40">
             <span class="text-[10px] text-stone-400">Opção B:</span>
             <div class="grid grid-cols-3 gap-1">
               <select id="inspector-optb-attr" class="col-span-2 bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-stone-200">
@@ -340,9 +358,11 @@
                 <option value="erudicao">Erudição (ERU)</option>
                 <option value="autoridade">Autoridade (AUT)</option>
                 <option value="impeto">Ímpeto (ÍMP)</option>
+                <option value="narrativo">Ramo / Narrativo</option>
               </select>
               <input type="number" id="inspector-optb-val" value="1" class="bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-purple-300 text-center">
             </div>
+            <input type="text" id="inspector-optb-texto" placeholder="Texto exibido (ex: +1 VIG ou Ramo Y)" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-[11px] text-stone-200">
           </div>
         </div>
 
@@ -351,19 +371,37 @@
           <label class="block font-cinzel text-gold-400 font-bold">Ramificação de Saída</label>
           <select id="inspector-branch-type" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-gold-300 text-xs">
             <option value="livre">Livre (Avanço simultâneo)</option>
-            <option value="exclusiva">Exclusiva (Bloqueia irmãos)</option>
-            <option value="restritiva">Restritiva (Limite secundário)</option>
+            <option value="restritiva">Restritiva (Avanço parcial; Herança Dupla ignora)</option>
+            <option value="exclusiva">Exclusiva (Bloqueia irmãos para todos)</option>
           </select>
           <div id="inspector-branch-limit-box" class="hidden pt-1">
-            <label class="block text-[10px] text-amber-300 mb-1">Máx. nós em caminhos secundários:</label>
+            <label class="block text-[10px] text-amber-300 mb-1">Máx. nós permitidos em caminhos secundários:</label>
             <input type="number" id="inspector-branch-limit" min="1" max="10" value="1" class="w-full bg-stone-900 border border-stone-800 rounded px-2 py-1 text-gold-400 font-mono">
           </div>
         </div>
 
-        <!-- Descrição -->
+        <!-- Descrição Normal -->
         <div class="space-y-1.5 border-t border-stone-800 pt-2">
           <label class="block font-cinzel text-stone-300">Descrição Completa</label>
           <textarea id="inspector-desc" rows="3" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-stone-300 focus:outline-none focus:border-gold-500 resize-none"></textarea>
+        </div>
+
+        <!-- Aprimoramento de Herança Singular -->
+        <div class="bg-gold-950/20 p-2.5 rounded border border-gold-600/40 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-cinzel text-gold-300 font-bold text-[11px]">★ Aprimoramento Herança Singular</span>
+          </div>
+          <textarea id="inspector-singular-desc" rows="2" placeholder="Opcional: Efeito extra ou aprimorado para quem possui Herança Singular nesta raiz..." class="w-full bg-stone-950 border border-stone-800 rounded px-2 py-1 text-[11px] text-gold-200 focus:outline-none focus:border-gold-500 resize-none"></textarea>
+          <div class="grid grid-cols-2 gap-1.5">
+            <div>
+              <label class="text-[10px] text-stone-400 block">Redução Custo PE:</label>
+              <input type="number" id="inspector-singular-red-pe" min="0" max="10" value="0" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 font-mono text-gold-300 text-center">
+            </div>
+            <div>
+              <label class="text-[10px] text-stone-400 block">Bônus Extra (+X):</label>
+              <input type="number" id="inspector-singular-bonus" min="0" max="10" value="0" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 font-mono text-gold-300 text-center">
+            </div>
+          </div>
         </div>
       </div>
 
@@ -419,7 +457,7 @@
           limiteNosSecundarios: 1,
           custoPontos: 1,
           requisitos: [],
-          conteudo: { descricao: "Benefício inicial da raiz.", cat: "passivo", f: 0, m: 0, efTipo: "nenhum", efVal: 0 }
+          conteudo: { descricao: "Benefício inicial da raiz.", cat: "passivo", f: 0, m: 0, efTipo: "nenhum", efVal: 0, critMod: 0 }
         }
       ]
     };
@@ -429,7 +467,6 @@
     let draggedNodeId = null;
     let currentZoom = 1, panX = 0, panY = 0;
 
-    // Inicialização de Contexto (Mesa vs Local)
     onAuthStateChanged(auth, async (user) => {
       if (mesaId && user) {
         await carregarContextoMesa(user);
@@ -451,9 +488,12 @@
       document.getElementById('btn-voltar').href = `mesa.html?id=${mesaId}`;
       document.getElementById('txt-voltar').textContent = "Voltar à Mesa";
       document.getElementById('subtitulo-contexto').textContent = `Mesa: ${mesaDados.nome}`;
-      document.getElementById('btn-salvar-mesa').classList.remove('hidden');
 
-      // Preenche select de raízes da mesa
+      const btnSalvar = document.getElementById('btn-salvar-mesa');
+      btnSalvar.classList.remove('hidden');
+      btnSalvar.classList.add('flex');
+      document.getElementById('btn-excluir-arvore-mesa').classList.remove('hidden');
+
       const rootInput = document.getElementById('tree-root-input');
       const rootSelect = document.getElementById('tree-root-select');
       const raizes = Object.keys(mesaDados.raizesDisponiveis || {});
@@ -464,7 +504,6 @@
           raizes.map(r => `<option value="${r}">${r}</option>`).join('');
       }
 
-      // Preenche seletor de árvores já salvas na mesa
       const selArvore = document.getElementById('select-arvore-mesa');
       selArvore.classList.remove('hidden');
       atualizarSeletorArvoresMesa();
@@ -497,7 +536,6 @@
       }
     };
 
-    // Salvar Árvore direto no Firestore da Mesa
     document.getElementById('btn-salvar-mesa').onclick = async () => {
       if (!mesaId) return;
       const btn = document.getElementById('btn-salvar-mesa');
@@ -526,6 +564,20 @@
       }
     };
 
+    document.getElementById('btn-excluir-arvore-mesa').onclick = async () => {
+      if (!mesaId) return;
+      const existe = (mesaDados?.arvores || []).some(a => a.id === treeData.id);
+      if (!existe) return alert("Esta árvore ainda não foi salva na mesa.");
+      if (!confirm(`Excluir permanentemente a árvore "${treeData.nome}" desta mesa?`)) return;
+
+      const filtradas = (mesaDados.arvores || []).filter(a => a.id !== treeData.id);
+      await updateDoc(doc(db, "mesas", mesaId), { arvores: filtradas });
+      mesaDados.arvores = filtradas;
+      atualizarSeletorArvoresMesa();
+      criarNovaArvore();
+      alert("Árvore removida da mesa.");
+    };
+
     function loadTreeIntoInputs() {
       document.getElementById('tree-name-input').value = treeData.nome || '';
       document.getElementById('tree-root-input').value = treeData.raizAssociada || '';
@@ -538,7 +590,9 @@
     document.getElementById('tree-root-select').onchange = e => treeData.raizAssociada = e.target.value;
     document.getElementById('tree-desc-input').oninput = e => treeData.descricao = e.target.value;
 
-    // ZOOM & PAN
+    /* ========================================================= */
+    /* ZOOM & PAN                                                */
+    /* ========================================================= */
     function setupZoomAndPan() {
       const wrapper = document.getElementById('tree-canvas-wrapper');
       const stage = document.getElementById('tree-stage');
@@ -592,7 +646,9 @@
       applyTransform();
     }
 
-    // LAYOUT
+    /* ========================================================= */
+    /* LAYOUT & RENDERIZAÇÃO DA ÁRVORE                           */
+    /* ========================================================= */
     function calculateTreeLayout() {
       const nodeMap = new Map(treeData.nos.map(n => [n.id, n]));
       const children = new Map(treeData.nos.map(n => [n.id, []]));
@@ -609,7 +665,7 @@
       const roots = treeData.nos.filter(n => !primaryParent.has(n.id));
       const positions = new Map();
       const visited = new Set();
-      const cardStep = 230;
+      const cardStep = 235;
 
       function place(node, depth, cursor) {
         if (visited.has(node.id)) return cursor;
@@ -707,6 +763,9 @@
           card.onclick = () => selectNode(node.id);
 
           const costBadge = `<span class="absolute -top-2 -right-2 bg-stone-900 text-gold-400 border border-gold-600/60 font-mono text-[10px] font-bold px-1.5 rounded-full shadow">${node.custoPontos || 1} PT</span>`;
+          const singularBadge = node.herancaSingular?.descricao || node.herancaSingular?.bonusExtra || node.herancaSingular?.reducaoPe
+            ? `<span class="absolute -top-2 left-2 bg-gold-950 text-gold-300 border border-gold-500 font-mono text-[9px] px-1 rounded shadow" title="Possui Aprimoramento de Herança Singular">★</span>`
+            : '';
 
           let branchIndicator = "";
           if (node.tipoRamificacao === 'exclusiva') {
@@ -719,16 +778,14 @@
           if (node.tipoRecompensa === 'atributo' || node.tipoRecompensa === 'ambiguo') {
             const optA = node.opcoesAmbiguas?.[0]?.efeito || '+1 POT';
             const optB = node.opcoesAmbiguas?.[1]?.efeito || '+1 VIG';
-            innerContent = `${costBadge}${branchIndicator}<div class="text-[11px] font-cinzel font-bold text-stone-200 text-center mb-1 truncate">${node.titulo}</div><div class="grid grid-cols-2 gap-1 text-[9px] font-mono font-bold text-center"><span class="bg-purple-950/80 border border-purple-600/50 text-purple-300 py-0.5 px-1 rounded truncate">${optA}</span><span class="bg-purple-950/80 border border-purple-600/50 text-purple-300 py-0.5 px-1 rounded truncate">${optB}</span></div>`;
+            innerContent = `${costBadge}${singularBadge}${branchIndicator}<div class="text-[11px] font-cinzel font-bold text-stone-200 text-center mb-1 truncate">${node.titulo}</div><div class="grid grid-cols-2 gap-1 text-[9px] font-mono font-bold text-center"><span class="bg-purple-950/80 border border-purple-600/50 text-purple-300 py-0.5 px-1 rounded truncate">${optA}</span><span class="bg-purple-950/80 border border-purple-600/50 text-purple-300 py-0.5 px-1 rounded truncate">${optB}</span></div>`;
           } else if (node.tipoRecompensa === 'pericia') {
-            let periciaTxt = "+1 Perícia";
-            if (node.conteudo?.bonusPericia) {
-              const keys = Object.keys(node.conteudo.bonusPericia);
-              if (keys.length > 0) periciaTxt = `+${node.conteudo.bonusPericia[keys[0]]} ${keys[0]}`;
-            }
-            innerContent = `${costBadge}${branchIndicator}<div class="text-[10px] uppercase font-mono text-sky-400 font-bold truncate">${periciaTxt}</div><div class="text-xs font-cinzel font-bold text-stone-200 truncate">${node.titulo}</div>`;
+            const entries = Object.entries(node.conteudo?.bonusPericia || {});
+            const periciaTxt = entries.length ? entries.map(([k, v]) => `+${v} ${k}`).join(' · ') : '+1 Perícia';
+            innerContent = `${costBadge}${singularBadge}${branchIndicator}<div class="text-[10px] uppercase font-mono text-sky-400 font-bold truncate">${periciaTxt}</div><div class="text-xs font-cinzel font-bold text-stone-200 truncate">${node.titulo}</div>`;
           } else {
-            innerContent = `${costBadge}${branchIndicator}<div class="text-xs font-cinzel font-bold text-gold-300 truncate">${node.titulo}</div><div class="text-[10px] text-stone-400 line-clamp-1">${node.conteudo?.descricao || ''}</div>`;
+            const critTag = (node.conteudo?.critMod && node.conteudo.critMod < 0) ? ` · Crít ${node.conteudo.critMod}` : '';
+            innerContent = `${costBadge}${singularBadge}${branchIndicator}<div class="text-xs font-cinzel font-bold text-gold-300 truncate">${node.titulo}</div><div class="text-[10px] text-stone-400 line-clamp-1">${node.conteudo?.descricao || ''}${critTag}</div>`;
           }
 
           card.innerHTML = innerContent;
@@ -797,7 +854,63 @@
       });
     }
 
-    // INSPETOR DO NÓ
+    /* ========================================================= */
+    /* INSPETOR DO NÓ (COM MÚLTIPLAS PERÍCIAS E HERANÇA SINGULAR)*/
+    /* ========================================================= */
+    function renderizarListaPericiasNo(node) {
+      const container = document.getElementById('lista-pericias-no');
+      const bonusMap = node.conteudo?.bonusPericia || {};
+      const entries = Object.entries(bonusMap);
+
+      if (!entries.length) {
+        container.innerHTML = `<span class="text-[10px] text-stone-500 italic">Nenhuma perícia configurada neste nó.</span>`;
+        return;
+      }
+
+      container.innerHTML = entries.map(([nome, val], idx) => `
+        <div class="grid grid-cols-12 gap-1 items-center">
+          <input type="text" data-per-nome="${idx}" value="${nome}" placeholder="Perícia (ex: Persuasão)" class="col-span-8 bg-stone-950 border border-stone-700 rounded px-2 py-1 text-stone-200">
+          <input type="number" data-per-val="${idx}" value="${val}" min="1" max="10" class="col-span-3 bg-stone-950 border border-stone-700 rounded px-1.5 py-1 text-sky-300 font-bold text-center">
+          <button type="button" data-per-del="${nome}" class="col-span-1 text-stone-500 hover:text-red-400 text-center">✕</button>
+        </div>
+      `).join('');
+
+      const sincronizarPericias = () => {
+        const novoMapa = {};
+        const inputsNome = container.querySelectorAll('[data-per-nome]');
+        const inputsVal = container.querySelectorAll('[data-per-val]');
+        inputsNome.forEach((inp, i) => {
+          const pName = inp.value.trim();
+          const pVal = parseInt(inputsVal[i].value) || 1;
+          if (pName) novoMapa[pName] = pVal;
+        });
+        if (!node.conteudo) node.conteudo = {};
+        node.conteudo.bonusPericia = novoMapa;
+        renderTreeVisual();
+      };
+
+      container.querySelectorAll('input').forEach(inp => inp.oninput = sincronizarPericias);
+      container.querySelectorAll('[data-per-del]').forEach(btn => {
+        btn.onclick = () => {
+          delete node.conteudo.bonusPericia[btn.dataset.perDel];
+          renderizarListaPericiasNo(node);
+          renderTreeVisual();
+        };
+      });
+    }
+
+    document.getElementById('btn-add-pericia-no').onclick = () => {
+      if (!selectedNodeId) return;
+      const node = treeData.nos.find(n => n.id === selectedNodeId);
+      if (!node) return;
+      if (!node.conteudo) node.conteudo = {};
+      if (!node.conteudo.bonusPericia) node.conteudo.bonusPericia = {};
+      const chaveBase = `Perícia ${Object.keys(node.conteudo.bonusPericia).length + 1}`;
+      node.conteudo.bonusPericia[chaveBase] = 1;
+      renderizarListaPericiasNo(node);
+      renderTreeVisual();
+    };
+
     function selectNode(nodeId) {
       selectedNodeId = nodeId;
       const node = treeData.nos.find(n => n.id === nodeId);
@@ -812,23 +925,31 @@
       document.getElementById('inspector-branch-limit').value = node.limiteNosSecundarios || 1;
       document.getElementById('inspector-desc').value = node.conteudo?.descricao || '';
 
-      // Carrega Perícia
-      const perEntries = Object.entries(node.conteudo?.bonusPericia || {});
-      document.getElementById('inspector-per-nome').value = perEntries[0]?.[0] || '';
-      document.getElementById('inspector-per-valor').value = perEntries[0]?.[1] || 1;
+      renderizarListaPericiasNo(node);
 
-      // Carrega Habilidade
+      // Habilidade
       document.getElementById('inspector-hab-cat').value = node.conteudo?.cat || 'passivo';
       document.getElementById('inspector-hab-pef').value = node.conteudo?.f || 0;
       document.getElementById('inspector-hab-pem').value = node.conteudo?.m || 0;
       document.getElementById('inspector-hab-ef-tipo').value = node.conteudo?.efTipo || 'nenhum';
       document.getElementById('inspector-hab-ef-val').value = node.conteudo?.efVal || 0;
+      document.getElementById('inspector-hab-crit-mod').value = node.conteudo?.critMod || 0;
 
-      // Carrega Opções Ambíguas
-      document.getElementById('inspector-opta-attr').value = node.opcoesAmbiguas?.[0]?.attr || 'potencia';
-      document.getElementById('inspector-opta-val').value = node.opcoesAmbiguas?.[0]?.val || 1;
-      document.getElementById('inspector-optb-attr').value = node.opcoesAmbiguas?.[1]?.attr || 'vigor';
-      document.getElementById('inspector-optb-val').value = node.opcoesAmbiguas?.[1]?.val || 1;
+      // Opções Ambíguas / Atributo
+      const optA = node.opcoesAmbiguas?.[0] || {};
+      const optB = node.opcoesAmbiguas?.[1] || {};
+      document.getElementById('inspector-opta-attr').value = optA.attr || 'potencia';
+      document.getElementById('inspector-opta-val').value = optA.val || 1;
+      document.getElementById('inspector-opta-texto').value = optA.efeito || '';
+
+      document.getElementById('inspector-optb-attr').value = optB.attr || 'vigor';
+      document.getElementById('inspector-optb-val').value = optB.val || 1;
+      document.getElementById('inspector-optb-texto').value = optB.efeito || '';
+
+      // Herança Singular
+      document.getElementById('inspector-singular-desc').value = node.herancaSingular?.descricao || '';
+      document.getElementById('inspector-singular-red-pe').value = node.herancaSingular?.reducaoPe || 0;
+      document.getElementById('inspector-singular-bonus').value = node.herancaSingular?.bonusExtra || 0;
 
       atualizarSecoesInspetor();
       renderTreeVisual();
@@ -836,7 +957,7 @@
 
     function atualizarSecoesInspetor() {
       const type = document.getElementById('inspector-type').value;
-      document.getElementById('sec-config-pericia').classList.toggle('hidden', type !== 'pericia');
+      document.getElementById('sec-config-pericia').classList.toggle('hidden', type !== 'pericia' && type !== 'habilidade');
       document.getElementById('sec-config-habilidade').classList.toggle('hidden', type !== 'habilidade');
       document.getElementById('sec-config-ambiguo').classList.toggle('hidden', type !== 'atributo' && type !== 'ambiguo');
 
@@ -858,42 +979,64 @@
       if (!node.conteudo) node.conteudo = {};
       node.conteudo.descricao = document.getElementById('inspector-desc').value;
 
-      if (node.tipoRecompensa === 'pericia') {
-        const pNome = document.getElementById('inspector-per-nome').value.trim();
-        const pVal = parseInt(document.getElementById('inspector-per-valor').value) || 1;
-        node.conteudo.bonusPericia = pNome ? { [pNome]: pVal } : {};
-      } else if (node.tipoRecompensa === 'habilidade') {
+      if (node.tipoRecompensa === 'habilidade') {
         node.conteudo.cat = document.getElementById('inspector-hab-cat').value;
         node.conteudo.f = parseInt(document.getElementById('inspector-hab-pef').value) || 0;
         node.conteudo.m = parseInt(document.getElementById('inspector-hab-pem').value) || 0;
         node.conteudo.efTipo = document.getElementById('inspector-hab-ef-tipo').value;
         node.conteudo.efVal = parseInt(document.getElementById('inspector-hab-ef-val').value) || 0;
+        node.conteudo.critMod = parseInt(document.getElementById('inspector-hab-crit-mod').value) || 0;
       } else if (node.tipoRecompensa === 'atributo' || node.tipoRecompensa === 'ambiguo') {
         const attrA = document.getElementById('inspector-opta-attr').value;
         const valA = parseInt(document.getElementById('inspector-opta-val').value) || 1;
+        const txtA = document.getElementById('inspector-opta-texto').value.trim();
+
         const attrB = document.getElementById('inspector-optb-attr').value;
         const valB = parseInt(document.getElementById('inspector-optb-val').value) || 1;
+        const txtB = document.getElementById('inspector-optb-texto').value.trim();
 
         node.opcoesAmbiguas = [
-          { idOpcao: 'a', attr: attrA, val: valA, efeito: `+${valA} ${SIGLAS_ATTR[attrA]}` },
-          { idOpcao: 'b', attr: attrB, val: valB, efeito: `+${valB} ${SIGLAS_ATTR[attrB]}` }
+          {
+            idOpcao: 'a',
+            attr: attrA,
+            val: valA,
+            efeito: txtA || (SIGLAS_ATTR[attrA] ? `+${valA} ${SIGLAS_ATTR[attrA]}` : 'Opção A')
+          },
+          {
+            idOpcao: 'b',
+            attr: attrB,
+            val: valB,
+            efeito: txtB || (SIGLAS_ATTR[attrB] ? `+${valB} ${SIGLAS_ATTR[attrB]}` : 'Opção B')
+          }
         ];
+      }
+
+      // Herança Singular
+      const singDesc = document.getElementById('inspector-singular-desc').value.trim();
+      const singRedPe = parseInt(document.getElementById('inspector-singular-red-pe').value) || 0;
+      const singBonus = parseInt(document.getElementById('inspector-singular-bonus').value) || 0;
+
+      if (singDesc || singRedPe > 0 || singBonus > 0) {
+        node.herancaSingular = { descricao: singDesc, reducaoPe: singRedPe, bonusExtra: singBonus };
+      } else {
+        delete node.herancaSingular;
       }
 
       renderTreeVisual();
     }
 
-    // Bind de eventos do Inspetor
     [
       'inspector-title', 'inspector-cost', 'inspector-desc',
-      'inspector-per-nome', 'inspector-per-valor',
       'inspector-hab-pef', 'inspector-hab-pem', 'inspector-hab-ef-val',
-      'inspector-opta-val', 'inspector-optb-val', 'inspector-branch-limit'
+      'inspector-opta-val', 'inspector-opta-texto',
+      'inspector-optb-val', 'inspector-optb-texto',
+      'inspector-branch-limit',
+      'inspector-singular-desc', 'inspector-singular-red-pe', 'inspector-singular-bonus'
     ].forEach(id => document.getElementById(id).oninput = saveInspectorChanges);
 
     [
       'inspector-type', 'inspector-branch-type',
-      'inspector-hab-cat', 'inspector-hab-ef-tipo',
+      'inspector-hab-cat', 'inspector-hab-ef-tipo', 'inspector-hab-crit-mod',
       'inspector-opta-attr', 'inspector-optb-attr'
     ].forEach(id => document.getElementById(id).onchange = () => {
       atualizarSecoesInspetor();
@@ -918,7 +1061,7 @@
         limiteNosSecundarios: 1,
         custoPontos: 1,
         requisitos: parentId ? [parentId] : [],
-        conteudo: { descricao: "Descrição do benefício.", cat: "passivo", f: 0, m: 0, efTipo: "nenhum", efVal: 0 }
+        conteudo: { descricao: "Descrição do benefício.", cat: "passivo", f: 0, m: 0, efTipo: "nenhum", efVal: 0, critMod: 0 }
       });
       renderTreeVisual();
       selectNode(newId);
@@ -948,7 +1091,7 @@
           limiteNosSecundarios: 1,
           custoPontos: 1,
           requisitos: [],
-          conteudo: { descricao: "Efeito inicial da raiz.", cat: "passivo", f: 0, m: 0, efTipo: "nenhum", efVal: 0 }
+          conteudo: { descricao: "Efeito inicial da raiz.", cat: "passivo", f: 0, m: 0, efTipo: "nenhum", efVal: 0, critMod: 0 }
         }]
       };
       loadTreeIntoInputs();
@@ -976,7 +1119,7 @@
     };
 
     document.getElementById('btn-close-json').onclick =
-    document.getElementById('btn-cancel-json').onclick = () => document.getElementById('json-modal').classList.add('hidden');
+      document.getElementById('btn-cancel-json').onclick = () => document.getElementById('json-modal').classList.add('hidden');
 
     document.getElementById('json-action-btn').onclick = () => {
       const area = document.getElementById('json-textarea');
@@ -1004,4 +1147,5 @@
     window.addEventListener('resize', drawConnectionLines);
   </script>
 </body>
+
 </html>
