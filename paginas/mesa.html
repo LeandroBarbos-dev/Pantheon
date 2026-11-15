@@ -1,1473 +1,1753 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PANTHEON · Painel da Mesa</title>
+  <title>Pantheon — Mesa de Campanha</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Faustina:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            gold: { 300: '#f6e05e', 400: '#ecc94b', 500: '#d69e2e', 600: '#b7791f', 700: '#975a16' },
-            parchment: { light: '#2a2620', DEFAULT: '#1c1917', dark: '#12100e', border: '#3d3326' }
+            obsidian: '#0f1115',
+            surface: '#161920',
+            surfaceHover: '#1f232c',
+            borderDark: '#272c38',
+            crimson: '#991b1b',
+            crimsonBright: '#dc2626',
+            gold: '#b45309',
+            goldBright: '#d97706',
           },
-          fontFamily: { cinzel: ['Cinzel', 'serif'], body: ['Faustina', 'serif'] }
+          fontFamily: {
+            serif: ['Cinzel', 'Georgia', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          }
         }
       }
     }
   </script>
   <style>
-    body { background-color: #090807; color: #e2d8c3; font-family: 'Faustina', serif; }
-    .gold-border { border: 1px solid #b7791f; box-shadow: inset 0 0 12px rgba(0,0,0,0.8); }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #090807; }
-    ::-webkit-scrollbar-thumb { background: #3d3326; border-radius: 3px; }
+    body { background-color: #0f1115; color: #e2e8f0; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #161920; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #272c38; border-radius: 3px; }
   </style>
 </head>
+<body class="font-sans antialiased min-h-screen flex flex-col">
 
-<body class="min-h-screen flex flex-col">
-
-  <!-- Cabeçalho -->
-  <header class="border-b border-gold-600/50 bg-parchment-dark/95 sticky top-0 z-30 backdrop-blur">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
-      <div class="flex items-center gap-3">
-        <a href="../index.html" class="px-3 py-1.5 rounded bg-stone-900 border border-stone-700 hover:border-gold-500 text-xs font-cinzel text-stone-300">
-          ← Início
+  <!-- Navbar -->
+  <header class="bg-surface border-b border-borderDark sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <a href="dashboard.html" class="text-slate-400 hover:text-white text-xs sm:text-sm flex items-center gap-1 transition-colors shrink-0">
+          <span>&larr;</span> <span class="hidden sm:inline">Voltar</span>
         </a>
-        <div>
-          <h1 id="mesa-nome" class="font-cinzel text-xl md:text-2xl font-bold text-gold-400">Carregando Mesa...</h1>
-          <div class="flex items-center gap-3 text-xs text-stone-400">
-            <span id="badge-papel" class="px-2 py-0.5 rounded font-cinzel text-[10px] uppercase border"></span>
-            <span>Código: <strong id="mesa-codigo" class="font-mono text-gold-300 select-all">---</strong></span>
-            <button id="btn-copiar-codigo" class="text-gold-400 hover:underline text-[11px]"><i class="fa-regular fa-copy"></i> Copiar</button>
+        <div class="h-6 w-[1px] bg-borderDark shrink-0"></div>
+        <div class="min-w-0">
+          <h1 id="mesa-titulo" class="font-serif text-base sm:text-xl font-bold text-slate-100 tracking-wide truncate">Carregando...</h1>
+          <div class="flex items-center gap-2 text-xs text-slate-400">
+            <span id="mesa-role-badge" class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-medium"></span>
+            <span id="mesa-codigo-container" class="hidden sm:inline font-mono text-amber-500"></span>
           </div>
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2">
-        <!-- Botões exclusivos do Mestre -->
-        <button id="btn-toggle-regras" class="hidden items-center gap-2 px-3 py-2 rounded bg-stone-900 border border-gold-600/60 hover:border-gold-400 text-gold-300 font-cinzel text-xs font-bold">
-          <i class="fa-solid fa-sliders"></i> Regras da Mesa
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="btn-abrir-biblioteca" class="hidden px-3 py-1.5 bg-amber-950/60 hover:bg-amber-900/60 border border-amber-700/60 text-amber-200 rounded text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5">
+          <span>📦</span> <span>Biblioteca & Mods</span>
         </button>
-        <button id="btn-toggle-itens" class="hidden items-center gap-2 px-3 py-2 rounded bg-stone-900 border border-emerald-600/60 hover:border-emerald-400 text-emerald-300 font-cinzel text-xs font-bold">
-          <i class="fa-solid fa-suitcase"></i> Catálogo de Itens
-        </button>
-        <a id="btn-abrir-editor" href="#" class="hidden items-center gap-2 px-3 py-2 rounded bg-amber-950/80 border border-amber-600 hover:bg-amber-800/60 text-amber-300 font-cinzel text-xs font-bold">
-          <i class="fa-solid fa-diagram-project"></i> Editor de Árvores
-        </a>
-        <button id="btn-nova-ficha" class="flex items-center gap-2 px-4 py-2 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
-          <i class="fa-solid fa-plus"></i> Nova Ficha
+        <button id="btn-nova-ficha" class="hidden px-3 py-1.5 bg-crimson hover:bg-crimsonBright text-white rounded text-xs sm:text-sm font-medium transition-colors">
+          + Nova Ficha
         </button>
       </div>
+    </div>
+
+    <!-- Abas -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-6 border-t border-borderDark/60 text-sm overflow-x-auto">
+      <button data-tab="fichas" class="tab-btn py-3 border-b-2 border-amber-500 text-amber-400 font-medium whitespace-nowrap">
+        Personagens
+      </button>
+      <button data-tab="regras" class="tab-btn hidden py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-medium whitespace-nowrap">
+        Regras & Raízes
+      </button>
+      <button data-tab="passatempos" class="tab-btn hidden py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-medium whitespace-nowrap">
+        Passatempos
+      </button>
+      <button data-tab="itens" class="tab-btn hidden py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-medium whitespace-nowrap">
+        Catálogo de Itens
+      </button>
+      <button data-tab="arvores" class="tab-btn hidden py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-medium whitespace-nowrap">
+        Árvores de Evolução
+      </button>
     </div>
   </header>
 
   <!-- Conteúdo Principal -->
-  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- ========================================================= -->
-    <!-- COLUNA ESQUERDA / CENTRAL (GAVETAS + FICHAS)              -->
-    <!-- ========================================================= -->
-    <div class="lg:col-span-8 space-y-6">
+    <!-- ABA 1: PERSONAGENS -->
+    <section id="tab-fichas" class="tab-content">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+        <h2 class="font-serif text-lg text-slate-200">Personagens da Campanha</h2>
+        <span id="fichas-count" class="text-xs text-slate-400"></span>
+      </div>
+      <div id="fichas-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
 
-      <!-- GAVETA 1: CONFIGURAÇÕES DA CAMPANHA (EXCLUSIVA DO MESTRE) -->
-      <section id="gaveta-regras" class="hidden bg-parchment gold-border rounded-xl p-5 space-y-5">
-        <div class="border-b border-gold-600/40 pb-3 flex flex-wrap justify-between items-center gap-2">
+    <!-- ABA 2: REGRAS & RAÍZES (MESTRE) -->
+    <section id="tab-regras" class="tab-content hidden space-y-8">
+      <!-- Configurações de Criação e Progressão -->
+      <div class="bg-surface border border-borderDark rounded-lg p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h2 class="font-cinzel text-lg font-bold text-gold-400 flex items-center gap-2">
-              <i class="fa-solid fa-crown text-gold-500"></i> Configurações da Campanha
-            </h2>
-            <p class="text-xs text-stone-400">Parâmetros de criação, estágios biológicos, regras de carga, raízes e passatempos.</p>
+            <h2 class="font-serif text-lg text-slate-100">Regras de Criação e Progressão</h2>
+            <p class="text-xs text-slate-400 mt-1">Defina os parâmetros iniciais, limites por estágio e restrições físicas aplicados às fichas.</p>
           </div>
-          <div class="flex items-center gap-2">
-            <button id="btn-salvar-regras" class="px-4 py-2 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
-              <i class="fa-solid fa-floppy-disk"></i> Salvar Regras
-            </button>
-            <button id="btn-fechar-regras" class="px-2.5 py-2 rounded bg-stone-900 border border-stone-700 text-stone-400 hover:text-white text-xs">✕</button>
-          </div>
-        </div>
-
-        <!-- 1. Regras de Criação -->
-        <div class="space-y-2">
-          <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">1. Parâmetros de Criação de Ficha</h3>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-            <div class="bg-stone-950 p-3 rounded border border-stone-800 space-y-1">
-              <label class="text-stone-400 block font-cinzel text-[10px]">Pontos de Atributo</label>
-              <input type="number" id="cfg-pontos-attr" min="0" max="30" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-gold-300 font-mono font-bold">
-              <span class="text-[10px] text-stone-500 block">Órfão recebe +1 auto</span>
-            </div>
-            <div class="bg-stone-950 p-3 rounded border border-stone-800 space-y-1">
-              <label class="text-stone-400 block font-cinzel text-[10px]">Estágio Inicial da Mesa</label>
-              <select id="cfg-estagio-inicial" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-gold-300 font-semibold">
-                <option value="1">1. Criação (Infância)</option>
-                <option value="2">2. Evolução da Raiz</option>
-                <option value="3">3. Fase Adulta (Vocação)</option>
-                <option value="4">4. Transgressão Mística</option>
-              </select>
-            </div>
-            <div class="bg-stone-950 p-3 rounded border border-stone-800 space-y-1">
-              <label class="text-stone-400 block font-cinzel text-[10px]">Pts Evolução Iniciais</label>
-              <input type="number" id="cfg-pontos-evo" min="0" max="100" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-emerald-400 font-mono font-bold">
-            </div>
-            <div class="bg-stone-950 p-3 rounded border border-stone-800 space-y-1">
-              <label class="text-stone-400 block font-cinzel text-[10px]">Slots Raiz Extra (Criação)</label>
-              <input type="number" id="cfg-slots-extra" min="0" max="5" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-sky-400 font-mono font-bold">
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. Tetos por Estágio -->
-        <div class="space-y-2 pt-2 border-t border-stone-800">
-          <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">2. Tetos Máximos de Atributo por Estágio</h3>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-            <div class="bg-stone-950 p-2.5 rounded border border-stone-800">
-              <label class="text-stone-400 block text-[10px]">1. Criação (Infância)</label>
-              <input type="number" id="cfg-teto-1" min="1" max="10" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono font-bold text-stone-200">
-            </div>
-            <div class="bg-stone-950 p-2.5 rounded border border-stone-800">
-              <label class="text-amber-400 block text-[10px]">2. Evolução da Raiz</label>
-              <input type="number" id="cfg-teto-2" min="1" max="10" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono font-bold text-amber-300">
-            </div>
-            <div class="bg-stone-950 p-2.5 rounded border border-stone-800">
-              <label class="text-gold-400 block text-[10px]">3. Fase Adulta (Vocação)</label>
-              <input type="number" id="cfg-teto-3" min="1" max="10" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono font-bold text-gold-300">
-            </div>
-            <div class="bg-stone-950 p-2.5 rounded border border-stone-800">
-              <label class="text-purple-400 block text-[10px]">4. Transgressão Mística</label>
-              <input type="number" id="cfg-teto-4" min="1" max="15" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono font-bold text-purple-300">
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Passatempos & Carga -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-stone-800 text-xs">
-          <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-2">
-            <h4 class="font-cinzel font-bold text-gold-300">3. Passatempos Infantis na Criação</h4>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="text-stone-400 text-[10px] block">Focados (+2 Perícia)</label>
-                <input type="number" id="cfg-pass-focado" min="0" max="5" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-gold-300">
-              </div>
-              <div>
-                <label class="text-stone-400 text-[10px] block">Mistos (+1 / +1)</label>
-                <input type="number" id="cfg-pass-misto" min="0" max="5" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-gold-300">
-              </div>
-            </div>
-            <p class="text-[10px] text-stone-500">Órfãos ganham automaticamente +2 passatempos extras.</p>
-          </div>
-
-          <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-2 flex flex-col justify-between">
-            <div>
-              <h4 class="font-cinzel font-bold text-gold-300">4. Inventário & Trava Ascendente</h4>
-              <p class="text-[11px] text-stone-400 mt-1">Impede combinar slots menores (Leve/Médio) para carregar itens Pesados acima do Vigor.</p>
-            </div>
-            <label class="flex items-center gap-2.5 cursor-pointer pt-1">
-              <input type="checkbox" id="cfg-trava-ascendente" class="w-4 h-4 accent-amber-500">
-              <span class="font-cinzel font-bold text-stone-200">Habilitar Trava Ascendente de Carga</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- 5. Raízes da Mesa -->
-        <div class="space-y-3 pt-2 border-t border-stone-800">
-          <div class="flex flex-wrap justify-between items-center gap-2">
-            <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">5. Raízes / Origens da Mesa</h3>
-            <button id="btn-importar-raizes-livro" class="px-3 py-1.5 rounded bg-stone-900 border border-gold-600/60 hover:border-gold-400 text-gold-300 font-cinzel text-[11px]">
-              <i class="fa-solid fa-book-open"></i> Importar 10 Raízes + Órfão do Livro
-            </button>
-          </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 bg-stone-950 p-2.5 rounded border border-stone-800 text-xs">
-            <input type="text" id="nova-raiz-nome" placeholder="Nome (ex: Ferreiro)" class="col-span-2 bg-stone-900 border border-stone-700 rounded px-2 py-1">
-            <input type="number" id="nova-raiz-hp" placeholder="HP" class="bg-stone-900 border border-stone-700 rounded px-2 py-1 text-center font-mono">
-            <input type="number" id="nova-raiz-san" placeholder="SAN" class="bg-stone-900 border border-stone-700 rounded px-2 py-1 text-center font-mono">
-            <input type="number" id="nova-raiz-pef" placeholder="PE-F" class="bg-stone-900 border border-stone-700 rounded px-2 py-1 text-center font-mono">
-            <div class="flex gap-1">
-              <input type="number" id="nova-raiz-pem" placeholder="PE-M" class="w-full bg-stone-900 border border-stone-700 rounded px-2 py-1 text-center font-mono">
-              <button id="btn-add-raiz" class="px-2.5 py-1 rounded bg-gold-600 text-stone-950 font-bold">+</button>
-            </div>
-          </div>
-
-          <div id="lista-raizes-mesa" class="flex flex-wrap gap-2"></div>
-        </div>
-
-        <!-- 6. Passatempos Infantis Disponíveis na Mesa -->
-        <div class="space-y-3 pt-2 border-t border-stone-800">
-          <div class="flex flex-wrap justify-between items-center gap-2">
-            <div>
-              <h3 class="font-cinzel text-xs font-bold text-amber-400 uppercase tracking-wider">6. Passatempos Infantis Disponíveis</h3>
-              <p class="text-[11px] text-stone-400">Define quais perícias os jogadores podem selecionar como Passatempos na criação da ficha.</p>
-            </div>
-            <button id="btn-importar-passatempos-livro" class="px-3 py-1.5 rounded bg-stone-900 border border-sky-600/60 hover:border-sky-400 text-sky-300 font-cinzel text-[11px]">
-              <i class="fa-solid fa-book-open"></i> Importar Lista Padrão do Livro
-            </button>
-          </div>
-
-          <div class="flex gap-2 bg-stone-950 p-2.5 rounded border border-stone-800 text-xs">
-            <input type="text" id="novo-passatempo-nome" placeholder="Nome do Passatempo / Perícia (ex: Atletismo, Carpintaria, Furtividade...)" class="flex-1 bg-stone-900 border border-stone-700 rounded px-2.5 py-1.5 text-stone-200">
-            <button id="btn-add-passatempo" class="px-3.5 py-1.5 rounded bg-sky-600 hover:bg-sky-500 text-stone-950 font-cinzel font-bold">
-              + Adicionar
-            </button>
-          </div>
-
-          <div id="lista-passatempos-mesa" class="flex flex-wrap gap-1.5"></div>
-        </div>
-      </section>
-
-      <!-- GAVETA 2: CATÁLOGO OFICIAL DE ITENS DA MESA (EXCLUSIVA DO MESTRE) -->
-      <section id="gaveta-itens" class="hidden bg-parchment gold-border rounded-xl p-5 space-y-5">
-        <div class="border-b border-gold-600/40 pb-3 flex flex-wrap justify-between items-center gap-2">
-          <div>
-            <h2 class="font-cinzel text-lg font-bold text-emerald-400 flex items-center gap-2">
-              <i class="fa-solid fa-suitcase"></i> Catálogo Oficial de Itens da Mesa
-            </h2>
-            <p class="text-xs text-stone-400">Cadastre ou importe itens com imagem para o inventário visual dos jogadores.</p>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-2">
-            <button id="btn-importar-itens-livro" class="px-2.5 py-1.5 rounded bg-stone-900 border border-gold-600/60 hover:border-gold-400 text-gold-300 font-cinzel text-[11px]">
-              <i class="fa-solid fa-book-open"></i> Itens do Livro
-            </button>
-            <button id="btn-importar-itens-json" class="px-2.5 py-1.5 rounded bg-stone-900 border border-sky-600/60 hover:border-sky-400 text-sky-300 font-cinzel text-[11px]">
-              <i class="fa-solid fa-file-import"></i> Importar JSON
-            </button>
-            <button id="btn-exportar-itens-json" class="px-2.5 py-1.5 rounded bg-stone-900 border border-emerald-600/60 hover:border-emerald-400 text-emerald-300 font-cinzel text-[11px]">
-              <i class="fa-solid fa-file-export"></i> Exportar JSON
-            </button>
-            <input type="file" id="input-arquivo-json-itens" accept=".json,application/json" hidden>
-            <button id="btn-fechar-itens" class="px-2.5 py-1.5 rounded bg-stone-900 border border-stone-700 text-stone-400 hover:text-white text-xs">✕</button>
-          </div>
-        </div>
-
-        <!-- Formulário de Cadastro de Item -->
-        <div class="bg-stone-950 p-4 rounded-lg border border-stone-800 space-y-3 text-xs">
-          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-            <div class="sm:col-span-2">
-              <label class="text-stone-400 text-[10px] font-cinzel block">Nome do Item</label>
-              <input type="text" id="item-nome" placeholder="Ex: Espada Longa, Kit Médico, Cota de Malha..." class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2.5 py-1.5 text-stone-200">
-            </div>
-            <div>
-              <label class="text-stone-400 text-[10px] font-cinzel block">Categoria</label>
-              <select id="item-categoria" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2.5 py-1.5 text-gold-300 font-semibold">
-                <option value="arma">⚔️ Arma</option>
-                <option value="escudo">🛡️ Escudo</option>
-                <option value="armadura">👕 Armadura</option>
-                <option value="cura">🩹 Item de Cura</option>
-                <option value="utilitario">🎒 Utilitário / Outro</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-stone-400 text-[10px] font-cinzel block">Peso (Slot de Carga)</label>
-              <select id="item-peso" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2.5 py-1.5 text-stone-200">
-                <option value="miudeza">Miudeza (Azul)</option>
-                <option value="leve" selected>Leve (Verde · Base 1)</option>
-                <option value="medio">Médio (Amarelo · Base 2)</option>
-                <option value="pesado">Pesado (Vermelho · Base 3)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Upload de Imagem via ImgBB + Preview -->
-          <div class="bg-stone-900/70 p-2.5 rounded border border-stone-800 flex flex-wrap items-center gap-3">
-            <div id="item-img-preview-box" class="w-14 h-14 rounded-lg bg-stone-950 border border-stone-700 flex items-center justify-center overflow-hidden shrink-0 text-xl text-stone-500">
-              🖼️
-            </div>
-            <div class="flex-1 min-w-[200px] space-y-1.5">
-              <div class="flex flex-wrap items-center gap-2">
-                <label class="px-3 py-1 rounded bg-amber-950 border border-amber-600/70 hover:bg-amber-900/60 text-amber-300 font-cinzel text-[11px] font-bold cursor-pointer flex items-center gap-1.5">
-                  <i class="fa-solid fa-cloud-arrow-up"></i> Enviar Imagem (ImgBB)
-                  <input type="file" id="item-img-file" accept="image/*" hidden>
-                </label>
-                <span id="item-img-status" class="text-[11px] text-stone-400 font-mono">Nenhuma imagem selecionada</span>
-                <button type="button" id="btn-limpar-img-item" class="hidden text-[11px] text-red-400 hover:underline">Remover</button>
-              </div>
-              <input type="url" id="item-img-url" placeholder="Ou cole uma URL direta da imagem (opcional)..." class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-[11px] text-stone-300 font-mono">
-            </div>
-          </div>
-
-          <!-- Campos Específicos: ARMA -->
-          <div id="campos-item-arma" class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2 border-t border-stone-900">
-            <div>
-              <label class="text-stone-400 text-[10px] block">Dano Base</label>
-              <input type="text" id="item-arma-dano" placeholder="Ex: 1d8" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-red-300">
-            </div>
-            <div>
-              <label class="text-stone-400 text-[10px] block">Margem Crítico</label>
-              <select id="item-arma-crit-margem" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-amber-300">
-                <option value="20">20 Natural</option>
-                <option value="19">19 - 20</option>
-                <option value="18">18 - 20</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-stone-400 text-[10px] block">Multiplicador Crítico</label>
-              <select id="item-arma-crit-mult" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-amber-300">
-                <option value="2">x2</option>
-                <option value="3">x3</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-stone-400 text-[10px] block">Bônus Extra Crítico</label>
-              <input type="text" id="item-arma-crit-extra" placeholder="Ex: +1d6 ou 0" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono">
-            </div>
-            <div class="flex items-end pb-1">
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" id="item-arma-defensiva" class="w-4 h-4 accent-emerald-500">
-                <span class="text-[11px] text-emerald-300 font-semibold">Arma Defensiva (+1 GD)</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Campos Específicos: ESCUDO -->
-          <div id="campos-item-escudo" hidden class="pt-2 border-t border-stone-900 text-stone-300">
-            <span class="text-[11px] text-emerald-400">
-              <i class="fa-solid fa-shield-halved"></i> Regra do Livro: Escudos concedem automaticamente <strong>GD = Peso + 1</strong> (Leve = GD 2, Médio = GD 3, Pesado = GD 4).
-            </span>
-          </div>
-
-          <!-- Campos Específicos: ARMADURA -->
-          <div id="campos-item-armadura" hidden class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-stone-900">
-            <div>
-              <label class="text-stone-400 text-[10px] block">Redução de Dano (RD)</label>
-              <input type="number" id="item-armadura-rd" value="2" min="0" max="20" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-sky-300 font-bold">
-            </div>
-            <div>
-              <label class="text-stone-400 text-[10px] block">Penalidade Deslocamento (m)</label>
-              <input type="number" id="item-armadura-pen-desl" value="0" max="0" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-red-300">
-            </div>
-          </div>
-
-          <!-- Campos Específicos: ITEM DE CURA -->
-          <div id="campos-item-cura" hidden class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-stone-900">
-            <div>
-              <label class="text-stone-400 text-[10px] block">Fórmula de Cura (HP)</label>
-              <input type="text" id="item-cura-formula" placeholder="Ex: 2d8 ou 2d4" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-emerald-300">
-            </div>
-            <div>
-              <label class="text-stone-400 text-[10px] block">Bônus no Teste Medicina</label>
-              <input type="number" id="item-cura-bonus" value="0" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono text-gold-300">
-            </div>
-            <div>
-              <label class="text-stone-400 text-[10px] block">Qtd de Usos</label>
-              <input type="number" id="item-cura-usos" value="3" min="1" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 font-mono">
-            </div>
-          </div>
-
-          <!-- Descrição & Habilidade Vinculada ao Item -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-stone-900">
-            <div>
-              <label class="text-stone-400 text-[10px] font-cinzel block">Descrição / Propriedades do Item</label>
-              <textarea id="item-desc" rows="2" placeholder="Detalhes narrativos ou mecânicos..." class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2.5 py-1.5"></textarea>
-            </div>
-            <div class="bg-stone-900/60 p-2.5 rounded border border-purple-900/40 space-y-1.5">
-              <div class="flex justify-between items-center">
-                <span class="font-cinzel text-[10px] font-bold text-purple-300 uppercase">Habilidade Vinculada (Opcional)</span>
-                <input type="text" id="item-hab-custo" placeholder="Custo (ex: 2 PE-F)" class="w-28 bg-stone-950 border border-stone-700 rounded px-1.5 py-0.5 text-[10px] font-mono text-amber-300">
-              </div>
-              <input type="text" id="item-hab-nome" placeholder="Nome da habilidade do item" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-[11px]">
-              <input type="text" id="item-hab-efeito" placeholder="Efeito / Dano / Teste da habilidade" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 text-[11px]">
-            </div>
-          </div>
-
-          <div class="flex justify-end">
-            <button id="btn-salvar-item-catalogo" class="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-cinzel text-xs font-bold">
-              <i class="fa-solid fa-plus"></i> Adicionar Item ao Catálogo
-            </button>
-          </div>
-        </div>
-
-        <!-- Lista de Itens Cadastrados -->
-        <div id="lista-catalogo-itens" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
-      </section>
-
-      <!-- Barra discreta de regras ativas (visível para jogadores) -->
-      <div id="banner-regras-jogador" class="hidden bg-stone-950/90 border border-stone-800 rounded-lg px-4 py-2.5 text-[11px] text-stone-300 flex flex-wrap items-center justify-between gap-2"></div>
-
-      <!-- ========================================================= -->
-      <!-- LISTA DE FICHAS DA MESA (VISÃO PRINCIPAL LIMPA)           -->
-      <!-- ========================================================= -->
-      <section class="bg-parchment gold-border rounded-xl p-5 space-y-4">
-        <div class="flex justify-between items-center border-b border-gold-600/40 pb-2">
-          <h2 class="font-cinzel text-lg font-bold text-gold-400 flex items-center gap-2">
-            <i class="fa-solid fa-scroll"></i> Personagens da Campanha
-          </h2>
-          <span id="contador-fichas" class="text-xs font-mono text-stone-400">0 fichas</span>
-        </div>
-
-        <div id="grid-fichas" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <p class="text-xs text-stone-400 italic">Carregando personagens...</p>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- COLUNA DIREITA: HISTÓRICO DE ROLAGENS + ROLADOR DO MESTRE -->
-    <!-- ========================================================= -->
-    <aside class="lg:col-span-4 space-y-4">
-
-      <!-- Histórico de Dados ao Vivo -->
-      <section class="bg-parchment gold-border rounded-xl p-4 flex flex-col h-[390px]">
-        <div class="border-b border-gold-600/40 pb-2 mb-3 flex justify-between items-center">
-          <h3 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
-            <i class="fa-solid fa-dice-d20 text-gold-500"></i> Histórico de Rolagens
-          </h3>
-          <button id="btn-limpar-log" class="hidden text-[11px] text-stone-400 hover:text-red-400">Limpar</button>
-        </div>
-
-        <div id="feed-rolagens" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
-          <p class="text-stone-500 italic text-center mt-8">Nenhuma rolagem registrada ainda.</p>
-        </div>
-      </section>
-
-      <!-- Rolador Livre do Mestre (Exclusivo do Mestre) -->
-      <section id="box-rolador-mestre" class="hidden bg-parchment gold-border rounded-xl p-4 space-y-3 text-xs">
-        <div class="border-b border-gold-600/40 pb-2 flex justify-between items-center">
-          <h3 class="font-cinzel text-sm font-bold text-gold-400 flex items-center gap-2">
-            <i class="fa-solid fa-dice text-gold-500"></i> Rolador Livre do Mestre
-          </h3>
-        </div>
-
-        <div class="grid grid-cols-3 gap-2">
-          <div>
-            <label class="text-[10px] text-stone-400 block">Qtd Dados</label>
-            <input type="number" id="mestre-dado-qtd" value="1" min="1" max="20" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 font-mono text-center text-gold-300 font-bold">
-          </div>
-          <div>
-            <label class="text-[10px] text-stone-400 block">Tipo de Dado</label>
-            <select id="mestre-dado-faces" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 font-mono text-gold-300 font-bold">
-              <option value="4">d4</option>
-              <option value="6">d6</option>
-              <option value="8">d8</option>
-              <option value="10">d10</option>
-              <option value="12">d12</option>
-              <option value="16">d16</option>
-              <option value="20" selected>d20</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-[10px] text-stone-400 block">Modificador</label>
-            <input type="number" id="mestre-dado-mod" value="0" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 font-mono text-center text-stone-200">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="text-[10px] text-stone-400 block">Modo de Resolução</label>
-            <select id="mestre-dado-modo" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 text-stone-200">
-              <option value="soma">Somar todos os dados</option>
-              <option value="maior">Pegar o MAIOR dado</option>
-              <option value="menor">Pegar o MENOR dado</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-[10px] text-stone-400 block">Rótulo (Opcional)</label>
-            <input type="text" id="mestre-dado-rotulo" placeholder="Ex: Ataque Lobo" class="w-full mt-1 bg-stone-950 border border-stone-700 rounded px-2 py-1.5 text-stone-200">
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between pt-1">
-          <label class="flex items-center gap-2 cursor-pointer text-[11px] text-stone-300">
-            <input type="checkbox" id="mestre-rolagem-publica" checked class="w-3.5 h-3.5 accent-amber-500">
-            <span>Mostrar no histórico público</span>
-          </label>
-          <button id="btn-rolar-mestre" class="px-4 py-1.5 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel font-bold">
-            🎲 Rolar
+          <button id="btn-salvar-regras" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded text-sm font-medium transition-colors">
+            Salvar Regras
           </button>
         </div>
 
-        <!-- Resultado Local -->
-        <div id="mestre-resultado-local" class="hidden bg-stone-950 border border-gold-600/50 rounded p-2.5 space-y-1">
-          <div class="flex justify-between items-center">
-            <span id="mestre-res-tag" class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded"></span>
-            <span id="mestre-res-total" class="font-cinzel text-xl font-bold text-gold-400">0</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+          <div class="bg-obsidian p-4 rounded border border-borderDark">
+            <label class="block text-xs text-slate-400 uppercase mb-1">Pontos de Atributo Iniciais</label>
+            <input type="number" id="regra-pontos-iniciais" min="0" max="30" class="w-full bg-surface border border-borderDark rounded px-3 py-2 text-white">
           </div>
-          <div id="mestre-res-detalhes" class="font-mono text-[11px] text-stone-400"></div>
+          <div class="bg-obsidian p-4 rounded border border-borderDark">
+            <label class="block text-xs text-slate-400 uppercase mb-1">Estágio Inicial (1 a 4)</label>
+            <input type="number" id="regra-estagio-inicial" min="1" max="4" class="w-full bg-surface border border-borderDark rounded px-3 py-2 text-white">
+          </div>
+          <div class="bg-obsidian p-4 rounded border border-borderDark">
+            <label class="block text-xs text-slate-400 uppercase mb-1">Pontos de Evolução Iniciais</label>
+            <input type="number" id="regra-pe-iniciais" min="0" max="50" class="w-full bg-surface border border-borderDark rounded px-3 py-2 text-white">
+          </div>
+          <div class="bg-obsidian p-4 rounded border border-borderDark">
+            <label class="block text-xs text-slate-400 uppercase mb-1">Slots Raiz Extra (Criação)</label>
+            <input type="number" id="regra-slots-raiz" min="0" max="5" class="w-full bg-surface border border-borderDark rounded px-3 py-2 text-white">
+          </div>
+          <div class="bg-obsidian p-4 rounded border border-borderDark">
+            <label class="block text-xs text-slate-400 uppercase mb-1">Passatempos Focados (+2)</label>
+            <input type="number" id="regra-pass-focados" min="0" max="5" class="w-full bg-surface border border-borderDark rounded px-3 py-2 text-white">
+          </div>
+          <div class="bg-obsidian p-4 rounded border border-borderDark">
+            <label class="block text-xs text-slate-400 uppercase mb-1">Passatempos Mistos (+1/+1)</label>
+            <input type="number" id="regra-pass-mistos" min="0" max="5" class="w-full bg-surface border border-borderDark rounded px-3 py-2 text-white">
+          </div>
         </div>
-      </section>
 
-    </aside>
+        <div class="mt-4 bg-obsidian p-4 rounded border border-borderDark">
+          <label class="block text-xs text-slate-400 uppercase mb-3">Teto Máximo de Atributo por Estágio</label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+            <div>
+              <span class="text-xs text-slate-400">Estágio 1</span>
+              <input type="number" id="regra-teto-1" min="1" max="10" class="w-full mt-1 bg-surface border border-borderDark rounded px-2.5 py-1.5 text-white">
+            </div>
+            <div>
+              <span class="text-xs text-slate-400">Estágio 2</span>
+              <input type="number" id="regra-teto-2" min="1" max="10" class="w-full mt-1 bg-surface border border-borderDark rounded px-2.5 py-1.5 text-white">
+            </div>
+            <div>
+              <span class="text-xs text-slate-400">Estágio 3</span>
+              <input type="number" id="regra-teto-3" min="1" max="10" class="w-full mt-1 bg-surface border border-borderDark rounded px-2.5 py-1.5 text-white">
+            </div>
+            <div>
+              <span class="text-xs text-slate-400">Estágio 4</span>
+              <input type="number" id="regra-teto-4" min="1" max="10" class="w-full mt-1 bg-surface border border-borderDark rounded px-2.5 py-1.5 text-white">
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 bg-obsidian p-4 rounded border border-borderDark flex items-center justify-between gap-4">
+          <div>
+            <p class="text-sm font-medium text-slate-200">Habilitar Trava Ascendente de Carga</p>
+            <p class="text-xs text-slate-400">Impede arrastar itens de compartimentos inferiores para superiores (ex: Mochila &rarr; Mãos) dentro do inventário.</p>
+          </div>
+          <input type="checkbox" id="regra-trava-carga" class="w-5 h-5 accent-amber-600 cursor-pointer shrink-0">
+        </div>
+      </div>
+
+      <!-- Catálogo de Raízes -->
+      <div class="bg-surface border border-borderDark rounded-lg p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div>
+            <h2 class="font-serif text-lg text-slate-100">Raízes Disponíveis na Mesa</h2>
+            <p class="text-xs text-slate-400 mt-1">Bônus de recursos iniciais [HP, SAN, PE-F, PE-M] concedidos por cada origem.</p>
+          </div>
+          <div class="flex gap-2">
+            <button id="btn-importar-raizes-padrao" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-medium border border-borderDark">
+              Restaurar Padrão do Livro
+            </button>
+            <button id="btn-nova-raiz" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-medium">
+              + Adicionar Raiz
+            </button>
+          </div>
+        </div>
+        <div id="lista-raizes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- ABA 3: PASSATEMPOS (MESTRE) -->
+    <section id="tab-passatempos" class="tab-content hidden">
+      <div class="bg-surface border border-borderDark rounded-lg p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div>
+            <h2 class="font-serif text-lg text-slate-100">Passatempos Infantis da Mesa</h2>
+            <p class="text-xs text-slate-400 mt-1">Atividades formativas disponíveis na criação de personagem (Focados +2 ou Mistos +1/+1).</p>
+          </div>
+          <div class="flex gap-2">
+            <button id="btn-importar-passatempos-padrao" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-medium border border-borderDark">
+              Importar Lista Padrão do Livro
+            </button>
+            <button id="btn-novo-passatempo" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-medium">
+              + Novo Passatempo
+            </button>
+          </div>
+        </div>
+        <div id="lista-passatempos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+      </div>
+    </section>
+
+    <!-- ABA 4: CATÁLOGO DE ITENS (MESTRE) -->
+    <section id="tab-itens" class="tab-content hidden">
+      <div class="bg-surface border border-borderDark rounded-lg p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div>
+            <h2 class="font-serif text-lg text-slate-100">Catálogo de Itens da Campanha</h2>
+            <p class="text-xs text-slate-400 mt-1">Armas, armaduras, escudos, suprimentos médicos e itens especiais da mesa.</p>
+          </div>
+          <div class="flex gap-2">
+            <button id="btn-importar-itens-padrao" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-medium border border-borderDark">
+              Importar Itens do Livro
+            </button>
+            <button id="btn-novo-item" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-medium">
+              + Novo Item
+            </button>
+          </div>
+        </div>
+        <div class="mb-4 flex flex-wrap gap-2">
+          <input type="text" id="filtro-itens-busca" placeholder="Buscar item por nome ou descrição..." class="flex-1 min-w-[200px] bg-obsidian border border-borderDark rounded px-3 py-1.5 text-sm text-white">
+          <select id="filtro-itens-cat" class="bg-obsidian border border-borderDark rounded px-3 py-1.5 text-sm text-white">
+            <option value="">Todas as Categorias</option>
+            <option value="arma">Armas</option>
+            <option value="armadura">Armaduras</option>
+            <option value="escudo">Escudos</option>
+            <option value="cura">Cura & Medicina</option>
+            <option value="utilitario">Utilitários & Outros</option>
+          </select>
+        </div>
+        <div id="lista-itens" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- ABA 5: ÁRVORES DE EVOLUÇÃO (MESTRE) -->
+    <section id="tab-arvores" class="tab-content hidden">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div>
+          <h2 class="font-serif text-lg text-slate-100">Árvores de Evolução da Campanha</h2>
+          <p class="text-xs text-slate-400 mt-1">Gerencie a árvore Padrão (comum a todos) e as árvores exclusivas de cada Raiz ou Especialização.</p>
+        </div>
+        <div class="flex gap-2">
+          <button id="btn-importar-arvore-padrao" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-sm font-medium border border-borderDark">
+            + Importar Árvore Padrão
+          </button>
+          <a id="link-nova-arvore" href="#" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded text-sm font-medium transition-colors">
+            + Criar Árvore no Editor
+          </a>
+        </div>
+      </div>
+      <div id="arvores-list" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </section>
 
   </main>
 
+  <!-- =========================================================================
+       MODAL: BIBLIOTECA PADRÃO & MODS DA COMUNIDADE
+  ========================================================================= -->
+  <div id="modal-biblioteca" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4">
+    <div class="bg-surface border border-borderDark rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl">
+      <!-- Cabeçalho -->
+      <div class="px-6 py-4 border-b border-borderDark flex items-center justify-between gap-3">
+        <div>
+          <h3 class="font-serif text-lg font-bold text-slate-100">Biblioteca Padrão & Mods da Comunidade</h3>
+          <p class="text-xs text-slate-400">Importe conteúdos prontos para esta mesa ou publique suas criações.</p>
+        </div>
+        <button id="btn-fechar-biblioteca" class="text-slate-400 hover:text-white text-xl px-2">&times;</button>
+      </div>
+
+      <!-- Sub-abas -->
+      <div class="px-6 border-b border-borderDark flex gap-4 text-xs sm:text-sm overflow-x-auto bg-obsidian/50">
+        <button data-bib-tab="padrao" class="bib-tab-btn py-3 border-b-2 border-amber-500 text-amber-400 font-medium whitespace-nowrap">
+          📖 Padrão do Sistema
+        </button>
+        <button data-bib-tab="meus" class="bib-tab-btn py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-medium whitespace-nowrap">
+          👤 Meus Mods
+        </button>
+        <button data-bib-tab="mesas" class="bib-tab-btn py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-medium whitespace-nowrap">
+          🎲 Minhas Mesas
+        </button>
+        <button data-bib-tab="comunidade" class="bib-tab-btn py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-medium whitespace-nowrap">
+          🌐 Comunidade
+        </button>
+        <button data-bib-tab="publicar" class="bib-tab-btn py-3 border-b-2 border-transparent text-emerald-400 hover:text-emerald-300 font-medium whitespace-nowrap ml-auto">
+          🚀 Publicar Mod desta Mesa
+        </button>
+      </div>
+
+      <!-- Conteúdo Scrollável -->
+      <div class="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-5">
+
+        <!-- VIEW 1: PADRÃO DO SISTEMA -->
+        <div id="bib-view-padrao" class="bib-view space-y-4">
+          <div class="bg-obsidian border border-borderDark rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h4 class="font-semibold text-amber-400 text-sm">Pacote Completo do Livro Base</h4>
+              <p class="text-xs text-slate-400 mt-0.5">
+                Inclui <span id="qtd-padrao-raizes">0</span> Raízes, <span id="qtd-padrao-pass">0</span> Passatempos, <span id="qtd-padrao-itens">0</span> Itens/Armas e <span id="qtd-padrao-arvores">0</span> Árvore Padrão.
+              </p>
+            </div>
+            <button id="btn-importar-tudo-padrao" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-semibold shrink-0">
+              Importar Pacote Completo
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Card Padrão: Raízes -->
+            <div class="bg-obsidian border border-borderDark rounded-lg p-4 flex flex-col justify-between gap-3">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-slate-100 text-sm">🌱 Raízes Oficiais</span>
+                  <span class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300" id="badge-padrao-raizes">11 raízes</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">Órfão, Lenhador, Ferreiro, Guarda, Caçador, Carpinteiro, Cozinheiro, Pastor, Mercador, Curandeiro e Escriba.</p>
+              </div>
+              <button data-import-padrao="raizes" class="btn-import-padrao-cat w-full py-1.5 bg-slate-800 hover:bg-slate-700 border border-borderDark text-slate-200 rounded text-xs font-medium">
+                Mesclar Raízes na Mesa
+              </button>
+            </div>
+
+            <!-- Card Padrão: Passatempos -->
+            <div class="bg-obsidian border border-borderDark rounded-lg p-4 flex flex-col justify-between gap-3">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-slate-100 text-sm">🎯 Passatempos Infantis</span>
+                  <span class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300" id="badge-padrao-pass">24 opções</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">12 passatempos focados (+2) e 12 passatempos mistos (+1/+1) alinhados com a ficha.</p>
+              </div>
+              <button data-import-padrao="passatempos" class="btn-import-padrao-cat w-full py-1.5 bg-slate-800 hover:bg-slate-700 border border-borderDark text-slate-200 rounded text-xs font-medium">
+                Mesclar Passatempos na Mesa
+              </button>
+            </div>
+
+            <!-- Card Padrão: Itens & Armas -->
+            <div class="bg-obsidian border border-borderDark rounded-lg p-4 flex flex-col justify-between gap-3">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-slate-100 text-sm">⚔️ Arsenal, Armaduras & Suprimentos</span>
+                  <span class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300" id="badge-padrao-itens">38 itens</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">Armas brancas leves, médias e pesadas, arcos, bestas, pólvora primitiva, armaduras, escudos e kits médicos.</p>
+              </div>
+              <button data-import-padrao="itens" class="btn-import-padrao-cat w-full py-1.5 bg-slate-800 hover:bg-slate-700 border border-borderDark text-slate-200 rounded text-xs font-medium">
+                Mesclar Itens na Mesa
+              </button>
+            </div>
+
+            <!-- Card Padrão: Árvores -->
+            <div class="bg-obsidian border border-borderDark rounded-lg p-4 flex flex-col justify-between gap-3">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-slate-100 text-sm">🌳 Árvores Base do Sistema</span>
+                  <span class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300" id="badge-padrao-arvores">1 árvore</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">Caminho do Sobrevivente (Padrão) acessível a todos os personagens.</p>
+              </div>
+              <button data-import-padrao="arvores" class="btn-import-padrao-cat w-full py-1.5 bg-slate-800 hover:bg-slate-700 border border-borderDark text-slate-200 rounded text-xs font-medium">
+                Importar Árvores Padrão
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 2: LISTAGEM DE MODS (MEUS / MESAS / COMUNIDADE) -->
+        <div id="bib-view-mods" class="bib-view hidden space-y-4">
+          <div class="flex flex-wrap gap-2">
+            <input type="text" id="mods-busca" placeholder="Buscar mod por título, autor ou descrição..." class="flex-1 min-w-[200px] bg-obsidian border border-borderDark rounded px-3 py-1.5 text-sm text-white">
+            <select id="mods-filtro-tipo" class="bg-obsidian border border-borderDark rounded px-3 py-1.5 text-sm text-white">
+              <option value="">Todos os Conteúdos</option>
+              <option value="arvores">Contém Árvores</option>
+              <option value="itens">Contém Itens</option>
+              <option value="raizes">Contém Raízes</option>
+              <option value="passatempos">Contém Passatempos</option>
+            </select>
+          </div>
+          <div id="mods-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <!-- VIEW 3: PUBLICAR MOD DESTA MESA -->
+        <div id="bib-view-publicar" class="bib-view hidden space-y-4">
+          <form id="form-publicar-mod" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-slate-400 uppercase mb-1">Nome do Mod / Pacote *</label>
+                <input type="text" id="mod-pub-titulo" required placeholder="Ex: Arsenal de Candeia & Raiz Ferreiro" class="w-full bg-obsidian border border-borderDark rounded px-3 py-2 text-sm text-white">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 uppercase mb-1">Visibilidade</label>
+                <select id="mod-pub-visibilidade" class="w-full bg-obsidian border border-borderDark rounded px-3 py-2 text-sm text-white">
+                  <option value="publico">🌐 Público (Qualquer mestre pode ver e importar)</option>
+                  <option value="mesa">🎲 Minhas Mesas (Apenas suas campanhas)</option>
+                  <option value="privado">👤 Privado (Somente você)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs text-slate-400 uppercase mb-1">Descrição</label>
+              <textarea id="mod-pub-descricao" rows="2" placeholder="Descreva o que este pacote adiciona ao sistema..." class="w-full bg-obsidian border border-borderDark rounded px-3 py-2 text-sm text-white"></textarea>
+            </div>
+
+            <div class="bg-obsidian border border-borderDark rounded-lg p-4 space-y-3">
+              <p class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Selecione o que incluir da mesa atual:</p>
+
+              <label class="flex items-center justify-between p-2.5 rounded bg-surface border border-borderDark cursor-pointer">
+                <span class="text-sm text-slate-200">🌳 Árvores de Evolução desta mesa</span>
+                <span class="flex items-center gap-2">
+                  <span id="pub-count-arvores" class="text-xs text-slate-400">0</span>
+                  <input type="checkbox" id="pub-inc-arvores" checked class="w-4 h-4 accent-emerald-600">
+                </span>
+              </label>
+
+              <label class="flex items-center justify-between p-2.5 rounded bg-surface border border-borderDark cursor-pointer">
+                <span class="text-sm text-slate-200">⚔️ Catálogo de Itens desta mesa</span>
+                <span class="flex items-center gap-2">
+                  <span id="pub-count-itens" class="text-xs text-slate-400">0</span>
+                  <input type="checkbox" id="pub-inc-itens" checked class="w-4 h-4 accent-emerald-600">
+                </span>
+              </label>
+
+              <label class="flex items-center justify-between p-2.5 rounded bg-surface border border-borderDark cursor-pointer">
+                <span class="text-sm text-slate-200">🌱 Raízes configuradas nesta mesa</span>
+                <span class="flex items-center gap-2">
+                  <span id="pub-count-raizes" class="text-xs text-slate-400">0</span>
+                  <input type="checkbox" id="pub-inc-raizes" class="w-4 h-4 accent-emerald-600">
+                </span>
+              </label>
+
+              <label class="flex items-center justify-between p-2.5 rounded bg-surface border border-borderDark cursor-pointer">
+                <span class="text-sm text-slate-200">🎯 Passatempos configurados nesta mesa</span>
+                <span class="flex items-center gap-2">
+                  <span id="pub-count-pass" class="text-xs text-slate-400">0</span>
+                  <input type="checkbox" id="pub-inc-pass" class="w-4 h-4 accent-emerald-600">
+                </span>
+              </label>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="submit" id="btn-submit-mod" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-sm font-semibold">
+                Publicar Mod
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: CRIAR / EDITAR ITEM DO CATÁLOGO
+  ========================================================================= -->
+  <div id="modal-item" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4">
+    <div class="bg-surface border border-borderDark rounded-lg max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <h3 id="modal-item-titulo" class="font-serif text-lg font-bold text-slate-100 mb-4">Novo Item do Catálogo</h3>
+      <form id="form-item" class="space-y-3 text-sm">
+        <input type="hidden" id="item-id">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-slate-400 uppercase mb-1">Nome do Item *</label>
+            <input type="text" id="item-nome" required class="w-full bg-obsidian border border-borderDark rounded px-3 py-2 text-white">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 uppercase mb-1">Categoria *</label>
+            <select id="item-categoria" class="w-full bg-obsidian border border-borderDark rounded px-3 py-2 text-white">
+              <option value="arma">Arma</option>
+              <option value="armadura">Armadura</option>
+              <option value="escudo">Escudo</option>
+              <option value="cura">Cura / Medicinal</option>
+              <option value="utilitario">Utilitário / Geral</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-slate-400 uppercase mb-1">Peso / Compartimento *</label>
+            <select id="item-peso" class="w-full bg-obsidian border border-borderDark rounded px-3 py-2 text-white">
+              <option value="miudeza">Miudeza (Bolso)</option>
+              <option value="leve">Leve (Cintura / 1 Mão)</option>
+              <option value="medio">Médio (Costas / Mãos)</option>
+              <option value="pesado">Pesado (Costas / 2 Mãos)</option>
+            </select>
+          </div>
+          <div id="campo-alcance-wrapper">
+            <label class="block text-xs text-slate-400 uppercase mb-1">Alcance</label>
+            <input type="text" id="item-alcance" placeholder="Ex: Curto, Médio, Longo" class="w-full bg-obsidian border border-borderDark rounded px-3 py-2 text-white">
+          </div>
+        </div>
+
+        <!-- Campos Específicos: ARMA -->
+        <div id="campos-arma" class="space-y-3 border-t border-borderDark pt-3">
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-xs text-slate-400 uppercase mb-1">Dano Base</label>
+              <input type="text" id="item-dano" placeholder="Ex: 1d8" class="w-full bg-obsidian border border-borderDark rounded px-2.5 py-1.5 text-white">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 uppercase mb-1">Margem Crítico</label>
+              <input type="number" id="item-crit-margem" value="20" min="1" max="20" class="w-full bg-obsidian border border-borderDark rounded px-2.5 py-1.5 text-white">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 uppercase mb-1">Mult. Crítico</label>
+              <input type="number" id="item-crit-mult" value="2" min="2" max="5" class="w-full bg-obsidian border border-borderDark rounded px-2.5 py-1.5 text-white">
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-xs text-slate-400 uppercase mb-1">GA (Ataque)</label>
+              <input type="number" id="item-ga" value="1" min="0" max="5" class="w-full bg-obsidian border border-borderDark rounded px-2.5 py-1.5 text-white">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 uppercase mb-1">GD (Defesa)</label>
+              <input type="number" id="item-gd" value="1" min="0" max="5" class="w-full bg-obsidian border border-borderDark rounded px-2.5 py-1.5 text-white">
+            </div>
+            <div class="flex items-end pb-1">
+              <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                <input type="checkbox" id="item-defensiva" class="accent-amber-600"> Arma Defensiva
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campos Específicos: ARMADURA -->
+        <div id="campos-armadura" class="hidden space-y-3 border-t border-borderDark pt-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-400 uppercase mb-1">Redução de Dano (RD)</label>
+              <input type="number" id="item-rd" value="2" min="0" max="15" class="w-full bg-obsidian border border-borderDark rounded px-3 py-1.5 text-white">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 uppercase mb-1">Penalidade Desl. (m)</label>
+              <input type="number" id="item-penalidade-desl" value="0" min="-6" max="0" class="w-full bg-obsidian border border-borderDark rounded px-3 py-1.5 text-white">
+            </div>
+          </div>
+        </div>
+
+        <!-- Campos Específicos: ESCUDO -->
+        <div id="campos-escudo" class="hidden space-y-3 border-t border-borderDark pt-3">
+          <div>
+            <label class="block text-xs text-slate-400 uppercase mb-1">Grau de Defesa (GD)</label>
+            <input type="number" id="item-escudo-gd" value="2" min="1" max="6" class="w-full bg-obsidian border border-borderDark rounded px-3 py-1.5 text-white">
+          </div>
+        </div>
+
+        <!-- Campos Específicos: CURA -->
+        <div id="campos-cura" class="hidden space-y-3 border-t border-borderDark pt-3">
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-xs text-slate-400 uppercase mb-1">Fórmula Cura</label>
+              <input type="text" id="item-cura-formula" placeholder="Ex: 2d4" class="w-full bg-obsidian border border-borderDark rounded px-2.5 py-1.5 text-white">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 uppercase mb-1">Bônus Teste</label>
+              <input type="number" id="item-cura-bonus" value="0" class="w-full bg-obsidian border border-borderDark rounded px-2.5 py-1.5 text-white">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 uppercase mb-1">Usos Máx.</label>
+              <input type="number" id="item-cura-usos" value="3" min="1" class="w-full bg-obsidian border border-borderDark rounded px-2.5 py-1.5 text-white">
+            </div>
+          </div>
+        </div>
+
+        <!-- Habilidade Vinculada ao Item (Opcional) -->
+        <div class="border-t border-borderDark pt-3 space-y-2">
+          <p class="text-xs text-amber-400 font-medium">Habilidade Concedida ao Equipar (Opcional)</p>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" id="item-hab-nome" placeholder="Nome da Habilidade" class="bg-obsidian border border-borderDark rounded px-2.5 py-1.5 text-xs text-white">
+            <input type="text" id="item-hab-custo" placeholder="Custo (ex: 1 PE-F)" class="bg-obsidian border border-borderDark rounded px-2.5 py-1.5 text-xs text-white">
+          </div>
+          <input type="text" id="item-hab-efeito" placeholder="Descrição curta do efeito da habilidade" class="w-full bg-obsidian border border-borderDark rounded px-2.5 py-1.5 text-xs text-white">
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 uppercase mb-1">Descrição</label>
+          <textarea id="item-descricao" rows="2" class="w-full bg-obsidian border border-borderDark rounded px-3 py-2 text-white"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t border-borderDark">
+          <button type="button" id="btn-fechar-modal-item" class="px-4 py-2 text-slate-400 hover:text-white">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded font-medium">Salvar Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: CRIAR / EDITAR PASSATEMPO
+  ========================================================================= -->
+  <div id="modal-passatempo" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4">
+    <div class="bg-surface border border-borderDark rounded-lg max-w-md w-full p-6">
+      <h3 class="font-serif text-lg font-bold text-slate-100 mb-4">Configurar Passatempo</h3>
+      <form id="form-passatempo" class="space-y-4 text-sm">
+        <div>
+          <label class="block text-xs text-slate-400 uppercase mb-1">Nome do Passatempo *</label>
+          <input type="text" id="pass-nome" required placeholder="Ex: Pique-Pega, Caça ao Tesouro..." class="w-full bg-obsidian border border-borderDark rounded px-3 py-2 text-white">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 uppercase mb-1">Tipo de Bônus *</label>
+          <select id="pass-tipo" class="w-full bg-obsidian border border-borderDark rounded px-3 py-2 text-white">
+            <option value="focado">Focado (+2 em 1 Perícia)</option>
+            <option value="misto">Misto (+1 em 2 Perícias)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 uppercase mb-1">Perícia Principal *</label>
+          <select id="pass-pericia-1" class="w-full bg-obsidian border border-borderDark rounded px-3 py-2 text-white"></select>
+        </div>
+        <div id="pass-pericia-2-wrapper" class="hidden">
+          <label class="block text-xs text-slate-400 uppercase mb-1">Segunda Perícia (Misto) *</label>
+          <select id="pass-pericia-2" class="w-full bg-obsidian border border-borderDark rounded px-3 py-2 text-white"></select>
+        </div>
+        <div class="flex justify-end gap-2 pt-3 border-t border-borderDark">
+          <button type="button" id="btn-fechar-modal-pass" class="px-4 py-2 text-slate-400 hover:text-white">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded font-medium">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase & Lógica da Mesa -->
   <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import {
-      auth, db, onAuthStateChanged,
-      doc, updateDoc, addDoc, deleteDoc, getDocs,
-      collection, query, where, onSnapshot, serverTimestamp
-    } from '../js/firebase-config.js';
+      doc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, where, orderBy, limit, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    import {
+      REGRAS_PADRAO,
+      PERICIAS_LIVRO,
+      RAIZES_PADRAO,
+      PASSATEMPOS_PADRAO,
+      ITENS_PADRAO,
+      ARVORES_PADRAO
+    } from './js/sistema-padrao.js';
 
     const params = new URLSearchParams(window.location.search);
     const mesaId = params.get('id');
-    if (!mesaId) window.location.href = '../index.html';
+    if (!mesaId) window.location.href = 'dashboard.html';
 
-    const IMGBB_API_KEY = '6da74d7373d43722422506cdfcf7e9c8';
-    const IMGBB_ENDPOINT = 'https://api.imgbb.com/1/upload';
+    let currentUser = null;
+    let mesaData = null;
+    let isMestre = false;
+    let arvoresCache = [];
+    let modsCache = [];
+    let currentBibTab = 'padrao';
 
-    const REGRAS_PADRAO = {
-      pontosAtributoIniciais: 5,
-      estagioInicial: 1,
-      tetosPorEstagio: { 1: 2, 2: 3, 3: 4, 4: 5 },
-      pontosEvolucaoIniciais: 0,
-      slotsRaizExtraCriacao: 0,
-      passatemposFocados: 1,
-      passatemposMistos: 1,
-      travaAscendenteCarga: true
-    };
+    // =========================================================================
+    // CÁLCULO DE RECURSOS MÁXIMOS (100% ESPELHADO COM A FICHA)
+    // =========================================================================
+    function calcularResumoRecursos(ficha, raizesMap, arvoresMesa) {
+      const baseAttr = { potencia: 0, vigor: 0, destreza: 0, percepcao: 0, erudicao: 0, impeto: 0, autoridade: 0 };
+      const attrs = { ...baseAttr, ...(ficha.atributos || {}) };
+      const bonusArvore = { hp: 0, san: 0, pef: 0, pem: 0 };
 
-    const RAIZES_DO_LIVRO = {
-      "Órfão": [2, -2, 2, 2],
-      "Lenhador": [6, 0, 2, 0],
-      "Ferreiro": [4, 0, 2, 2],
-      "Guarda / Vigia": [4, 2, 2, 0],
-      "Caçador": [2, 0, 4, 2],
-      "Carpinteiro": [2, 0, 4, 2],
-      "Cozinheiro / Padeiro": [2, 2, 2, 2],
-      "Pastor / Criador": [2, 4, 2, 0],
-      "Mercador": [0, 2, 2, 4],
-      "Curandeiro": [0, 4, 0, 4],
-      "Escriba / Devoto": [0, 6, 0, 2]
-    };
+      // Percorre árvores vinculadas para somar dilemas de atributo e nós de aumento de recurso
+      const arvoresVinculadas = ficha.arvoresVinculadas || [];
+      const nosDesbloqueados = ficha.nosDesbloqueados || {};
+      const escolhasAmbiguas = ficha.escolhasAmbiguas || {};
 
-    const PASSATEMPOS_DO_LIVRO = [
-      "Acrobacia", "Adestramento", "Artes", "Atletismo", "Atualidades",
-      "Ciências", "Crime", "Diplomacia", "Enganação", "Fortitude",
-      "Furtividade", "Iniciativa", "Intimidação", "Intuição", "Investigação",
-      "Luta", "Medicina", "Ocultismo", "Percepção", "Pilotagem",
-      "Pontaria", "Profissão", "Reflexos", "Religião", "Sobrevivência",
-      "Tática", "Tecnologia", "Vontade"
-    ];
+      arvoresVinculadas.forEach(arvId => {
+        const arv = arvoresMesa.find(a => a.id === arvId);
+        if (!arv || !arv.nos) return;
+        const unlockedIds = nosDesbloqueados[arvId] || [];
 
-    const ITENS_DO_LIVRO = [
-      { id: 'livro_armadura_leve', nome: 'Armadura Leve', categoria: 'armadura', peso: 'leve', rd: 2, penalidadeDesl: 0, descricao: 'Couro acolchoado, gibões de pano grosso ou peles simples. Sem penalidades.' },
-      { id: 'livro_armadura_media', nome: 'Armadura Média', categoria: 'armadura', peso: 'medio', rd: 4, penalidadeDesl: 0, descricao: 'Couro batido reforçado, brigandina ou cota de malha leve.' },
-      { id: 'livro_armadura_pesada', nome: 'Armadura Pesada', categoria: 'armadura', peso: 'pesado', rd: 6, penalidadeDesl: -2, descricao: 'Cota de malha pesada ou placas de aço. Impõe -2m no Deslocamento e -2 em rolagens com Destreza.' },
-      { id: 'livro_escudo_leve', nome: 'Escudo Leve (Broquel)', categoria: 'escudo', peso: 'leve', gd: 2, descricao: 'Concede GD 2 (+4 no teste de Bloqueio) e deixa a mão livre para itens leves.' },
-      { id: 'livro_escudo_medio', nome: 'Escudo Médio (Gota / Redondo)', categoria: 'escudo', peso: 'medio', gd: 3, descricao: 'Concede GD 3 (+6 no teste de Bloqueio).' },
-      { id: 'livro_escudo_pesado', nome: 'Escudo Pesado (Pavês / Torre)', categoria: 'escudo', peso: 'pesado', gd: 4, descricao: 'Concede GD 4 (+8 Bloqueio), Cobertura Parcial (+2 Defesa vs projéteis) e -1m Deslocamento.' },
-      { id: 'livro_kit_medico', nome: 'Kit Médico', categoria: 'cura', peso: 'leve', curaFormula: '2d8', curaBonus: 2, usosMax: 3, descricao: 'Exige Habilidade Medicina. Concede +2 no teste de cura (+4 em estabilização) e cura 2d8 HP.' },
-      { id: 'livro_bandagem', nome: 'Bandagem', categoria: 'cura', peso: 'miudeza', curaFormula: '2d4', curaBonus: 0, usosMax: 3, descricao: 'Não exige habilidade. Cura 2d4 HP e concede +2 no teste de estabilização.' },
-      { id: 'livro_item_improvisado', nome: 'Curativo Improvisado', categoria: 'cura', peso: 'miudeza', curaFormula: '1d4', curaBonus: 0, usosMax: 1, descricao: 'Cura 1d4 HP apenas com Habilidade Medicina; leigos usam apenas para estabilizar.' },
-      { id: 'livro_racao', nome: 'Ração de Viagem & Água', categoria: 'utilitario', peso: 'leve', descricao: 'Recupera 1d6 + Vigor (PE-F) e 1d6 + Ímpeto (PE-M) durante uma Pausa Curta.' },
-      { id: 'livro_corda', nome: 'Corda de Cânhamo (15m)', categoria: 'utilitario', peso: 'medio', descricao: 'Corda resistente para escalada, amarração e travessias.' },
-      { id: 'livro_tocha', nome: 'Tocha', categoria: 'utilitario', peso: 'leve', descricao: 'Ilumina uma área de 9 metros por até 1 hora.' }
-    ];
+        arv.nos.forEach(no => {
+          if (!unlockedIds.includes(no.id)) return;
 
-    const NOMES_ESTAGIOS = {
-      1: "1. Criação (Infância)",
-      2: "2. Evolução da Raiz",
-      3: "3. Fase Adulta (Vocação)",
-      4: "4. Transgressão Mística"
-    };
+          // 1. Escolhas de Atributo / Dilema
+          if ((no.tipoRecompensa === 'atributo' || no.tipoRecompensa === 'ambiguo') && no.opcoesAmbiguas) {
+            const escId = escolhasAmbiguas[`${arvId}_${no.id}`];
+            const opc = no.opcoesAmbiguas.find(o => o.idOpcao === escId);
+            if (opc && (!opc.tipo || opc.tipo === 'atributo') && opc.attr && attrs[opc.attr] !== undefined) {
+              attrs[opc.attr] += (parseInt(opc.val) || 1);
+            }
+          }
 
-    const PESO_BASE = { miudeza: 0, leve: 1, medio: 2, pesado: 3 };
-    const BORDA_PESO = {
-      pesado: 'border-red-500',
-      medio: 'border-amber-400',
-      leve: 'border-emerald-500',
-      miudeza: 'border-sky-400'
-    };
-    const ICONE_CATEGORIA = {
-      arma: '⚔️',
-      escudo: '🛡️',
-      armadura: '🦺',
-      cura: '🩹',
-      utilitario: '🎒'
-    };
+          // 2. Nós de habilidade estatística que aumentam HP / SAN / PE-F / PE-M
+          if (no.tipoRecompensa === 'habilidade' && no.conteudo && no.conteudo.efTipo) {
+            const k = no.conteudo.efTipo;
+            const v = parseInt(no.conteudo.efVal) || 0;
+            if (bonusArvore[k] !== undefined) bonusArvore[k] += v;
+          }
+        });
+      });
 
-    let usuarioAtual = null;
-    let mesaDados = null;
-    let souMestre = false;
-    let regrasAtuais = { ...REGRAS_PADRAO };
-    let formRegrasPreenchido = false;
-    let uploadEmAndamento = false;
+      const rh = ficha.raizesHeranca || { tipo: 'heranca', r1: 'Órfão', r2: '' };
+      let r1Bonus = [0, 0, 0, 0];
+      let r2Bonus = [0, 0, 0, 0];
 
-    function mostrar(el, flex = false) {
-      el.classList.remove('hidden');
-      if (flex) el.classList.add('flex');
-    }
-    function esconder(el) {
-      el.classList.add('hidden');
-      el.classList.remove('flex');
+      if (rh.tipo === 'heranca') {
+        r1Bonus = raizesMap[rh.r1] || [0, 0, 0, 0];
+      } else {
+        const b1 = raizesMap[rh.r1] || [0, 0, 0, 0];
+        const b2 = raizesMap[rh.r2] || [0, 0, 0, 0];
+        r1Bonus = [Math.floor(b1[0] / 2), Math.floor(b1[1] / 2), Math.floor(b1[2] / 2), Math.floor(b1[3] / 2)];
+        r2Bonus = [Math.floor(b2[0] / 2), Math.floor(b2[1] / 2), Math.floor(b2[2] / 2), Math.floor(b2[3] / 2)];
+      }
+
+      const est = ficha.estagio || 1;
+      const multEst = Math.max(0, est - 1);
+
+      const hpMax  = 8 + (attrs.vigor * 2) + r1Bonus[0] + r2Bonus[0] + (multEst * (2 + attrs.vigor)) + bonusArvore.hp;
+      const sanMax = 8 + (attrs.impeto * 2) + r1Bonus[1] + r2Bonus[1] + (multEst * (2 + attrs.impeto)) + bonusArvore.san;
+      const pefMax = 4 + attrs.vigor + r1Bonus[2] + r2Bonus[2] + (multEst * (1 + attrs.vigor)) + bonusArvore.pef;
+      const pemMax = 4 + attrs.impeto + r1Bonus[3] + r2Bonus[3] + (multEst * (1 + attrs.impeto)) + bonusArvore.pem;
+
+      const rec = ficha.recursos || {};
+      return {
+        hpAtual:  rec.hpAtual !== undefined ? rec.hpAtual : hpMax,   hpMax,
+        sanAtual: rec.sanAtual !== undefined ? rec.sanAtual : sanMax, sanMax,
+        pefAtual: rec.pefAtual !== undefined ? rec.pefAtual : pefMax, pefMax,
+        pemAtual: rec.pemAtual !== undefined ? rec.pemAtual : pemMax, pemMax
+      };
     }
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) return window.location.href = '../index.html';
-      usuarioAtual = user;
-      iniciarListeners();
+    // =========================================================================
+    // AUTENTICAÇÃO E CARREGAMENTO DA MESA
+    // =========================================================================
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'index.html'; return; }
+      currentUser = user;
+      await carregarMesa();
     });
 
-    function iniciarListeners() {
-      onSnapshot(doc(db, "mesas", mesaId), (snap) => {
-        if (!snap.exists()) {
-          alert("Mesa não encontrada!");
-          return window.location.href = '../index.html';
-        }
-        mesaDados = snap.data();
-        souMestre = mesaDados.mestreId === usuarioAtual.uid;
-        regrasAtuais = {
-          ...REGRAS_PADRAO,
-          ...(mesaDados.regras || {}),
-          tetosPorEstagio: { ...REGRAS_PADRAO.tetosPorEstagio, ...(mesaDados.regras?.tetosPorEstagio || {}) }
-        };
+    async function carregarMesa() {
+      const mesaRef = doc(db, 'mesas', mesaId);
+      const mesaSnap = await getDoc(mesaRef);
+      if (!mesaSnap.exists()) {
+        alert("Mesa não encontrada.");
+        window.location.href = 'dashboard.html';
+        return;
+      }
 
-        renderizarCabecalhoMesa();
-        if (souMestre) {
-          renderizarGavetaRegras();
-          renderizarCatalogoItens();
-        }
-      });
+      mesaData = { id: mesaSnap.id, ...mesaSnap.data() };
+      isMestre = mesaData.mestreId === currentUser.uid;
 
-      const qFichas = query(collection(db, "fichas"), where("mesaId", "==", mesaId));
-      onSnapshot(qFichas, (snapshot) => {
-        const fichas = [];
-        snapshot.forEach(d => fichas.push({ id: d.id, ...d.data() }));
-        renderizarListaFichas(fichas);
-      });
+      if (!isMestre && !(mesaData.jogadores || []).includes(currentUser.uid)) {
+        alert("Você não tem acesso a esta mesa.");
+        window.location.href = 'dashboard.html';
+        return;
+      }
 
-      const qRolagens = query(collection(db, "rolagens"), where("mesaId", "==", mesaId));
-      onSnapshot(qRolagens, (snapshot) => {
-        const lista = [];
-        snapshot.forEach(d => lista.push({ id: d.id, ...d.data() }));
-        lista.sort((a, b) => (b.criadoEm?.toMillis?.() || Date.now()) - (a.criadoEm?.toMillis?.() || Date.now()));
-        renderizarFeedRolagens(lista.slice(0, 30));
-      });
+      document.getElementById('mesa-titulo').textContent = mesaData.nome;
+      document.getElementById('link-nova-arvore').href = `editor-arvores.html?mesaId=${mesaId}`;
+
+      const badge = document.getElementById('mesa-role-badge');
+      badge.textContent = isMestre ? 'Mestre' : 'Jogador';
+      badge.className = isMestre
+        ? 'px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-400 border border-amber-800/60 font-medium'
+        : 'px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-medium';
+
+      if (isMestre) {
+        document.getElementById('mesa-codigo-container').textContent = `Código: ${mesaData.codigoConvite}`;
+        document.getElementById('btn-nova-ficha').classList.remove('hidden');
+        document.getElementById('btn-abrir-biblioteca').classList.remove('hidden');
+        document.querySelectorAll('.tab-btn[data-tab="regras"], .tab-btn[data-tab="passatempos"], .tab-btn[data-tab="itens"], .tab-btn[data-tab="arvores"]').forEach(el => {
+          el.classList.remove('hidden');
+        });
+        preencherFormularioRegras();
+      } else {
+        document.getElementById('btn-nova-ficha').classList.remove('hidden');
+      }
+
+      await carregarArvores();
+      await carregarFichas();
+      if (isMestre) {
+        renderizarRaizes();
+        renderizarPassatempos();
+        renderizarItens();
+      }
+      preencherSelectsPassatempos();
     }
 
-    function renderizarCabecalhoMesa() {
-      document.getElementById('mesa-nome').textContent = mesaDados.nome || 'Mesa sem nome';
-      document.getElementById('mesa-codigo').textContent = mesaDados.codigoConvite || mesaId.slice(0, 6).toUpperCase();
+    // =========================================================================
+    // NAVEGAÇÃO POR ABAS PRINCIPAIS
+    // =========================================================================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('border-amber-500', 'text-amber-400');
+          b.classList.add('border-transparent', 'text-slate-400');
+        });
+        btn.classList.add('border-amber-500', 'text-amber-400');
+        btn.classList.remove('border-transparent', 'text-slate-400');
 
-      const badge = document.getElementById('badge-papel');
-      const btnRegras = document.getElementById('btn-toggle-regras');
-      const btnItens = document.getElementById('btn-toggle-itens');
-      const btnEditor = document.getElementById('btn-abrir-editor');
-      const btnLimpar = document.getElementById('btn-limpar-log');
-      const boxRolador = document.getElementById('box-rolador-mestre');
-      const bannerJogador = document.getElementById('banner-regras-jogador');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById(`tab-${target}`).classList.remove('hidden');
+      });
+    });
 
-      if (souMestre) {
-        badge.textContent = "👑 Mestre da Mesa";
-        badge.className = "px-2 py-0.5 rounded font-cinzel text-[10px] uppercase border border-gold-500 text-gold-300 bg-gold-950/60";
-        mostrar(btnRegras, true);
-        mostrar(btnItens, true);
-        mostrar(btnEditor, true);
-        btnEditor.href = `editor-arvores.html?mesaId=${mesaId}`;
-        mostrar(btnLimpar);
-        mostrar(boxRolador);
-        esconder(bannerJogador);
-      } else {
-        badge.textContent = "⚔️ Jogador";
-        badge.className = "px-2 py-0.5 rounded font-cinzel text-[10px] uppercase border border-sky-600 text-sky-300 bg-sky-950/50";
-        esconder(btnRegras);
-        esconder(btnItens);
-        esconder(btnEditor);
-        esconder(btnLimpar);
-        esconder(boxRolador);
-        esconder(document.getElementById('gaveta-regras'));
-        esconder(document.getElementById('gaveta-itens'));
+    // =========================================================================
+    // ABA 1: FICHAS DE PERSONAGENS
+    // =========================================================================
+    async function carregarFichas() {
+      const grid = document.getElementById('fichas-grid');
+      grid.innerHTML = '<p class="text-slate-500 text-sm col-span-full">Carregando fichas...</p>';
 
-        mostrar(bannerJogador, true);
-        const r = regrasAtuais;
-        bannerJogador.innerHTML = `
-          <span><strong class="text-gold-400">Regras da Mesa:</strong> ${r.pontosAtributoIniciais} pts de Atributo (+1 Órfão)</span>
-          <span>• Estágio Inicial: <strong class="text-stone-200">${NOMES_ESTAGIOS[r.estagioInicial]}</strong> (Teto ${r.tetosPorEstagio[r.estagioInicial]})</span>
-          <span>• Carga Ascendente: <strong class="text-stone-200">${r.travaAscendenteCarga ? 'Travada' : 'Livre'}</strong></span>
-        `;
-      }
-    }
+      const fichasRef = collection(db, 'mesas', mesaId, 'fichas');
+      const snap = await getDocs(fichasRef);
+      const raizesMap = mesaData.raizesCustom || RAIZES_PADRAO;
 
-    document.getElementById('btn-copiar-codigo').onclick = () => {
-      navigator.clipboard.writeText(document.getElementById('mesa-codigo').textContent);
-      alert("Código copiado!");
-    };
+      grid.innerHTML = '';
+      let count = 0;
 
-    /* ========================================================= */
-    /* CONTROLE DAS GAVETAS RECOLHÍVEIS (MESTRE)                 */
-    /* ========================================================= */
-    const gavetaRegras = document.getElementById('gaveta-regras');
-    const gavetaItens = document.getElementById('gaveta-itens');
+      snap.forEach(docSnap => {
+        const f = docSnap.data();
+        const isDono = f.jogadorId === currentUser.uid;
+        if (!isMestre && !isDono) return;
 
-    document.getElementById('btn-toggle-regras').onclick = () => {
-      if (!souMestre) return;
-      const estaFechada = gavetaRegras.classList.contains('hidden');
-      if (estaFechada) {
-        mostrar(gavetaRegras);
-        esconder(gavetaItens);
-      } else {
-        esconder(gavetaRegras);
-      }
-    };
-    document.getElementById('btn-fechar-regras').onclick = () => esconder(gavetaRegras);
+        count++;
+        const res = calcularResumoRecursos(f, raizesMap, arvoresCache);
+        const rh = f.raizesHeranca || { tipo: 'heranca', r1: 'Órfão' };
+        const origemTxt = rh.tipo === 'mista' && rh.r2 ? `${rh.r1} / ${rh.r2} (Mista)` : (rh.r1 || 'Sem Raiz');
 
-    document.getElementById('btn-toggle-itens').onclick = () => {
-      if (!souMestre) return;
-      const estaFechada = gavetaItens.classList.contains('hidden');
-      if (estaFechada) {
-        mostrar(gavetaItens);
-        esconder(gavetaRegras);
-      } else {
-        esconder(gavetaItens);
-      }
-    };
-    document.getElementById('btn-fechar-itens').onclick = () => esconder(gavetaItens);
-
-    /* ========================================================= */
-    /* GAVETA 1: REGRAS DA MESA, RAÍZES & PASSATEMPOS            */
-    /* ========================================================= */
-    function renderizarGavetaRegras() {
-      if (!souMestre) return;
-
-      if (!formRegrasPreenchido) {
-        document.getElementById('cfg-pontos-attr').value = regrasAtuais.pontosAtributoIniciais;
-        document.getElementById('cfg-estagio-inicial').value = regrasAtuais.estagioInicial;
-        document.getElementById('cfg-pontos-evo').value = regrasAtuais.pontosEvolucaoIniciais;
-        document.getElementById('cfg-slots-extra').value = regrasAtuais.slotsRaizExtraCriacao;
-
-        document.getElementById('cfg-teto-1').value = regrasAtuais.tetosPorEstagio[1];
-        document.getElementById('cfg-teto-2').value = regrasAtuais.tetosPorEstagio[2];
-        document.getElementById('cfg-teto-3').value = regrasAtuais.tetosPorEstagio[3];
-        document.getElementById('cfg-teto-4').value = regrasAtuais.tetosPorEstagio[4];
-
-        document.getElementById('cfg-pass-focado').value = regrasAtuais.passatemposFocados;
-        document.getElementById('cfg-pass-misto').value = regrasAtuais.passatemposMistos;
-        document.getElementById('cfg-trava-ascendente').checked = regrasAtuais.travaAscendenteCarga !== false;
-        formRegrasPreenchido = true;
-      }
-
-      // Raízes
-      const raizes = mesaDados.raizesDisponiveis || {};
-      const container = document.getElementById('lista-raizes-mesa');
-      const nomes = Object.keys(raizes);
-      if (!nomes.length) {
-        container.innerHTML = `<span class="text-xs text-stone-500 italic">Nenhuma raiz cadastrada.</span>`;
-      } else {
-        container.innerHTML = nomes.map(nome => {
-          const b = raizes[nome];
-          const temArvore = (mesaDados.arvores || []).some(a => a.raizAssociada === nome);
-          return `
-            <div class="flex items-center gap-2 px-2.5 py-1 rounded bg-stone-950 border ${temArvore ? 'border-emerald-700/70' : 'border-stone-800'} text-xs">
-              <strong class="font-cinzel text-gold-300">${nome}</strong>
-              <span class="font-mono text-[10px] text-stone-400">[${b.map(v => (v >= 0 ? '+' + v : v)).join(', ')}]</span>
-              ${temArvore ? '<span class="text-[10px] text-emerald-400" title="Árvore vinculada">🌳</span>' : ''}
-              <button data-del-raiz="${nome}" class="text-stone-500 hover:text-red-400 ml-1">✕</button>
+        const card = document.createElement('div');
+        card.className = "bg-surface border border-borderDark hover:border-amber-700/60 rounded-lg p-5 flex flex-col justify-between transition-all";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div>
+                <h3 class="font-serif text-lg font-bold text-slate-100">${f.nome || 'Sem Nome'}</h3>
+                <p class="text-xs text-slate-400">${origemTxt} • Estágio ${f.estagio || 1}</p>
+              </div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-obsidian border border-borderDark text-slate-400">
+                ${isDono ? 'Seu Personagem' : (f.jogadorNome || 'Jogador')}
+              </span>
             </div>
-          `;
-        }).join('');
 
-        container.querySelectorAll('[data-del-raiz]').forEach(btn => {
-          btn.onclick = async () => {
-            const alvo = btn.dataset.delRaiz;
-            if (!confirm(`Remover a raiz "${alvo}"?`)) return;
-            const copia = { ...(mesaDados.raizesDisponiveis || {}) };
-            delete copia[alvo];
-            await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: copia });
-          };
-        });
-      }
+            <!-- Barras Compactas -->
+            <div class="grid grid-cols-2 gap-2 mt-4 text-xs">
+              <div class="bg-obsidian p-2 rounded border border-borderDark">
+                <div class="flex justify-between text-slate-400 mb-1"><span>HP</span><span class="text-red-400 font-semibold">${res.hpAtual}/${res.hpMax}</span></div>
+                <div class="w-full bg-slate-800 h-1.5 rounded overflow-hidden"><div class="bg-red-600 h-full" style="width:${Math.min(100, Math.max(0, (res.hpAtual / Math.max(1, res.hpMax)) * 100))}%"></div></div>
+              </div>
+              <div class="bg-obsidian p-2 rounded border border-borderDark">
+                <div class="flex justify-between text-slate-400 mb-1"><span>SAN</span><span class="text-purple-400 font-semibold">${res.sanAtual}/${res.sanMax}</span></div>
+                <div class="w-full bg-slate-800 h-1.5 rounded overflow-hidden"><div class="bg-purple-600 h-full" style="width:${Math.min(100, Math.max(0, (res.sanAtual / Math.max(1, res.sanMax)) * 100))}%"></div></div>
+              </div>
+              <div class="bg-obsidian p-2 rounded border border-borderDark">
+                <div class="flex justify-between text-slate-400 mb-1"><span>PE-F</span><span class="text-amber-400 font-semibold">${res.pefAtual}/${res.pefMax}</span></div>
+                <div class="w-full bg-slate-800 h-1.5 rounded overflow-hidden"><div class="bg-amber-600 h-full" style="width:${Math.min(100, Math.max(0, (res.pefAtual / Math.max(1, res.pefMax)) * 100))}%"></div></div>
+              </div>
+              <div class="bg-obsidian p-2 rounded border border-borderDark">
+                <div class="flex justify-between text-slate-400 mb-1"><span>PE-M</span><span class="text-sky-400 font-semibold">${res.pemAtual}/${res.pemMax}</span></div>
+                <div class="w-full bg-slate-800 h-1.5 rounded overflow-hidden"><div class="bg-sky-600 h-full" style="width:${Math.min(100, Math.max(0, (res.pemAtual / Math.max(1, res.pemMax)) * 100))}%"></div></div>
+              </div>
+            </div>
+          </div>
 
-      // Passatempos Infantis
-      const passatempos = Array.isArray(mesaDados.passatemposDisponiveis) ? mesaDados.passatemposDisponiveis : [];
-      const contPass = document.getElementById('lista-passatempos-mesa');
-      if (!passatempos.length) {
-        contPass.innerHTML = `<span class="text-xs text-stone-500 italic">Nenhum passatempo cadastrado na mesa (a ficha usará a lista padrão do sistema).</span>`;
-      } else {
-        contPass.innerHTML = passatempos.map(p => `
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-stone-950 border border-sky-800/60 text-sky-300 text-xs">
-            ${p}
-            <button data-del-pass="${p}" class="text-stone-500 hover:text-red-400 text-[11px]">✕</button>
-          </span>
-        `).join('');
-
-        contPass.querySelectorAll('[data-del-pass]').forEach(btn => {
-          btn.onclick = async () => {
-            const alvo = btn.dataset.delPass;
-            const filtrados = (mesaDados.passatemposDisponiveis || []).filter(x => x !== alvo);
-            await updateDoc(doc(db, "mesas", mesaId), { passatemposDisponiveis: filtrados });
-          };
-        });
-      }
-    }
-
-    document.getElementById('btn-salvar-regras').onclick = async () => {
-      if (!souMestre) return;
-      const novasRegras = {
-        pontosAtributoIniciais: Math.max(0, parseInt(document.getElementById('cfg-pontos-attr').value) || 0),
-        estagioInicial: parseInt(document.getElementById('cfg-estagio-inicial').value) || 1,
-        tetosPorEstagio: {
-          1: Math.max(1, parseInt(document.getElementById('cfg-teto-1').value) || 2),
-          2: Math.max(1, parseInt(document.getElementById('cfg-teto-2').value) || 3),
-          3: Math.max(1, parseInt(document.getElementById('cfg-teto-3').value) || 4),
-          4: Math.max(1, parseInt(document.getElementById('cfg-teto-4').value) || 5)
-        },
-        pontosEvolucaoIniciais: Math.max(0, parseInt(document.getElementById('cfg-pontos-evo').value) || 0),
-        slotsRaizExtraCriacao: Math.max(0, parseInt(document.getElementById('cfg-slots-extra').value) || 0),
-        passatemposFocados: Math.max(0, parseInt(document.getElementById('cfg-pass-focado').value) || 0),
-        passatemposMistos: Math.max(0, parseInt(document.getElementById('cfg-pass-misto').value) || 0),
-        travaAscendenteCarga: document.getElementById('cfg-trava-ascendente').checked
-      };
-      await updateDoc(doc(db, "mesas", mesaId), { regras: novasRegras });
-      esconder(gavetaRegras);
-      alert("Regras da campanha salvas!");
-    };
-
-    document.getElementById('btn-importar-raizes-livro').onclick = async () => {
-      if (!souMestre) return;
-      const atuais = { ...(mesaDados.raizesDisponiveis || {}), ...RAIZES_DO_LIVRO };
-      await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: atuais });
-      alert("As 10 profissões do livro + Órfão foram importadas!");
-    };
-
-    document.getElementById('btn-add-raiz').onclick = async () => {
-      if (!souMestre) return;
-      const nome = document.getElementById('nova-raiz-nome').value.trim();
-      if (!nome) return alert("Informe o nome da raiz.");
-      const vals = [
-        parseInt(document.getElementById('nova-raiz-hp').value) || 0,
-        parseInt(document.getElementById('nova-raiz-san').value) || 0,
-        parseInt(document.getElementById('nova-raiz-pef').value) || 0,
-        parseInt(document.getElementById('nova-raiz-pem').value) || 0
-      ];
-      const atuais = { ...(mesaDados.raizesDisponiveis || {}), [nome]: vals };
-      await updateDoc(doc(db, "mesas", mesaId), { raizesDisponiveis: atuais });
-      document.getElementById('nova-raiz-nome').value = '';
-      ['hp', 'san', 'pef', 'pem'].forEach(k => document.getElementById(`nova-raiz-${k}`).value = '');
-    };
-
-    document.getElementById('btn-importar-passatempos-livro').onclick = async () => {
-      if (!souMestre) return;
-      const atuais = new Set(Array.isArray(mesaDados.passatemposDisponiveis) ? mesaDados.passatemposDisponiveis : []);
-      PASSATEMPOS_DO_LIVRO.forEach(p => atuais.add(p));
-      await updateDoc(doc(db, "mesas", mesaId), { passatemposDisponiveis: [...atuais].sort((a, b) => a.localeCompare(b, 'pt-BR')) });
-    };
-
-    document.getElementById('btn-add-passatempo').onclick = async () => {
-      if (!souMestre) return;
-      const input = document.getElementById('novo-passatempo-nome');
-      const nome = input.value.trim();
-      if (!nome) return alert("Digite o nome do passatempo.");
-      const atuais = Array.isArray(mesaDados.passatemposDisponiveis) ? [...mesaDados.passatemposDisponiveis] : [];
-      if (!atuais.some(p => p.toLowerCase() === nome.toLowerCase())) {
-        atuais.push(nome);
-        atuais.sort((a, b) => a.localeCompare(b, 'pt-BR'));
-        await updateDoc(doc(db, "mesas", mesaId), { passatemposDisponiveis: atuais });
-      }
-      input.value = '';
-    };
-
-    /* ========================================================= */
-    /* UPLOAD DE IMAGEM VIA IMGBB (CATÁLOGO DE ITENS)            */
-    /* ========================================================= */
-    const inputImgFile = document.getElementById('item-img-file');
-    const inputImgUrl = document.getElementById('item-img-url');
-    const previewBox = document.getElementById('item-img-preview-box');
-    const statusImg = document.getElementById('item-img-status');
-    const btnLimparImg = document.getElementById('btn-limpar-img-item');
-
-    function atualizarPreviewImagemItem(url) {
-      if (url) {
-        previewBox.innerHTML = `<img src="${url}" alt="Preview" class="w-full h-full object-cover">`;
-        btnLimparImg.classList.remove('hidden');
-      } else {
-        previewBox.innerHTML = '🖼️';
-        btnLimparImg.classList.add('hidden');
-      }
-    }
-
-    inputImgUrl.oninput = () => {
-      const val = inputImgUrl.value.trim();
-      atualizarPreviewImagemItem(val);
-      statusImg.textContent = val ? 'URL definida' : 'Nenhuma imagem selecionada';
-    };
-
-    btnLimparImg.onclick = () => {
-      inputImgUrl.value = '';
-      inputImgFile.value = '';
-      statusImg.textContent = 'Nenhuma imagem selecionada';
-      atualizarPreviewImagemItem('');
-    };
-
-    inputImgFile.onchange = async (e) => {
-      const arquivo = e.target.files?.[0];
-      if (!arquivo) return;
-
-      uploadEmAndamento = true;
-      statusImg.textContent = '⏳ Enviando para ImgBB...';
-      statusImg.className = 'text-[11px] text-amber-300 font-mono';
-
-      try {
-        const form = new FormData();
-        form.append('image', arquivo);
-
-        const res = await fetch(`${IMGBB_ENDPOINT}?key=${IMGBB_API_KEY}`, {
-          method: 'POST',
-          body: form
-        });
-        const json = await res.json();
-        if (!json.success || !json.data?.url) {
-          throw new Error(json.error?.message || 'Falha no upload ImgBB');
-        }
-
-        inputImgUrl.value = json.data.url;
-        atualizarPreviewImagemItem(json.data.url);
-        statusImg.textContent = '✅ Imagem hospedada!';
-        statusImg.className = 'text-[11px] text-emerald-400 font-mono';
-      } catch (err) {
-        statusImg.textContent = '❌ Erro no upload: ' + err.message;
-        statusImg.className = 'text-[11px] text-red-400 font-mono';
-      } finally {
-        uploadEmAndamento = false;
-      }
-    };
-
-    /* ========================================================= */
-    /* GAVETA 2: CATÁLOGO OFICIAL DE ITENS DA MESA + JSON        */
-    /* ========================================================= */
-    const selCatItem = document.getElementById('item-categoria');
-    selCatItem.onchange = () => {
-      const cat = selCatItem.value;
-      document.getElementById('campos-item-arma').hidden = cat !== 'arma';
-      document.getElementById('campos-item-escudo').hidden = cat !== 'escudo';
-      document.getElementById('campos-item-armadura').hidden = cat !== 'armadura';
-      document.getElementById('campos-item-cura').hidden = cat !== 'cura';
-    };
-
-    document.getElementById('btn-importar-itens-livro').onclick = async () => {
-      if (!souMestre) return;
-      const atuais = [...(mesaDados.catalogoItens || [])];
-      const idsExistentes = new Set(atuais.map(i => i.id));
-      let adicionados = 0;
-
-      ITENS_DO_LIVRO.forEach(itemLivro => {
-        if (!idsExistentes.has(itemLivro.id)) {
-          atuais.push({ ...itemLivro });
-          adicionados++;
-        }
+          <div class="mt-5 pt-3 border-t border-borderDark flex items-center justify-between gap-2">
+            <a href="ficha.html?mesaId=${mesaId}&fichaId=${docSnap.id}" class="flex-1 text-center py-2 bg-slate-800 hover:bg-amber-700 text-white rounded text-xs font-medium transition-colors">
+              Abrir Ficha
+            </a>
+            ${(isMestre || isDono) ? `<button data-del-ficha="${docSnap.id}" class="px-2.5 py-2 text-slate-500 hover:text-red-400 text-xs" title="Excluir Ficha">✕</button>` : ''}
+          </div>
+        `;
+        grid.appendChild(card);
       });
 
-      if (adicionados === 0) return alert("Todos os itens padrões do livro já estão no catálogo.");
-      await updateDoc(doc(db, "mesas", mesaId), { catalogoItens: atuais });
-      alert(`${adicionados} item(ns) padrão(ões) do livro importado(s)!`);
-    };
+      document.getElementById('fichas-count').textContent = `${count} personagem(ns)`;
 
-    document.getElementById('btn-exportar-itens-json').onclick = () => {
-      if (!souMestre) return;
-      const lista = mesaDados.catalogoItens || [];
-      if (!lista.length) return alert("O catálogo está vazio.");
-
-      const blob = new Blob([JSON.stringify(lista, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `catalogo-itens-${(mesaDados.nome || 'pantheon').toLowerCase().replace(/\s+/g, '-')}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    };
-
-    const inputArquivoJson = document.getElementById('input-arquivo-json-itens');
-    document.getElementById('btn-importar-itens-json').onclick = () => {
-      if (!souMestre) return;
-      inputArquivoJson.value = '';
-      inputArquivoJson.click();
-    };
-
-    inputArquivoJson.onchange = async (e) => {
-      if (!souMestre) return;
-      const file = e.target.files?.[0];
-      if (!file) return;
-
-      try {
-        const texto = await file.text();
-        const dados = JSON.parse(texto);
-        const listaImportada = Array.isArray(dados) ? dados : (Array.isArray(dados.itens) ? dados.itens : null);
-        if (!listaImportada) return alert("JSON inválido: deve conter uma lista [ ... ] de itens.");
-
-        const atuais = [...(mesaDados.catalogoItens || [])];
-        const idsExistentes = new Set(atuais.map(i => i.id));
-        let count = 0;
-
-        listaImportada.forEach((raw, idx) => {
-          if (!raw || !raw.nome) return;
-          const cat = ['arma', 'escudo', 'armadura', 'cura', 'utilitario'].includes(raw.categoria) ? raw.categoria : 'utilitario';
-          const peso = ['miudeza', 'leve', 'medio', 'pesado'].includes(raw.peso) ? raw.peso : 'leve';
-          const pesoVal = PESO_BASE[peso] || 0;
-
-          const itemLimpo = {
-            id: raw.id && !idsExistentes.has(raw.id) ? raw.id : `item_${Date.now()}_${idx}`,
-            nome: String(raw.nome).trim(),
-            categoria: cat,
-            peso,
-            imagem: raw.imagem ? String(raw.imagem).trim() : '',
-            descricao: raw.descricao ? String(raw.descricao).trim() : ''
-          };
-
-          if (cat === 'arma') {
-            const def = Boolean(raw.armaDefensiva);
-            itemLimpo.dano = raw.dano || '1d6';
-            itemLimpo.criticoMargem = parseInt(raw.criticoMargem) || 20;
-            itemLimpo.criticoMult = parseInt(raw.criticoMult) || 2;
-            itemLimpo.criticoExtra = raw.criticoExtra || '';
-            itemLimpo.ga = raw.ga !== undefined ? parseInt(raw.ga) : pesoVal;
-            itemLimpo.gd = raw.gd !== undefined ? parseInt(raw.gd) : pesoVal + (def ? 1 : 0);
-            itemLimpo.armaDefensiva = def;
-          } else if (cat === 'escudo') {
-            itemLimpo.gd = raw.gd !== undefined ? parseInt(raw.gd) : pesoVal + 1;
-          } else if (cat === 'armadura') {
-            itemLimpo.rd = parseInt(raw.rd) || 0;
-            itemLimpo.penalidadeDesl = parseInt(raw.penalidadeDesl) || 0;
-          } else if (cat === 'cura') {
-            itemLimpo.curaFormula = raw.curaFormula || '1d4';
-            itemLimpo.curaBonus = parseInt(raw.curaBonus) || 0;
-            itemLimpo.usosMax = Math.max(1, parseInt(raw.usosMax) || 1);
-          }
-
-          if (raw.habilidade && raw.habilidade.nome) {
-            itemLimpo.habilidade = {
-              nome: String(raw.habilidade.nome).trim(),
-              custo: raw.habilidade.custo ? String(raw.habilidade.custo).trim() : '',
-              efeito: raw.habilidade.efeito ? String(raw.habilidade.efeito).trim() : ''
-            };
-          }
-
-          atuais.push(itemLimpo);
-          idsExistentes.add(itemLimpo.id);
-          count++;
-        });
-
-        await updateDoc(doc(db, "mesas", mesaId), { catalogoItens: atuais });
-        alert(`${count} item(ns) importado(s) do JSON!`);
-      } catch (err) {
-        alert("Erro ao ler o arquivo JSON: " + err.message);
+      if (count === 0) {
+        grid.innerHTML = `<div class="col-span-full bg-surface border border-dashed border-borderDark rounded-lg p-10 text-center text-slate-400 text-sm">
+          Nenhum personagem encontrado. Clique em <strong>+ Nova Ficha</strong> para começar.
+        </div>`;
       }
-    };
 
-    document.getElementById('btn-salvar-item-catalogo').onclick = async () => {
-      if (!souMestre) return;
-      if (uploadEmAndamento) return alert("Aguarde o envio da imagem terminar.");
+      document.querySelectorAll('[data-del-ficha]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm("Tem certeza que deseja excluir esta ficha permanentemente?")) return;
+          await deleteDoc(doc(db, 'mesas', mesaId, 'fichas', btn.dataset.delFicha));
+          await carregarFichas();
+        });
+      });
+    }
 
-      const nome = document.getElementById('item-nome').value.trim();
-      if (!nome) return alert("Informe o nome do item.");
+    // Criar Nova Ficha (alinhada 100% com o schema de ficha_4.html)
+    document.getElementById('btn-nova-ficha').addEventListener('click', async () => {
+      const nome = prompt("Nome do Personagem:");
+      if (!nome || !nome.trim()) return;
 
-      const categoria = selCatItem.value;
-      const peso = document.getElementById('item-peso').value;
-      const pesoVal = PESO_BASE[peso] || 0;
+      const regras = { ...REGRAS_PADRAO, ...(mesaData.regras || {}) };
+      const raizesDisponiveis = Object.keys(mesaData.raizesCustom || RAIZES_PADRAO);
+      const primeiraRaiz = raizesDisponiveis.includes('Órfão') ? 'Órfão' : (raizesDisponiveis[0] || 'Órfão');
 
-      const novoItem = {
-        id: 'item_' + Date.now(),
-        nome,
-        categoria,
-        peso,
-        imagem: inputImgUrl.value.trim(),
-        descricao: document.getElementById('item-desc').value.trim()
+      // Vincula automaticamente árvores marcadas como Padrão na mesa
+      const arvoresPadraoMesa = arvoresCache
+        .filter(a => a.raizAssociada === 'Padrão' || a.isPadrao)
+        .map(a => a.id);
+
+      const novaFicha = {
+        nome: nome.trim(),
+        jogadorId: currentUser.uid,
+        jogadorNome: currentUser.displayName || currentUser.email.split('@')[0],
+        estagio: regras.estagioInicial || 1,
+        pontosEvolucao: regras.pontosEvolucaoIniciais || 0,
+        atributos: { potencia: 0, vigor: 0, destreza: 0, percepcao: 0, erudicao: 0, impeto: 0, autoridade: 0 },
+        raizesHeranca: { tipo: 'heranca', r1: primeiraRaiz, r2: '', secEscolhida: '', secEscolhida2: '' },
+        raizesExtras: [],
+        passatempos: { lista: [] },
+        periciasExtras: {},
+        periciasLivre: {},
+        inventario: { maos: [], cintura: [], costas: [], bolso: [] },
+        equipados: { armaduraId: null, escudoId: null },
+        arvoresVinculadas: arvoresPadraoMesa,
+        nosDesbloqueados: {},
+        escolhasAmbiguas: {},
+        macros: [],
+        anotacoes: '',
+        criadoEm: serverTimestamp()
       };
 
-      if (categoria === 'arma') {
-        const defensiva = document.getElementById('item-arma-defensiva').checked;
-        novoItem.dano = document.getElementById('item-arma-dano').value.trim() || '1d6';
-        novoItem.criticoMargem = parseInt(document.getElementById('item-arma-crit-margem').value) || 20;
-        novoItem.criticoMult = parseInt(document.getElementById('item-arma-crit-mult').value) || 2;
-        novoItem.criticoExtra = document.getElementById('item-arma-crit-extra').value.trim() || '';
-        novoItem.ga = pesoVal;
-        novoItem.gd = pesoVal + (defensiva ? 1 : 0);
-        novoItem.armaDefensiva = defensiva;
-      } else if (categoria === 'escudo') {
-        novoItem.gd = pesoVal + 1;
-      } else if (categoria === 'armadura') {
-        novoItem.rd = parseInt(document.getElementById('item-armadura-rd').value) || 0;
-        novoItem.penalidadeDesl = parseInt(document.getElementById('item-armadura-pen-desl').value) || 0;
-      } else if (categoria === 'cura') {
-        novoItem.curaFormula = document.getElementById('item-cura-formula').value.trim() || '1d4';
-        novoItem.curaBonus = parseInt(document.getElementById('item-cura-bonus').value) || 0;
-        novoItem.usosMax = Math.max(1, parseInt(document.getElementById('item-cura-usos').value) || 1);
+      const docRef = await addDoc(collection(db, 'mesas', mesaId, 'fichas'), novaFicha);
+      window.location.href = `ficha.html?mesaId=${mesaId}&fichaId=${docRef.id}`;
+    });
+
+    // =========================================================================
+    // ABA 2: REGRAS & RAÍZES
+    // =========================================================================
+    function preencherFormularioRegras() {
+      const r = { ...REGRAS_PADRAO, ...(mesaData.regras || {}) };
+      document.getElementById('regra-pontos-iniciais').value = r.pontosAtributoIniciais;
+      document.getElementById('regra-estagio-inicial').value = r.estagioInicial;
+      document.getElementById('regra-pe-iniciais').value = r.pontosEvolucaoIniciais;
+      document.getElementById('regra-slots-raiz').value = r.slotsRaizExtraCriacao;
+      document.getElementById('regra-pass-focados').value = r.passatemposFocados;
+      document.getElementById('regra-pass-mistos').value = r.passatemposMistos;
+      document.getElementById('regra-teto-1').value = r.tetosPorEstagio?.[1] ?? 2;
+      document.getElementById('regra-teto-2').value = r.tetosPorEstagio?.[2] ?? 3;
+      document.getElementById('regra-teto-3').value = r.tetosPorEstagio?.[3] ?? 4;
+      document.getElementById('regra-teto-4').value = r.tetosPorEstagio?.[4] ?? 5;
+      document.getElementById('regra-trava-carga').checked = r.travaAscendenteCarga !== false;
+    }
+
+    document.getElementById('btn-salvar-regras').addEventListener('click', async () => {
+      const novasRegras = {
+        pontosAtributoIniciais: parseInt(document.getElementById('regra-pontos-iniciais').value) || 0,
+        estagioInicial: parseInt(document.getElementById('regra-estagio-inicial').value) || 1,
+        pontosEvolucaoIniciais: parseInt(document.getElementById('regra-pe-iniciais').value) || 0,
+        slotsRaizExtraCriacao: parseInt(document.getElementById('regra-slots-raiz').value) || 0,
+        passatemposFocados: parseInt(document.getElementById('regra-pass-focados').value) || 0,
+        passatemposMistos: parseInt(document.getElementById('regra-pass-mistos').value) || 0,
+        tetosPorEstagio: {
+          1: parseInt(document.getElementById('regra-teto-1').value) || 2,
+          2: parseInt(document.getElementById('regra-teto-2').value) || 3,
+          3: parseInt(document.getElementById('regra-teto-3').value) || 4,
+          4: parseInt(document.getElementById('regra-teto-4').value) || 5
+        },
+        travaAscendenteCarga: document.getElementById('regra-trava-carga').checked
+      };
+
+      await updateDoc(doc(db, 'mesas', mesaId), { regras: novasRegras });
+      mesaData.regras = novasRegras;
+      alert("Regras da campanha atualizadas com sucesso!");
+    });
+
+    function renderizarRaizes() {
+      const container = document.getElementById('lista-raizes');
+      const raizes = mesaData.raizesCustom || { ...RAIZES_PADRAO };
+      container.innerHTML = '';
+
+      Object.entries(raizes).forEach(([nome, vals]) => {
+        const div = document.createElement('div');
+        div.className = "bg-obsidian border border-borderDark rounded p-4 flex items-center justify-between gap-2";
+        div.innerHTML = `
+          <div>
+            <p class="font-semibold text-slate-100 text-sm">${nome}</p>
+            <p class="text-xs text-slate-400 mt-1">
+              HP <span class="text-red-400 font-mono">${vals[0] >= 0 ? '+' + vals[0] : vals[0]}</span> •
+              SAN <span class="text-purple-400 font-mono">${vals[1] >= 0 ? '+' + vals[1] : vals[1]}</span> •
+              PE-F <span class="text-amber-400 font-mono">${vals[2] >= 0 ? '+' + vals[2] : vals[2]}</span> •
+              PE-M <span class="text-sky-400 font-mono">${vals[3] >= 0 ? '+' + vals[3] : vals[3]}</span>
+            </p>
+          </div>
+          <div class="flex gap-1">
+            <button data-edit-raiz="${nome}" class="px-2 py-1 text-xs text-slate-400 hover:text-amber-400">✎</button>
+            <button data-del-raiz="${nome}" class="px-2 py-1 text-xs text-slate-500 hover:text-red-400">✕</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      document.querySelectorAll('[data-edit-raiz]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const nome = btn.dataset.editRaiz;
+          const atual = (mesaData.raizesCustom || RAIZES_PADRAO)[nome];
+          const input = prompt(`Bônus de "${nome}" no formato HP, SAN, PE-F, PE-M:`, atual.join(', '));
+          if (!input) return;
+          const parts = input.split(',').map(n => parseInt(n.trim()) || 0);
+          if (parts.length !== 4) { alert("Informe exatamente 4 números separados por vírgula."); return; }
+
+          const copia = { ...(mesaData.raizesCustom || RAIZES_PADRAO), [nome]: parts };
+          await updateDoc(doc(db, 'mesas', mesaId), { raizesCustom: copia });
+          mesaData.raizesCustom = copia;
+          renderizarRaizes();
+        });
+      });
+
+      document.querySelectorAll('[data-del-raiz]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const nome = btn.dataset.delRaiz;
+          if (!confirm(`Remover a raiz "${nome}" desta mesa?`)) return;
+          const copia = { ...(mesaData.raizesCustom || RAIZES_PADRAO) };
+          delete copia[nome];
+          await updateDoc(doc(db, 'mesas', mesaId), { raizesCustom: copia });
+          mesaData.raizesCustom = copia;
+          renderizarRaizes();
+        });
+      });
+    }
+
+    document.getElementById('btn-nova-raiz').addEventListener('click', async () => {
+      const nome = prompt("Nome da nova Raiz (ex: Ferreiro, Marinheiro, Nômade):");
+      if (!nome || !nome.trim()) return;
+      const input = prompt("Bônus iniciais no formato HP, SAN, PE-F, PE-M (ex: 4, 0, 2, 2):", "2, 2, 2, 2");
+      if (!input) return;
+      const parts = input.split(',').map(n => parseInt(n.trim()) || 0);
+      if (parts.length !== 4) { alert("Informe exatamente 4 números separados por vírgula."); return; }
+
+      const copia = { ...(mesaData.raizesCustom || RAIZES_PADRAO), [nome.trim()]: parts };
+      await updateDoc(doc(db, 'mesas', mesaId), { raizesCustom: copia });
+      mesaData.raizesCustom = copia;
+      renderizarRaizes();
+    });
+
+    document.getElementById('btn-importar-raizes-padrao').addEventListener('click', async () => {
+      if (!confirm("Mesclar todas as raízes padrão do livro na configuração desta mesa?")) return;
+      const copia = { ...RAIZES_PADRAO, ...(mesaData.raizesCustom || {}) };
+      await updateDoc(doc(db, 'mesas', mesaId), { raizesCustom: copia });
+      mesaData.raizesCustom = copia;
+      renderizarRaizes();
+    });
+
+    // =========================================================================
+    // ABA 3: PASSATEMPOS
+    // =========================================================================
+    function preencherSelectsPassatempos() {
+      const s1 = document.getElementById('pass-pericia-1');
+      const s2 = document.getElementById('pass-pericia-2');
+      s1.innerHTML = PERICIAS_LIVRO.map(p => `<option value="${p}">${p}</option>`).join('');
+      s2.innerHTML = `<option value="ESCOLHA">À Escolha do Jogador</option>` + PERICIAS_LIVRO.map(p => `<option value="${p}">${p}</option>`).join('');
+    }
+
+    document.getElementById('pass-tipo').addEventListener('change', (e) => {
+      document.getElementById('pass-pericia-2-wrapper').classList.toggle('hidden', e.target.value !== 'misto');
+    });
+
+    function renderizarPassatempos() {
+      const container = document.getElementById('lista-passatempos');
+      const lista = mesaData.passatemposCustom || [];
+      container.innerHTML = '';
+
+      if (lista.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 col-span-full">Nenhum passatempo cadastrado ainda. Use <strong>Importar Lista Padrão do Livro</strong> ou adicione manualmente.</p>`;
+        return;
+      }
+
+      lista.forEach((p, idx) => {
+        const div = document.createElement('div');
+        div.className = "bg-obsidian border border-borderDark rounded p-3 flex items-center justify-between gap-2";
+        const badgeClass = p.tipo === 'focado' ? 'text-amber-400 bg-amber-950/40' : 'text-sky-400 bg-sky-950/40';
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-medium text-slate-100 text-sm">${p.nome}</span>
+              <span class="text-[10px] uppercase px-1.5 py-0.5 rounded ${badgeClass}">${p.tipo}</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">${p.desc || p.pericias.join(', ')}</p>
+          </div>
+          <button data-del-pass="${idx}" class="text-slate-500 hover:text-red-400 text-xs px-2">✕</button>
+        `;
+        container.appendChild(div);
+      });
+
+      document.querySelectorAll('[data-del-pass]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const idx = parseInt(btn.dataset.delPass);
+          const copia = [...(mesaData.passatemposCustom || [])];
+          copia.splice(idx, 1);
+          await updateDoc(doc(db, 'mesas', mesaId), { passatemposCustom: copia });
+          mesaData.passatemposCustom = copia;
+          renderizarPassatempos();
+        });
+      });
+    }
+
+    document.getElementById('btn-novo-passatempo').addEventListener('click', () => {
+      document.getElementById('form-passatempo').reset();
+      document.getElementById('pass-pericia-2-wrapper').classList.add('hidden');
+      document.getElementById('modal-passatempo').classList.remove('hidden');
+      document.getElementById('modal-passatempo').classList.add('flex');
+    });
+
+    document.getElementById('btn-fechar-modal-pass').addEventListener('click', () => {
+      document.getElementById('modal-passatempo').classList.add('hidden');
+      document.getElementById('modal-passatempo').classList.remove('flex');
+    });
+
+    document.getElementById('form-passatempo').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nome = document.getElementById('pass-nome').value.trim();
+      const tipo = document.getElementById('pass-tipo').value;
+      const p1 = document.getElementById('pass-pericia-1').value;
+      const p2 = document.getElementById('pass-pericia-2').value;
+
+      const novo = tipo === 'focado'
+        ? { nome, tipo, pericias: [p1], desc: `+2 ${p1}` }
+        : { nome, tipo, pericias: [p1, p2], desc: `+1 ${p1}, +1 ${p2 === 'ESCOLHA' ? 'à Escolha' : p2}` };
+
+      const copia = [...(mesaData.passatemposCustom || []), novo];
+      await updateDoc(doc(db, 'mesas', mesaId), { passatemposCustom: copia });
+      mesaData.passatemposCustom = copia;
+      document.getElementById('modal-passatempo').classList.add('hidden');
+      document.getElementById('modal-passatempo').classList.remove('flex');
+      renderizarPassatempos();
+    });
+
+    document.getElementById('btn-importar-passatempos-padrao').addEventListener('click', async () => {
+      const atuais = mesaData.passatemposCustom || [];
+      const nomesExistentes = new Set(atuais.map(p => p.nome.toLowerCase()));
+      const novos = PASSATEMPOS_PADRAO.filter(p => !nomesExistentes.has(p.nome.toLowerCase()));
+
+      if (novos.length === 0) {
+        alert("Todos os passatempos padrão do livro já estão cadastrados nesta mesa.");
+        return;
+      }
+
+      const copia = [...atuais, ...novos];
+      await updateDoc(doc(db, 'mesas', mesaId), { passatemposCustom: copia });
+      mesaData.passatemposCustom = copia;
+      renderizarPassatempos();
+      alert(`${novos.length} passatempos do livro foram importados!`);
+    });
+
+    // =========================================================================
+    // ABA 4: CATÁLOGO DE ITENS
+    // =========================================================================
+    const catSelect = document.getElementById('item-categoria');
+    catSelect.addEventListener('change', atualizarCamposModalItem);
+
+    function atualizarCamposModalItem() {
+      const cat = catSelect.value;
+      document.getElementById('campos-arma').classList.toggle('hidden', cat !== 'arma');
+      document.getElementById('campo-alcance-wrapper').classList.toggle('hidden', cat !== 'arma');
+      document.getElementById('campos-armadura').classList.toggle('hidden', cat !== 'armadura');
+      document.getElementById('campos-escudo').classList.toggle('hidden', cat !== 'escudo');
+      document.getElementById('campos-cura').classList.toggle('hidden', cat !== 'cura');
+    }
+
+    function renderizarItens() {
+      const container = document.getElementById('lista-itens');
+      const busca = document.getElementById('filtro-itens-busca').value.toLowerCase();
+      const catFiltro = document.getElementById('filtro-itens-cat').value;
+      const itens = (mesaData.itensCustom || []).filter(it => {
+        const matchTexto = !busca || it.nome.toLowerCase().includes(busca) || (it.descricao || '').toLowerCase().includes(busca);
+        const matchCat = !catFiltro || it.categoria === catFiltro;
+        return matchTexto && matchCat;
+      });
+
+      container.innerHTML = '';
+      if (itens.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 col-span-full">Nenhum item encontrado.</p>`;
+        return;
+      }
+
+      const pesoLabels = { miudeza: 'Miudeza', leve: 'Leve', medio: 'Médio', pesado: 'Pesado' };
+
+      itens.forEach(it => {
+        let statsHtml = '';
+        if (it.categoria === 'arma') {
+          statsHtml = `<span class="text-red-400 font-mono">${it.dano || '1d4'}</span> • Crít ${it.criticoMargem || 20}/x${it.criticoMult || 2} • GA ${it.ga ?? 1} / GD ${it.gd ?? 1}${it.alcance ? ` • ${it.alcance}` : ''}`;
+        } else if (it.categoria === 'armadura') {
+          statsHtml = `<span class="text-sky-400 font-mono">RD ${it.rd || 0}</span>${it.penalidadeDesl ? ` • Desl ${it.penalidadeDesl}m` : ''}`;
+        } else if (it.categoria === 'escudo') {
+          statsHtml = `<span class="text-amber-400 font-mono">GD ${it.gd || 1}</span>`;
+        } else if (it.categoria === 'cura') {
+          statsHtml = `<span class="text-emerald-400 font-mono">Cura ${it.curaFormula || '1d4'}</span> • ${it.usosMax || 1} usos`;
+        }
+
+        const div = document.createElement('div');
+        div.className = "bg-obsidian border border-borderDark rounded-lg p-4 flex flex-col justify-between";
+        div.innerHTML = `
+          <div>
+            <div class="flex items-start justify-between gap-2">
+              <h4 class="font-semibold text-slate-100 text-sm">${it.nome}</h4>
+              <span class="text-[10px] uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 shrink-0">${pesoLabels[it.peso] || it.peso}</span>
+            </div>
+            ${statsHtml ? `<p class="text-xs mt-1 text-slate-300">${statsHtml}</p>` : ''}
+            ${it.habilidade ? `<p class="text-[11px] text-amber-400 mt-1">✦ ${it.habilidade.nome} (${it.habilidade.custo})</p>` : ''}
+            <p class="text-xs text-slate-400 mt-2 line-clamp-2">${it.descricao || ''}</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-borderDark/60 flex justify-end gap-2 text-xs">
+            <button data-edit-item="${it.id}" class="text-slate-400 hover:text-amber-400">Editar</button>
+            <button data-del-item="${it.id}" class="text-slate-500 hover:text-red-400">Excluir</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      document.querySelectorAll('[data-edit-item]').forEach(btn => {
+        btn.addEventListener('click', () => abrirModalEditarItem(btn.dataset.editItem));
+      });
+
+      document.querySelectorAll('[data-del-item]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm("Remover este item do catálogo da mesa?")) return;
+          const copia = (mesaData.itensCustom || []).filter(i => i.id !== btn.dataset.delItem);
+          await updateDoc(doc(db, 'mesas', mesaId), { itensCustom: copia });
+          mesaData.itensCustom = copia;
+          renderizarItens();
+        });
+      });
+    }
+
+    document.getElementById('filtro-itens-busca').addEventListener('input', renderizarItens);
+    document.getElementById('filtro-itens-cat').addEventListener('change', renderizarItens);
+
+    document.getElementById('btn-novo-item').addEventListener('click', () => {
+      document.getElementById('form-item').reset();
+      document.getElementById('item-id').value = '';
+      document.getElementById('modal-item-titulo').textContent = 'Novo Item do Catálogo';
+      atualizarCamposModalItem();
+      document.getElementById('modal-item').classList.remove('hidden');
+      document.getElementById('modal-item').classList.add('flex');
+    });
+
+    function abrirModalEditarItem(id) {
+      const it = (mesaData.itensCustom || []).find(i => i.id === id);
+      if (!it) return;
+      document.getElementById('item-id').value = it.id;
+      document.getElementById('item-nome').value = it.nome;
+      document.getElementById('item-categoria').value = it.categoria;
+      document.getElementById('item-peso').value = it.peso;
+      document.getElementById('item-alcance').value = it.alcance || '';
+      document.getElementById('item-descricao').value = it.descricao || '';
+
+      document.getElementById('item-dano').value = it.dano || '';
+      document.getElementById('item-crit-margem').value = it.criticoMargem || 20;
+      document.getElementById('item-crit-mult').value = it.criticoMult || 2;
+      document.getElementById('item-ga').value = it.ga ?? 1;
+      document.getElementById('item-gd').value = it.gd ?? 1;
+      document.getElementById('item-defensiva').checked = !!it.armaDefensiva;
+
+      document.getElementById('item-rd').value = it.rd ?? 2;
+      document.getElementById('item-penalidade-desl').value = it.penalidadeDesl ?? 0;
+      document.getElementById('item-escudo-gd').value = it.gd ?? 2;
+
+      document.getElementById('item-cura-formula').value = it.curaFormula || '';
+      document.getElementById('item-cura-bonus').value = it.curaBonus ?? 0;
+      document.getElementById('item-cura-usos').value = it.usosMax ?? 3;
+
+      document.getElementById('item-hab-nome').value = it.habilidade?.nome || '';
+      document.getElementById('item-hab-custo').value = it.habilidade?.custo || '';
+      document.getElementById('item-hab-efeito').value = it.habilidade?.efeito || '';
+
+      document.getElementById('modal-item-titulo').textContent = 'Editar Item';
+      atualizarCamposModalItem();
+      document.getElementById('modal-item').classList.remove('hidden');
+      document.getElementById('modal-item').classList.add('flex');
+    }
+
+    document.getElementById('btn-fechar-modal-item').addEventListener('click', () => {
+      document.getElementById('modal-item').classList.add('hidden');
+      document.getElementById('modal-item').classList.remove('flex');
+    });
+
+    document.getElementById('form-item').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const idExistente = document.getElementById('item-id').value;
+      const cat = document.getElementById('item-categoria').value;
+
+      const itemObj = {
+        id: idExistente || `item_${Date.now()}`,
+        nome: document.getElementById('item-nome').value.trim(),
+        categoria: cat,
+        peso: document.getElementById('item-peso').value,
+        descricao: document.getElementById('item-descricao').value.trim()
+      };
+
+      if (cat === 'arma') {
+        itemObj.dano = document.getElementById('item-dano').value.trim() || '1d4';
+        itemObj.criticoMargem = parseInt(document.getElementById('item-crit-margem').value) || 20;
+        itemObj.criticoMult = parseInt(document.getElementById('item-crit-mult').value) || 2;
+        itemObj.ga = parseInt(document.getElementById('item-ga').value) || 0;
+        itemObj.gd = parseInt(document.getElementById('item-gd').value) || 0;
+        itemObj.armaDefensiva = document.getElementById('item-defensiva').checked;
+        itemObj.alcance = document.getElementById('item-alcance').value.trim() || 'Curto';
+      } else if (cat === 'armadura') {
+        itemObj.rd = parseInt(document.getElementById('item-rd').value) || 0;
+        itemObj.penalidadeDesl = parseInt(document.getElementById('item-penalidade-desl').value) || 0;
+      } else if (cat === 'escudo') {
+        itemObj.gd = parseInt(document.getElementById('item-escudo-gd').value) || 1;
+      } else if (cat === 'cura') {
+        itemObj.curaFormula = document.getElementById('item-cura-formula').value.trim() || '1d4';
+        itemObj.curaBonus = parseInt(document.getElementById('item-cura-bonus').value) || 0;
+        itemObj.usosMax = parseInt(document.getElementById('item-cura-usos').value) || 1;
       }
 
       const habNome = document.getElementById('item-hab-nome').value.trim();
       if (habNome) {
-        novoItem.habilidade = {
+        itemObj.habilidade = {
           nome: habNome,
           custo: document.getElementById('item-hab-custo').value.trim(),
           efeito: document.getElementById('item-hab-efeito').value.trim()
         };
       }
 
-      const atuais = [...(mesaDados.catalogoItens || []), novoItem];
-      await updateDoc(doc(db, "mesas", mesaId), { catalogoItens: atuais });
-
-      document.getElementById('item-nome').value = '';
-      document.getElementById('item-desc').value = '';
-      document.getElementById('item-hab-nome').value = '';
-      document.getElementById('item-hab-custo').value = '';
-      document.getElementById('item-hab-efeito').value = '';
-      document.getElementById('item-arma-defensiva').checked = false;
-      btnLimparImg.click();
-    };
-
-    function renderizarCatalogoItens() {
-      if (!souMestre) return;
-      const lista = mesaDados.catalogoItens || [];
-      const container = document.getElementById('lista-catalogo-itens');
-      if (!lista.length) {
-        container.innerHTML = `<p class="text-stone-500 italic col-span-2">Nenhum item cadastrado. Clique em "Itens do Livro" acima ou cadastre manualmente.</p>`;
-        return;
-      }
-
-      container.innerHTML = lista.map(it => {
-        let stats = '';
-        if (it.categoria === 'arma') {
-          stats = `Dano: <strong class="text-red-300">${it.dano}</strong> | Crít: <strong>${it.criticoMargem}+ (x${it.criticoMult})</strong> | GA ${it.ga} / GD ${it.gd}`;
-        } else if (it.categoria === 'escudo') {
-          stats = `Escudo | <strong class="text-emerald-300">GD ${it.gd}</strong> (+${it.gd * 2} Bloqueio)`;
-        } else if (it.categoria === 'armadura') {
-          stats = `Armadura | <strong class="text-sky-300">RD ${it.rd}</strong> ${it.penalidadeDesl ? `(${it.penalidadeDesl}m Desl)` : ''}`;
-        } else if (it.categoria === 'cura') {
-          stats = `Cura: <strong class="text-emerald-300">${it.curaFormula}</strong> | Bônus Med: <strong>${it.curaBonus >= 0 ? '+' + it.curaBonus : it.curaBonus}</strong> (${it.usosMax} usos)`;
-        }
-
-        const borda = BORDA_PESO[it.peso] || 'border-stone-700';
-        const thumb = it.imagem
-          ? `<img src="${it.imagem}" alt="${it.nome}" class="w-12 h-12 rounded-lg object-cover border-2 ${borda} shrink-0">`
-          : `<div class="w-12 h-12 rounded-lg bg-stone-900 border-2 ${borda} flex items-center justify-center text-xl shrink-0">${ICONE_CATEGORIA[it.categoria] || '🎒'}</div>`;
-
-        return `
-          <div class="bg-stone-950 border border-stone-800 rounded p-3 flex justify-between items-start gap-2.5">
-            <div class="flex items-start gap-2.5 min-w-0">
-              ${thumb}
-              <div class="space-y-1 min-w-0">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <strong class="font-cinzel text-gold-300 truncate">${it.nome}</strong>
-                  <span class="px-1.5 py-0.5 rounded bg-stone-900 text-stone-400 font-mono text-[10px] uppercase">${it.peso}</span>
-                </div>
-                ${stats ? `<div class="font-mono text-[11px] text-stone-300">${stats}</div>` : ''}
-                ${it.descricao ? `<p class="text-stone-400 text-[11px] line-clamp-2">${it.descricao}</p>` : ''}
-                ${it.habilidade ? `<div class="text-[11px] text-purple-300">✨ <strong>${it.habilidade.nome}</strong> ${it.habilidade.custo ? `(${it.habilidade.custo})` : ''}: ${it.habilidade.efeito}</div>` : ''}
-              </div>
-            </div>
-            <button data-del-item="${it.id}" class="text-stone-500 hover:text-red-400 shrink-0">✕</button>
-          </div>
-        `;
-      }).join('');
-
-      container.querySelectorAll('[data-del-item]').forEach(btn => {
-        btn.onclick = async () => {
-          if (!confirm("Remover este item do catálogo?")) return;
-          const filtrados = (mesaDados.catalogoItens || []).filter(x => x.id !== btn.dataset.delItem);
-          await updateDoc(doc(db, "mesas", mesaId), { catalogoItens: filtrados });
-        };
-      });
-    }
-
-    /* ========================================================= */
-    /* FICHAS DA MESA                                            */
-    /* ========================================================= */
-    function calcularResumoRecursos(ficha) {
-      const h = ficha.raizesHeranca || {};
-      const raizPrincipal = h.tipo === 'auto' ? 'Órfão' : (h.r1 || '');
-      const bonusRaiz = (mesaDados?.raizesDisponiveis || {})[raizPrincipal] || [0, 0, 0, 0];
-
-      const attr = { ...(ficha.atributosBase || {}) };
-      const arvores = mesaDados?.arvores || [];
-      Object.entries(ficha.nosDesbloqueados || {}).forEach(([arvId, nosIds]) => {
-        const arv = arvores.find(a => a.id === arvId);
-        if (!arv) return;
-        (nosIds || []).forEach(noId => {
-          const no = (arv.nos || []).find(n => n.id === noId);
-          if (no?.efeitoTipo === 'atributo' && no.efeitoAlvo) {
-            attr[no.efeitoAlvo] = (attr[no.efeitoAlvo] || 0) + (parseInt(no.efeitoValor) || 1);
-          }
-        });
-      });
-      (ficha.conversoesMaestria || []).forEach(c => {
-        if (c.atributo) attr[c.atributo] = (attr[c.atributo] || 0) + 1;
-      });
-
-      const hpMax = 10 + ((attr.vigor || 0) * 3) + (bonusRaiz[0] || 0) + (ficha.bonusRecursosArvore?.hp || 0);
-      const sanMax = 10 + ((attr.impeto || 0) * 3) + (bonusRaiz[1] || 0) + (ficha.bonusRecursosArvore?.san || 0);
-      const pefMax = 5 + (attr.destreza || 0) + (attr.vigor || 0) + (bonusRaiz[2] || 0) + (ficha.bonusRecursosArvore?.pef || 0);
-      const pemMax = 5 + (attr.impeto || 0) + (attr.erudicao || 0) + (bonusRaiz[3] || 0) + (ficha.bonusRecursosArvore?.pem || 0);
-
-      const atuais = ficha.recursosAtuais || {};
-      return {
-        hp: { cur: atuais.hp ?? hpMax, max: hpMax },
-        san: { cur: atuais.san ?? sanMax, max: sanMax },
-        pef: { cur: atuais.pef ?? pefMax, max: pefMax },
-        pem: { cur: atuais.pem ?? pemMax, max: pemMax }
-      };
-    }
-
-    document.getElementById('btn-nova-ficha').onclick = async () => {
-      const nome = prompt("Nome do novo personagem:");
-      if (!nome || !nome.trim()) return;
-
-      const primeiraRaiz = Object.keys(mesaDados.raizesDisponiveis || {}).find(r => r !== 'Órfão') || '';
-
-      const novaFicha = {
-        mesaId,
-        donoId: usuarioAtual.uid,
-        donoNome: usuarioAtual.displayName || usuarioAtual.email || 'Jogador',
-        nome: nome.trim(),
-        criacaoFinalizada: false,
-        estagioBiologico: regrasAtuais.estagioInicial || 1,
-        tetoIndividualOverride: null,
-        pontosEvolucao: regrasAtuais.pontosEvolucaoIniciais || 0,
-        raizesHeranca: { tipo: 'heranca', r1: primeiraRaiz, r2: '' },
-        raizesExtras: [],
-        passatempos: { focados: [], mistos: [], extrasOrfao: [] },
-        atributosBase: {
-          potencia: 0, vigor: 0, destreza: 0,
-          percepcao: 0, erudicao: 0,
-          autoridade: 0, impeto: 0
-        },
-        conversoesMaestria: [],
-        nosDesbloqueados: {},
-        escolhasAmbiguas: {},
-        inventario: [],
-        macros: [],
-        criadoEm: serverTimestamp()
-      };
-
-      const docRef = await addDoc(collection(db, "fichas"), novaFicha);
-      window.location.href = `ficha.html?mesaId=${mesaId}&fichaId=${docRef.id}`;
-    };
-
-    function renderizarListaFichas(fichas) {
-      const grid = document.getElementById('grid-fichas');
-      const visiveis = souMestre ? fichas : fichas.filter(f => f.donoId === usuarioAtual.uid);
-      document.getElementById('contador-fichas').textContent = `${visiveis.length} ficha(s)`;
-
-      if (!visiveis.length) {
-        grid.innerHTML = `<p class="text-xs text-stone-400 italic col-span-2">Nenhuma ficha encontrada. Clique em "+ Nova Ficha" para começar.</p>`;
-        return;
-      }
-
-      grid.innerHTML = visiveis.map(f => {
-        const h = f.raizesHeranca || {};
-        const origemTxt = h.tipo === 'auto'
-          ? 'Autodidata (Órfão)'
-          : h.tipo === 'singular'
-            ? `Singular: ${h.r1 || '?'} + ${h.r2 || '?'}`
-            : h.tipo === 'dupla'
-              ? `Raiz Dupla: ${h.r1 || '?'}`
-              : `Herança: ${h.r1 || '?'}`;
-
-        const estagio = f.estagioBiologico || 1;
-        const tetoEfetivo = f.tetoIndividualOverride || regrasAtuais.tetosPorEstagio[estagio] || 2;
-        const rec = calcularResumoRecursos(f);
-        const pctHp = Math.max(0, Math.min(100, Math.round((rec.hp.cur / Math.max(1, rec.hp.max)) * 100)));
-        const podeExcluir = souMestre || (!f.criacaoFinalizada && f.donoId === usuarioAtual.uid);
-
-        return `
-          <div class="bg-stone-950/90 border border-stone-800 hover:border-gold-600/60 rounded-lg p-4 flex flex-col justify-between gap-3">
-            <div class="space-y-2.5">
-              <div class="flex justify-between items-start gap-2">
-                <div>
-                  <h3 class="font-cinzel font-bold text-base text-gold-300">${f.nome}</h3>
-                  <p class="text-[11px] text-stone-400">${f.donoNome || '—'} · ${origemTxt}</p>
-                </div>
-                <span class="px-2 py-0.5 rounded text-[10px] font-mono ${f.criacaoFinalizada ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : 'bg-sky-950 text-sky-300 border border-sky-700'}">
-                  ${f.criacaoFinalizada ? '🔒 Finalizada' : '✏️ Em Criação'}
-                </span>
-              </div>
-
-              <!-- Barra de Vida Atual + Recursos Rápidos -->
-              <div class="bg-stone-900/90 p-2.5 rounded border border-stone-800 space-y-1.5">
-                <div class="flex justify-between text-[11px] font-mono">
-                  <span class="text-red-400 font-bold">❤️ HP: ${rec.hp.cur} / ${rec.hp.max}</span>
-                  <span class="text-purple-300">🧠 SAN: ${rec.san.cur}/${rec.san.max}</span>
-                </div>
-                <div class="w-full h-2 bg-stone-950 rounded-full overflow-hidden border border-stone-800">
-                  <div class="h-full bg-red-600 transition-all" style="width: ${pctHp}%"></div>
-                </div>
-                <div class="flex justify-between text-[10px] font-mono text-stone-400 pt-0.5">
-                  <span class="text-amber-300">⚡ PE-F: ${rec.pef.cur}/${rec.pef.max}</span>
-                  <span class="text-sky-300">✨ PE-M: ${rec.pem.cur}/${rec.pem.max}</span>
-                </div>
-              </div>
-
-              <div class="text-[11px] text-stone-300 flex flex-wrap justify-between gap-1">
-                <span>${NOMES_ESTAGIOS[estagio]} (Teto: <strong class="text-gold-400">${tetoEfetivo}</strong>)</span>
-                <span class="text-emerald-400 font-mono font-bold">${f.pontosEvolucao || 0} PT</span>
-              </div>
-              ${(f.raizesExtras || []).length ? `<div class="text-emerald-400 text-[11px]">+ Extras: ${f.raizesExtras.join(', ')}</div>` : ''}
-            </div>
-
-            <!-- Ações -->
-            <div class="pt-2 border-t border-stone-900 flex flex-wrap gap-1.5 items-center">
-              <a href="ficha.html?mesaId=${mesaId}&fichaId=${f.id}" class="flex-1 text-center px-3 py-1.5 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
-                Abrir Ficha
-              </a>
-
-              ${souMestre ? `
-                <button data-pts="${f.id}" data-cur="${f.pontosEvolucao || 0}" class="px-2 py-1.5 rounded bg-emerald-950 border border-emerald-700 text-emerald-300 text-xs font-mono" title="Dar Pontos de Evolução">+PT</button>
-                <button data-extra="${f.id}" class="px-2 py-1.5 rounded bg-sky-950 border border-sky-700 text-sky-300 text-xs" title="Conceder Raiz Extra">+Raiz</button>
-                <button data-estagio="${f.id}" data-cur-est="${estagio}" class="px-2 py-1.5 rounded bg-amber-950 border border-amber-700 text-amber-300 text-xs" title="Estágio Biológico / Teto Individual">Estágio</button>
-                <button data-trava="${f.id}" data-locked="${f.criacaoFinalizada ? '1' : '0'}" class="px-2 py-1.5 rounded bg-stone-900 border border-stone-700 text-stone-300 text-xs" title="Travar / Reabrir Criação">
-                  ${f.criacaoFinalizada ? '🔓' : '🔒'}
-                </button>
-              ` : ''}
-
-              ${podeExcluir ? `
-                <button data-del-ficha="${f.id}" data-nome-ficha="${f.nome}" class="px-2 py-1.5 rounded bg-red-950/60 border border-red-900 hover:border-red-500 text-red-400 text-xs" title="Excluir Ficha">🗑️</button>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      grid.querySelectorAll('[data-del-ficha]').forEach(b => {
-        b.onclick = async () => {
-          if (!confirm(`Tem certeza que deseja excluir permanentemente a ficha "${b.dataset.nomeFicha}"?`)) return;
-          await deleteDoc(doc(db, "fichas", b.dataset.delFicha));
-        };
-      });
-
-      if (souMestre) {
-        grid.querySelectorAll('[data-pts]').forEach(b => {
-          b.onclick = async () => {
-            const qtd = parseInt(prompt("Quantos Pontos de Evolução adicionar? (Use negativo para remover)", "1"));
-            if (isNaN(qtd) || qtd === 0) return;
-            await updateDoc(doc(db, "fichas", b.dataset.pts), {
-              pontosEvolucao: Math.max(0, (parseInt(b.dataset.cur) || 0) + qtd)
-            });
-          };
-        });
-
-        grid.querySelectorAll('[data-extra]').forEach(b => {
-          b.onclick = async () => {
-            const disponiveis = Object.keys(mesaDados.raizesDisponiveis || {});
-            const escolhida = prompt(`Digite o nome da Raiz Extra:\nDisponíveis: ${disponiveis.join(', ')}`);
-            if (!escolhida || !escolhida.trim()) return;
-            const ficha = fichas.find(x => x.id === b.dataset.extra);
-            const atuais = ficha?.raizesExtras || [];
-            if (!atuais.includes(escolhida.trim())) {
-              await updateDoc(doc(db, "fichas", b.dataset.extra), { raizesExtras: [...atuais, escolhida.trim()] });
-            }
-          };
-        });
-
-        grid.querySelectorAll('[data-estagio]').forEach(b => {
-          b.onclick = async () => {
-            const ficha = fichas.find(x => x.id === b.dataset.estagio);
-            const resp = prompt(
-              "Escolha o Estágio Biológico (1 a 4):\n1 - Criação (Infância)\n2 - Evolução da Raiz\n3 - Fase Adulta (Vocação)\n4 - Transgressão Mística",
-              b.dataset.curEst
-            );
-            const novoEst = parseInt(resp);
-            if (![1, 2, 3, 4].includes(novoEst)) return;
-
-            const tetoCustom = prompt(
-              "Teto individual de atributo para esta ficha? (Deixe vazio para usar o padrão do estágio)",
-              ficha?.tetoIndividualOverride || ''
-            );
-            const tetoParsed = tetoCustom && !isNaN(parseInt(tetoCustom)) ? parseInt(tetoCustom) : null;
-
-            await updateDoc(doc(db, "fichas", b.dataset.estagio), {
-              estagioBiologico: novoEst,
-              tetoIndividualOverride: tetoParsed
-            });
-          };
-        });
-
-        grid.querySelectorAll('[data-trava]').forEach(b => {
-          b.onclick = async () => {
-            const estavaTravada = b.dataset.locked === '1';
-            await updateDoc(doc(db, "fichas", b.dataset.trava), { criacaoFinalizada: !estavaTravada });
-          };
-        });
-      }
-    }
-
-    /* ========================================================= */
-    /* HISTÓRICO E ROLADOR LIVRE DO MESTRE                       */
-    /* ========================================================= */
-    function renderizarFeedRolagens(lista) {
-      const feed = document.getElementById('feed-rolagens');
-      if (!lista.length) {
-        feed.innerHTML = `<p class="text-stone-500 italic text-center mt-8">Nenhuma rolagem registrada ainda.</p>`;
-        return;
-      }
-
-      feed.innerHTML = lista.map(r => `
-        <div class="bg-stone-950 border ${r.ehMestre ? 'border-gold-700/50' : 'border-stone-800'} rounded p-2.5 space-y-1">
-          <div class="flex justify-between items-baseline">
-            <strong class="font-cinzel ${r.ehMestre ? 'text-amber-400' : 'text-gold-300'}">${r.personagemNome || 'Personagem'}</strong>
-            <span class="font-cinzel font-bold text-lg text-gold-400">${r.total}</span>
-          </div>
-          <div class="text-[11px] text-stone-300">${r.descricao || ''}</div>
-          <div class="font-mono text-[10px] text-stone-500">${r.detalhes || ''}</div>
-        </div>
-      `).join('');
-    }
-
-    document.getElementById('btn-rolar-mestre').onclick = async () => {
-      if (!souMestre) return;
-      const qtd = Math.max(1, Math.min(20, parseInt(document.getElementById('mestre-dado-qtd').value) || 1));
-      const faces = parseInt(document.getElementById('mestre-dado-faces').value) || 20;
-      const mod = parseInt(document.getElementById('mestre-dado-mod').value) || 0;
-      const modo = document.getElementById('mestre-dado-modo').value;
-      const rotulo = document.getElementById('mestre-dado-rotulo').value.trim();
-      const publica = document.getElementById('mestre-rolagem-publica').checked;
-
-      const dados = [];
-      for (let i = 0; i < qtd; i++) {
-        dados.push(Math.floor(Math.random() * faces) + 1);
-      }
-
-      let base = 0;
-      let modoTxt = '';
-      if (modo === 'soma') {
-        base = dados.reduce((a, b) => a + b, 0);
-        modoTxt = 'Soma';
-      } else if (modo === 'maior') {
-        base = Math.max(...dados);
-        modoTxt = 'Maior';
+      let lista = [...(mesaData.itensCustom || [])];
+      if (idExistente) {
+        const idx = lista.findIndex(i => i.id === idExistente);
+        if (idx >= 0) lista[idx] = itemObj;
       } else {
-        base = Math.min(...dados);
-        modoTxt = 'Menor';
+        lista.push(itemObj);
       }
 
-      const total = base + mod;
-      const modStr = mod !== 0 ? (mod > 0 ? ` + ${mod}` : ` - ${Math.abs(mod)}`) : '';
-      const descricao = `${rotulo ? rotulo + ' · ' : ''}${qtd}d${faces} (${modoTxt})${modStr}`;
-      const detalhes = `Dados: [${dados.join(', ')}]${modStr}`;
+      await updateDoc(doc(db, 'mesas', mesaId), { itensCustom: lista });
+      mesaData.itensCustom = lista;
+      document.getElementById('modal-item').classList.add('hidden');
+      document.getElementById('modal-item').classList.remove('flex');
+      renderizarItens();
+    });
 
-      const boxRes = document.getElementById('mestre-resultado-local');
-      const tagRes = document.getElementById('mestre-res-tag');
-      mostrar(boxRes);
-      document.getElementById('mestre-res-total').textContent = total;
-      document.getElementById('mestre-res-detalhes').textContent = `${descricao} → ${detalhes}`;
+    document.getElementById('btn-importar-itens-padrao').addEventListener('click', async () => {
+      const atuais = mesaData.itensCustom || [];
+      const idsExistentes = new Set(atuais.map(i => i.id));
+      const novos = ITENS_PADRAO.filter(i => !idsExistentes.has(i.id));
 
-      if (publica) {
-        tagRes.textContent = "👁️ Pública (Enviada)";
-        tagRes.className = "text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700";
+      if (novos.length === 0) {
+        alert("Todos os itens padrão já estão no catálogo desta mesa.");
+        return;
+      }
 
-        await addDoc(collection(db, "rolagens"), {
-          mesaId,
-          ehMestre: true,
-          personagemNome: "👑 Mestre",
-          total,
+      const copia = [...atuais, ...novos];
+      await updateDoc(doc(db, 'mesas', mesaId), { itensCustom: copia });
+      mesaData.itensCustom = copia;
+      renderizarItens();
+      alert(`${novos.length} itens do livro foram adicionados ao catálogo!`);
+    });
+
+    // =========================================================================
+    // ABA 5: ÁRVORES DE EVOLUÇÃO
+    // =========================================================================
+    async function carregarArvores() {
+      const arvRef = collection(db, 'mesas', mesaId, 'arvores');
+      const snap = await getDocs(arvRef);
+      arvoresCache = [];
+      snap.forEach(d => arvoresCache.push({ id: d.id, ...d.data() }));
+
+      if (!isMestre) return;
+
+      const list = document.getElementById('arvores-list');
+      list.innerHTML = '';
+
+      if (arvoresCache.length === 0) {
+        list.innerHTML = `<div class="col-span-full bg-surface border border-dashed border-borderDark rounded-lg p-10 text-center text-slate-400 text-sm">
+          Nenhuma árvore de evolução criada ainda. Importe a <strong>Árvore Padrão</strong> ou crie uma no Editor.
+        </div>`;
+        return;
+      }
+
+      arvoresCache.forEach(a => {
+        const isPadrao = a.raizAssociada === 'Padrão' || a.isPadrao;
+        const card = document.createElement('div');
+        card.className = "bg-surface border border-borderDark rounded-lg p-5 flex flex-col justify-between";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="font-serif text-base font-bold text-slate-100">${a.nome}</h3>
+              <span class="text-xs px-2 py-0.5 rounded ${isPadrao ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/60' : 'bg-amber-950/50 text-amber-400 border border-amber-800/50'}">
+                ${isPadrao ? 'Padrão (Todos)' : (a.raizAssociada || 'Geral')}
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">${a.descricao || 'Sem descrição.'}</p>
+            <p class="text-xs text-slate-500 mt-3">${(a.nos || []).length} nó(s) configurado(s)</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-borderDark flex items-center justify-between">
+            <a href="editor-arvores.html?mesaId=${mesaId}&arvoreId=${a.id}" class="text-xs text-amber-400 hover:text-amber-300 font-medium">
+              Abrir no Editor &rarr;
+            </a>
+            <button data-del-arv="${a.id}" class="text-xs text-slate-500 hover:text-red-400">Excluir</button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      document.querySelectorAll('[data-del-arv]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm("Excluir esta árvore de evolução?")) return;
+          await deleteDoc(doc(db, 'mesas', mesaId, 'arvores', btn.dataset.delArv));
+          await carregarArvores();
+        });
+      });
+    }
+
+    document.getElementById('btn-importar-arvore-padrao').addEventListener('click', async () => {
+      const arv = ARVORES_PADRAO[0];
+      if (!arv) return;
+      const jaExiste = arvoresCache.some(a => a.nome === arv.nome);
+      if (jaExiste && !confirm(`A árvore "${arv.nome}" já existe nesta mesa. Deseja importar uma nova cópia?`)) return;
+
+      await addDoc(collection(db, 'mesas', mesaId, 'arvores'), {
+        nome: arv.nome,
+        raizAssociada: arv.raizAssociada,
+        isPadrao: true,
+        descricao: arv.descricao,
+        nos: arv.nos,
+        criadoEm: serverTimestamp()
+      });
+      await carregarArvores();
+      alert(`Árvore "${arv.nome}" adicionada à mesa!`);
+    });
+
+    // =========================================================================
+    // MODAL: BIBLIOTECA PADRÃO & MODS DA COMUNIDADE
+    // =========================================================================
+    const modalBib = document.getElementById('modal-biblioteca');
+
+    document.getElementById('btn-abrir-biblioteca').addEventListener('click', () => {
+      document.getElementById('qtd-padrao-raizes').textContent = Object.keys(RAIZES_PADRAO).length;
+      document.getElementById('qtd-padrao-pass').textContent = PASSATEMPOS_PADRAO.length;
+      document.getElementById('qtd-padrao-itens').textContent = ITENS_PADRAO.length;
+      document.getElementById('qtd-padrao-arvores').textContent = ARVORES_PADRAO.length;
+
+      document.getElementById('badge-padrao-raizes').textContent = `${Object.keys(RAIZES_PADRAO).length} raízes`;
+      document.getElementById('badge-padrao-pass').textContent = `${PASSATEMPOS_PADRAO.length} opções`;
+      document.getElementById('badge-padrao-itens').textContent = `${ITENS_PADRAO.length} itens`;
+      document.getElementById('badge-padrao-arvores').textContent = `${ARVORES_PADRAO.length} árvore(s)`;
+
+      atualizarContadoresPublicacao();
+      modalBib.classList.remove('hidden');
+      modalBib.classList.add('flex');
+    });
+
+    document.getElementById('btn-fechar-biblioteca').addEventListener('click', () => {
+      modalBib.classList.add('hidden');
+      modalBib.classList.remove('flex');
+    });
+
+    document.querySelectorAll('.bib-tab-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        currentBibTab = btn.dataset.bibTab;
+        document.querySelectorAll('.bib-tab-btn').forEach(b => {
+          b.classList.remove('border-amber-500', 'text-amber-400');
+          b.classList.add('border-transparent', 'text-slate-400');
+        });
+        btn.classList.add('border-amber-500', 'text-amber-400');
+        btn.classList.remove('border-transparent', 'text-slate-400');
+
+        document.querySelectorAll('.bib-view').forEach(v => v.classList.add('hidden'));
+
+        if (currentBibTab === 'padrao') {
+          document.getElementById('bib-view-padrao').classList.remove('hidden');
+        } else if (currentBibTab === 'publicar') {
+          atualizarContadoresPublicacao();
+          document.getElementById('bib-view-publicar').classList.remove('hidden');
+        } else {
+          document.getElementById('bib-view-mods').classList.remove('hidden');
+          await carregarMods(currentBibTab);
+        }
+      });
+    });
+
+    // Importações do Padrão do Sistema via Biblioteca
+    document.getElementById('btn-importar-tudo-padrao').addEventListener('click', async () => {
+      if (!confirm("Importar todas as Raízes, Passatempos, Itens e Árvore Padrão do livro para esta mesa?")) return;
+
+      const novasRaizes = { ...RAIZES_PADRAO, ...(mesaData.raizesCustom || {}) };
+
+      const passAtuais = mesaData.passatemposCustom || [];
+      const passNomes = new Set(passAtuais.map(p => p.nome.toLowerCase()));
+      const novosPass = [...passAtuais, ...PASSATEMPOS_PADRAO.filter(p => !passNomes.has(p.nome.toLowerCase()))];
+
+      const itensAtuais = mesaData.itensCustom || [];
+      const itensIds = new Set(itensAtuais.map(i => i.id));
+      const novosItens = [...itensAtuais, ...ITENS_PADRAO.filter(i => !itensIds.has(i.id))];
+
+      await updateDoc(doc(db, 'mesas', mesaId), {
+        raizesCustom: novasRaizes,
+        passatemposCustom: novosPass,
+        itensCustom: novosItens
+      });
+
+      mesaData.raizesCustom = novasRaizes;
+      mesaData.passatemposCustom = novosPass;
+      mesaData.itensCustom = novosItens;
+
+      for (const arv of ARVORES_PADRAO) {
+        if (!arvoresCache.some(a => a.nome === arv.nome)) {
+          await addDoc(collection(db, 'mesas', mesaId, 'arvores'), {
+            nome: arv.nome,
+            raizAssociada: arv.raizAssociada,
+            isPadrao: true,
+            descricao: arv.descricao,
+            nos: arv.nos,
+            criadoEm: serverTimestamp()
+          });
+        }
+      }
+
+      renderizarRaizes();
+      renderizarPassatempos();
+      renderizarItens();
+      await carregarArvores();
+      alert("Pacote completo do livro importado com sucesso!");
+    });
+
+    document.querySelectorAll('.btn-import-padrao-cat').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const tipo = btn.dataset.importPadrao;
+        if (tipo === 'raizes') document.getElementById('btn-importar-raizes-padrao').click();
+        if (tipo === 'passatempos') document.getElementById('btn-importar-passatempos-padrao').click();
+        if (tipo === 'itens') document.getElementById('btn-importar-itens-padrao').click();
+        if (tipo === 'arvores') document.getElementById('btn-importar-arvore-padrao').click();
+      });
+    });
+
+    // Carregar Mods do Firestore (Sob Demanda)
+    async function carregarMods(filtroAba) {
+      const grid = document.getElementById('mods-grid');
+      grid.innerHTML = '<p class="text-xs text-slate-400 col-span-full">Buscando pacotes...</p>';
+
+      const modsRef = collection(db, 'mods');
+      let q;
+
+      if (filtroAba === 'meus') {
+        q = query(modsRef, where('autorId', '==', currentUser.uid), limit(50));
+      } else if (filtroAba === 'mesas') {
+        q = query(modsRef, where('autorId', '==', currentUser.uid), where('visibilidade', '==', 'mesa'), limit(50));
+      } else {
+        q = query(modsRef, where('visibilidade', '==', 'publico'), limit(50));
+      }
+
+      try {
+        const snap = await getDocs(q);
+        modsCache = [];
+        snap.forEach(d => modsCache.push({ id: d.id, ...d.data() }));
+        renderizarModsGrid();
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = `<p class="text-xs text-red-400 col-span-full">Erro ao carregar mods. Verifique as regras do Firestore para a coleção 'mods'.</p>`;
+      }
+    }
+
+    function renderizarModsGrid() {
+      const grid = document.getElementById('mods-grid');
+      const busca = document.getElementById('mods-busca').value.toLowerCase();
+      const tipo = document.getElementById('mods-filtro-tipo').value;
+
+      const filtrados = modsCache.filter(m => {
+        const matchTexto = !busca ||
+          (m.titulo || '').toLowerCase().includes(busca) ||
+          (m.descricao || '').toLowerCase().includes(busca) ||
+          (m.autorNome || '').toLowerCase().includes(busca);
+        const matchTipo = !tipo || (m.tiposInclusos || []).includes(tipo);
+        return matchTexto && matchTipo;
+      });
+
+      grid.innerHTML = '';
+      if (filtrados.length === 0) {
+        grid.innerHTML = `<div class="col-span-full bg-obsidian border border-dashed border-borderDark rounded-lg p-8 text-center text-xs text-slate-400">
+          Nenhum mod encontrado nesta categoria.
+        </div>`;
+        return;
+      }
+
+      filtrados.forEach(m => {
+        const c = m.conteudo || {};
+        const tags = [];
+        if (c.arvores?.length) tags.push(`🌳 ${c.arvores.length} árvore(s)`);
+        if (c.itens?.length) tags.push(`⚔️ ${c.itens.length} item(ns)`);
+        if (c.raizes && Object.keys(c.raizes).length) tags.push(`🌱 ${Object.keys(c.raizes).length} raiz(es)`);
+        if (c.passatempos?.length) tags.push(`🎯 ${c.passatempos.length} passatempo(s)`);
+
+        const isAutor = m.autorId === currentUser.uid;
+        const card = document.createElement('div');
+        card.className = "bg-obsidian border border-borderDark rounded-lg p-4 flex flex-col justify-between gap-3";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-start justify-between gap-2">
+              <h4 class="font-semibold text-slate-100 text-sm">${m.titulo}</h4>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 shrink-0">por ${m.autorNome || 'Anônimo'}</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1 line-clamp-2">${m.descricao || 'Sem descrição.'}</p>
+            <div class="flex flex-wrap gap-1.5 mt-3">
+              ${tags.map(t => `<span class="text-[11px] px-2 py-0.5 rounded bg-surface border border-borderDark text-slate-300">${t}</span>`).join('')}
+            </div>
+          </div>
+          <div class="pt-2 border-t border-borderDark flex items-center justify-between gap-2">
+            <button data-import-mod="${m.id}" class="flex-1 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-medium">
+              Importar para esta Mesa
+            </button>
+            ${isAutor ? `<button data-del-mod="${m.id}" class="px-2.5 py-1.5 text-slate-500 hover:text-red-400 text-xs" title="Excluir Mod">✕</button>` : ''}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      document.querySelectorAll('[data-import-mod]').forEach(btn => {
+        btn.addEventListener('click', () => importarModParaMesa(btn.dataset.importMod));
+      });
+
+      document.querySelectorAll('[data-del-mod]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm("Excluir este Mod permanentemente?")) return;
+          await deleteDoc(doc(db, 'mods', btn.dataset.delMod));
+          await carregarMods(currentBibTab);
+        });
+      });
+    }
+
+    document.getElementById('mods-busca').addEventListener('input', renderizarModsGrid);
+    document.getElementById('mods-filtro-tipo').addEventListener('change', renderizarModsGrid);
+
+    async function importarModParaMesa(modId) {
+      const mod = modsCache.find(m => m.id === modId);
+      if (!mod || !mod.conteudo) return;
+      if (!confirm(`Importar o pacote "${mod.titulo}" para esta mesa?`)) return;
+
+      const c = mod.conteudo;
+      const updates = {};
+
+      if (c.raizes && Object.keys(c.raizes).length > 0) {
+        updates.raizesCustom = { ...(mesaData.raizesCustom || RAIZES_PADRAO), ...c.raizes };
+        mesaData.raizesCustom = updates.raizesCustom;
+      }
+
+      if (c.passatempos && c.passatempos.length > 0) {
+        const atuais = mesaData.passatemposCustom || [];
+        const nomes = new Set(atuais.map(p => p.nome.toLowerCase()));
+        updates.passatemposCustom = [...atuais, ...c.passatempos.filter(p => !nomes.has(p.nome.toLowerCase()))];
+        mesaData.passatemposCustom = updates.passatemposCustom;
+      }
+
+      if (c.itens && c.itens.length > 0) {
+        const atuais = mesaData.itensCustom || [];
+        const ids = new Set(atuais.map(i => i.id));
+        const novos = c.itens.map(i => ids.has(i.id) ? { ...i, id: `item_${Date.now()}_${Math.random().toString(36).slice(2, 6)}` } : i);
+        updates.itensCustom = [...atuais, ...novos];
+        mesaData.itensCustom = updates.itensCustom;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await updateDoc(doc(db, 'mesas', mesaId), updates);
+      }
+
+      if (c.arvores && c.arvores.length > 0) {
+        for (const arv of c.arvores) {
+          await addDoc(collection(db, 'mesas', mesaId, 'arvores'), {
+            nome: arv.nome,
+            raizAssociada: arv.raizAssociada || 'Geral',
+            isPadrao: !!arv.isPadrao,
+            descricao: arv.descricao || '',
+            nos: arv.nos || [],
+            criadoEm: serverTimestamp()
+          });
+        }
+      }
+
+      renderizarRaizes();
+      renderizarPassatempos();
+      renderizarItens();
+      await carregarArvores();
+      alert(`Mod "${mod.titulo}" importado com sucesso!`);
+    }
+
+    // Publicar Mod
+    function atualizarContadoresPublicacao() {
+      document.getElementById('pub-count-arvores').textContent = `${arvoresCache.length} árvore(s)`;
+      document.getElementById('pub-count-itens').textContent = `${(mesaData.itensCustom || []).length} item(ns)`;
+      document.getElementById('pub-count-raizes').textContent = `${Object.keys(mesaData.raizesCustom || {}).length} raiz(es)`;
+      document.getElementById('pub-count-pass').textContent = `${(mesaData.passatemposCustom || []).length} passatempo(s)`;
+    }
+
+    document.getElementById('form-publicar-mod').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const titulo = document.getElementById('mod-pub-titulo').value.trim();
+      const visibilidade = document.getElementById('mod-pub-visibilidade').value;
+      const descricao = document.getElementById('mod-pub-descricao').value.trim();
+
+      const incArv = document.getElementById('pub-inc-arvores').checked;
+      const incItens = document.getElementById('pub-inc-itens').checked;
+      const incRaizes = document.getElementById('pub-inc-raizes').checked;
+      const incPass = document.getElementById('pub-inc-pass').checked;
+
+      const conteudo = {};
+      const tiposInclusos = [];
+
+      if (incArv && arvoresCache.length > 0) {
+        conteudo.arvores = arvoresCache.map(({ id, criadoEm, ...rest }) => rest);
+        tiposInclusos.push('arvores');
+      }
+      if (incItens && (mesaData.itensCustom || []).length > 0) {
+        conteudo.itens = mesaData.itensCustom;
+        tiposInclusos.push('itens');
+      }
+      if (incRaizes && mesaData.raizesCustom && Object.keys(mesaData.raizesCustom).length > 0) {
+        conteudo.raizes = mesaData.raizesCustom;
+        tiposInclusos.push('raizes');
+      }
+      if (incPass && (mesaData.passatemposCustom || []).length > 0) {
+        conteudo.passatempos = mesaData.passatemposCustom;
+        tiposInclusos.push('passatempos');
+      }
+
+      if (tiposInclusos.length === 0) {
+        alert("Selecione pelo menos uma categoria que possua conteúdo cadastrado nesta mesa.");
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-mod');
+      btn.disabled = true;
+      btn.textContent = 'Publicando...';
+
+      try {
+        await addDoc(collection(db, 'mods'), {
+          titulo,
           descricao,
-          detalhes,
+          autorId: currentUser.uid,
+          autorNome: currentUser.displayName || currentUser.email.split('@')[0],
+          visibilidade,
+          mesaIdOrigem: mesaId,
+          tiposInclusos,
+          conteudo,
           criadoEm: serverTimestamp()
         });
-      } else {
-        tagRes.textContent = "🙈 Secreta (Só Mestre)";
-        tagRes.className = "text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-700";
-      }
-    };
 
-    document.getElementById('btn-limpar-log').onclick = async () => {
-      if (!souMestre) return;
-      if (!confirm("Deseja apagar todas as rolagens do histórico público?")) return;
-      const q = query(collection(db, "rolagens"), where("mesaId", "==", mesaId));
-      const snap = await getDocs(q);
-      snap.forEach(d => deleteDoc(doc(db, "rolagens", d.id)));
-    };
+        document.getElementById('form-publicar-mod').reset();
+        alert("Mod publicado com sucesso! Já está disponível na aba correspondente.");
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao publicar o Mod. Verifique se a coleção 'mods' está liberada nas regras do Firestore.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Publicar Mod';
+      }
+    });
   </script>
 </body>
-
 </html>
