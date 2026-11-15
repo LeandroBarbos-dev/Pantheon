@@ -1231,7 +1231,7 @@
       };
 
       const docRef = await addDoc(collection(db, "fichas"), novaFicha);
-      window.location.href = `ficha_2.html?mesaId=${mesaId}&fichaId=${docRef.id}`;
+      window.location.href = `ficha.html?mesaId=${mesaId}&fichaId=${docRef.id}`;
     };
 
     function renderizarListaFichas(fichas) {
@@ -1297,7 +1297,7 @@
 
             <!-- Ações -->
             <div class="pt-2 border-t border-stone-900 flex flex-wrap gap-1.5 items-center">
-              <a href="ficha_2.html?mesaId=${mesaId}&fichaId=${f.id}" class="flex-1 text-center px-3 py-1.5 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
+              <a href="ficha.html?mesaId=${mesaId}&fichaId=${f.id}" class="flex-1 text-center px-3 py-1.5 rounded bg-gold-600 hover:bg-gold-500 text-stone-950 font-cinzel text-xs font-bold">
                 Abrir Ficha
               </a>
 

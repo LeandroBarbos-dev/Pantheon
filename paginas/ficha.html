@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Faustina:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
-    /* Variáveis Globais de Cores e Temas */
     :root {
       --h: 40;
       --acc: hsl(var(--h) 70% 50%);
@@ -51,7 +50,6 @@
 
     .cz, h2, .btn, .nome-personagem { font-family: Cinzel, Georgia, serif; }
 
-    /* Cartões e Blocos */
     .card {
       background: var(--card);
       border: 1px solid var(--line);
@@ -75,21 +73,9 @@
     .blk.minimized h2 { margin-bottom: 0; }
     .blk.minimized .blk-body { display: none; }
 
-    .grip {
-      cursor: grab;
-      color: var(--mut);
-      user-select: none;
-      font-size: 15px;
-    }
+    .grip { cursor: grab; color: var(--mut); user-select: none; font-size: 15px; }
+    .r { margin-left: auto; display: flex; gap: 5px; align-items: center; }
 
-    .r {
-      margin-left: auto;
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    /* Controles */
     button, input, select { font: inherit; color: inherit; }
 
     .btn {
@@ -101,14 +87,8 @@
       font-size: 11px;
       transition: border-color 0.15s, color 0.15s;
     }
-
-    .btn:hover:not(:disabled), .btn.on {
-      border-color: var(--acc);
-      color: var(--acc);
-    }
-
+    .btn:hover:not(:disabled), .btn.on { border-color: var(--acc); color: var(--acc); }
     .btn:disabled { opacity: 0.42; cursor: not-allowed; }
-
     .btn.pri {
       background: var(--acc) !important;
       color: var(--on) !important;
@@ -123,14 +103,13 @@
       padding: 4px 8px;
       min-width: 0;
     }
-
     input:focus, select:focus { outline: none; border-color: var(--acc); }
     input:disabled, select:disabled { opacity: 0.65; cursor: not-allowed; }
     input[type=number] { -moz-appearance: textfield; }
     input::-webkit-inner-spin-button, input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
-    /* Cabeçalho Limpo */
-    .head { display: grid; gap: 10px; }
+    /* Cabeçalho */
+    .head { display: grid; gap: 9px; }
 
     .nome-personagem {
       font-size: 21px;
@@ -151,7 +130,6 @@
       align-items: center;
       font-size: 12px;
     }
-
     .rz label { color: var(--mut); font-weight: 600; }
 
     .chip {
@@ -165,20 +143,43 @@
       font: 600 11px monospace;
     }
 
-    /* Layout Principal + Barra Lateral de Histórico */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+    }
+    .form-box {
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 7px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-box label {
+      font-family: Cinzel, serif;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--acc);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .form-box small { color: var(--mut); font-size: 11px; }
+
+    /* Layout Principal */
     .workspace {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 290px;
       gap: 12px;
       align-items: start;
     }
-
     .workspace.no-hist { grid-template-columns: minmax(0, 1fr); }
     .workspace.no-hist .hist-side { display: none; }
-
-    @media (max-width: 1120px) {
-      .workspace { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 1120px) { .workspace { grid-template-columns: 1fr; } }
 
     .cols {
       display: grid;
@@ -186,44 +187,21 @@
       gap: 12px;
       align-items: start;
     }
-
     .col { min-height: 80px; }
-
-    @media (max-width: 900px) {
-      .cols { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 900px) { .cols { grid-template-columns: 1fr; } }
 
     .dragging { opacity: 0.4; }
     .col.over { outline: 1px dashed var(--acc); outline-offset: 4px; }
 
     /* Histórico Lateral */
     .hist-side { position: sticky; top: 12px; }
-    .hist-list {
-      max-height: 72vh;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .hist-item {
-      background: var(--card2);
-      border: 1px solid var(--line);
-      border-radius: 7px;
-      padding: 6px 8px;
-      font-size: 12px;
-    }
+    .hist-list { max-height: 72vh; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+    .hist-item { background: var(--card2); border: 1px solid var(--line); border-radius: 7px; padding: 6px 8px; font-size: 12px; }
 
-    /* Barras de Recursos */
+    /* Recursos */
     .res { margin-bottom: 11px; }
     .rt { display: flex; justify-content: space-between; font: 700 12px monospace; }
-    .bar {
-      height: 9px;
-      border-radius: 5px;
-      background: var(--card2);
-      border: 1px solid var(--line);
-      overflow: hidden;
-      margin-top: 3px;
-    }
+    .bar { height: 9px; border-radius: 5px; background: var(--card2); border: 1px solid var(--line); overflow: hidden; margin-top: 3px; }
     .bar i { display: block; height: 100%; transition: width 0.25s; }
     .ctl { display: flex; gap: 5px; margin-top: 5px; }
     .ctl input { width: 64px; text-align: center; }
@@ -231,26 +209,11 @@
     .sg.add { color: #4cc36f; }
     .sg.sub { color: #e05555; }
 
-    /* Sigilo / Roda de Atributos */
-    .wheel {
-      position: relative;
-      width: min(100%, 295px);
-      aspect-ratio: 1;
-      margin: 6px auto;
-    }
+    /* Roda de Atributos */
+    .wheel { position: relative; width: min(100%, 295px); aspect-ratio: 1; margin: 6px auto; }
     .wheel svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .ctr {
-      position: absolute;
-      left: 50%;
-      top: 51.7%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      color: var(--mut);
-      font-size: 10px;
-      line-height: 1.1;
-    }
+    .ctr { position: absolute; left: 50%; top: 51.7%; transform: translate(-50%, -50%); text-align: center; color: var(--mut); font-size: 10px; line-height: 1.1; }
     .ctr b { display: block; font: 700 20px Cinzel, serif; color: var(--acc); }
-
     .node {
       position: absolute;
       width: 19.5%;
@@ -267,22 +230,14 @@
       box-shadow: 0 2px 8px #0006;
     }
     .node b { font: 700 9px Cinzel, serif; letter-spacing: 0.04em; }
-    .node input {
-      width: 72%;
-      text-align: center;
-      background: transparent;
-      border: 0;
-      font: 700 17px Cinzel, serif;
-      padding: 0;
-      color: var(--txt);
-    }
+    .node input { width: 72%; text-align: center; background: transparent; border: 0; font: 700 17px Cinzel, serif; padding: 0; color: var(--txt); }
     .c-r { color: #e06a5a; }
     .c-b { color: #4fb0e0; }
     .c-p { color: #b480e6; }
     .node.on { background: var(--acc); }
     .node.on b, .node.on input { color: var(--on); }
 
-    /* Perícias, Habilidades, Inventário e Macros */
+    /* Perícias, Habilidades e Macros */
     .prow, .hcard, .mrow {
       background: var(--card2);
       border: 1px solid var(--line);
@@ -291,150 +246,189 @@
       margin-bottom: 6px;
       font-size: 13px;
     }
-    .prow, .mrow {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      justify-content: space-between;
-    }
-    .prow.on, .hcard.on {
-      border-color: var(--acc);
-      box-shadow: 0 0 0 1px var(--acc);
-    }
+    .prow, .mrow { display: flex; align-items: center; gap: 6px; justify-content: space-between; }
+    .prow.on, .hcard.on { border-color: var(--acc); box-shadow: 0 0 0 1px var(--acc); }
     .hcard p { margin: 3px 0; font-size: 12px; color: var(--mut); }
-    .hcard .t {
-      display: flex;
-      justify-content: space-between;
-      gap: 6px;
-      font-family: Cinzel, serif;
-      font-weight: 700;
-      color: var(--acc);
-      font-size: 12px;
-    }
-    .tag {
-      font: 700 9px monospace;
-      text-transform: uppercase;
-      padding: 1px 5px;
-      border: 1px solid var(--line);
-      border-radius: 4px;
-      color: var(--mut);
-    }
+    .hcard .t { display: flex; justify-content: space-between; gap: 6px; font-family: Cinzel, serif; font-weight: 700; color: var(--acc); font-size: 12px; }
+    .tag { font: 700 9px monospace; text-transform: uppercase; padding: 1px 5px; border: 1px solid var(--line); border-radius: 4px; color: var(--mut); }
     .x { background: none; border: 0; color: var(--mut); cursor: pointer; }
     .x:hover { color: #e05555; }
 
-    /* Motor de Teste */
-    .sl {
+    /* ============================================================ */
+    /* INVENTÁRIO EM BLOCOS SUBDIVISÍVEIS (VERMELHO/AMARELO/VERDE/AZUL) */
+    /* ============================================================ */
+    .inv-group { margin-bottom: 10px; }
+    .inv-group-hdr {
       display: flex;
-      gap: 6px;
+      justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 7px;
-      min-height: 28px;
-    }
-    .sl > span.k {
-      width: 68px;
-      font-size: 11px;
+      font: 700 10px monospace;
+      text-transform: uppercase;
+      margin-bottom: 4px;
       color: var(--mut);
-      font-family: Cinzel, serif;
     }
-    .hint {
-      display: none;
-      margin: 5px 0;
-      padding: 6px 9px;
-      border-radius: 6px;
+    .inv-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+      gap: 6px;
+    }
+    .inv-grid.miudeza-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .inv-block {
+      border-radius: 8px;
       background: var(--card2);
-      border: 1px dashed var(--acc);
-      font-size: 12px;
+      min-height: 76px;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+      transition: transform 0.12s, box-shadow 0.12s;
     }
+    .inv-block.miudeza { min-height: 52px; padding: 3px; }
+    .inv-block.b-pesado { border: 2px solid #e05252; }
+    .inv-block.b-medio  { border: 2px solid #eab308; }
+    .inv-block.b-leve   { border: 2px solid #22c55e; }
+    .inv-block.b-miudeza{ border: 2px solid #38bdf8; }
+
+    .inv-block.drag-over {
+      box-shadow: 0 0 0 2px #fff, 0 0 12px var(--acc);
+      transform: scale(1.02);
+    }
+
+    .inv-block-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font: 700 8px monospace;
+      color: var(--mut);
+      line-height: 1;
+    }
+    .inv-split-btn {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 0 4px;
+      font-size: 9px;
+      cursor: pointer;
+      color: var(--mut);
+    }
+    .inv-split-btn:hover { border-color: var(--acc); color: var(--acc); }
+
+    .inv-subslots {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .inv-subslots.grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+    }
+
+    .inv-subcell {
+      flex: 1;
+      min-height: 26px;
+      border-radius: 5px;
+      border: 1px dashed var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font: 700 8px monospace;
+      color: var(--mut);
+      padding: 2px;
+      text-align: center;
+    }
+    .inv-subcell.sc-medio { border-color: #eab30866; }
+    .inv-subcell.sc-leve  { border-color: #22c55e66; }
+    .inv-subcell.drag-over { border-style: solid; border-color: #fff; background: color-mix(in srgb, var(--acc) 20%, transparent); }
+
+    .inv-item-tile {
+      width: 100%;
+      height: 100%;
+      min-height: 44px;
+      border-radius: 5px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .inv-subcell .inv-item-tile { min-height: 24px; flex-direction: row; gap: 4px; justify-content: flex-start; padding: 2px 4px; }
+    .inv-block.miudeza .inv-item-tile { min-height: 36px; padding: 2px; }
+
+    .inv-item-tile.equipped {
+      border-color: var(--acc);
+      box-shadow: inset 0 0 0 1px var(--acc);
+    }
+    .inv-item-tile img {
+      width: 34px;
+      height: 34px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+    .inv-subcell .inv-item-tile img { width: 18px; height: 18px; }
+    .inv-block.miudeza .inv-item-tile img { width: 22px; height: 22px; }
+
+    .inv-item-name {
+      font-size: 9.5px;
+      font-weight: 600;
+      line-height: 1.1;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+    .inv-subcell .inv-item-name { margin-top: 0; font-size: 9px; }
+    .inv-eq-dot {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--acc);
+    }
+
+    /* Motor de Teste */
+    .sl { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 7px; min-height: 28px; }
+    .sl > span.k { width: 68px; font-size: 11px; color: var(--mut); font-family: Cinzel, serif; }
+    .hint { display: none; margin: 5px 0; padding: 6px 9px; border-radius: 6px; background: var(--card2); border: 1px dashed var(--acc); font-size: 12px; }
     [data-arm] .hint { display: block; }
     [data-arm=attr] .node,
     [data-arm=per] .prow,
-    [data-arm=hab] .hcard.el {
-      cursor: crosshair;
-      animation: pulsarm 1.2s infinite;
-    }
+    [data-arm=hab] .hcard.el { cursor: crosshair; animation: pulsarm 1.2s infinite; }
     [data-arm] .node input { pointer-events: none; }
 
     @keyframes pulsarm {
       50% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 35%, transparent); }
     }
 
-    .pool {
-      display: flex;
-      justify-content: space-between;
-      font: 600 12px monospace;
-      background: var(--card2);
-      padding: 6px 9px;
-      border-radius: 6px;
-      margin: 7px 0;
-    }
-    .out {
-      margin-top: 8px;
-      padding: 8px;
-      border: 1px solid var(--acc);
-      border-radius: 8px;
-      background: var(--card2);
-    }
+    .pool { display: flex; justify-content: space-between; font: 600 12px monospace; background: var(--card2); padding: 6px 9px; border-radius: 6px; margin: 7px 0; }
+    .out { margin-top: 8px; padding: 8px; border: 1px solid var(--acc); border-radius: 8px; background: var(--card2); }
     .tot { font: 700 30px Cinzel, serif; color: var(--acc); }
-    .die {
-      display: inline-flex;
-      width: 24px;
-      height: 24px;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--line);
-      border-radius: 5px;
-      font: 700 11px monospace;
-      margin: 2px 2px 0 0;
-      opacity: 0.55;
-    }
+    .die { display: inline-flex; width: 24px; height: 24px; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 5px; font: 700 11px monospace; margin: 2px 2px 0 0; opacity: 0.55; }
     .die.pk { opacity: 1; border-color: var(--acc); color: var(--acc); }
 
-    /* Modal e Visualizador de Árvores (Estilo Editor) */
-    .ov {
-      position: fixed;
-      inset: 0;
-      background: #000c;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 14px;
-      z-index: 9;
-    }
+    /* Modal & Árvores */
+    .ov { position: fixed; inset: 0; background: #000c; display: flex; align-items: center; justify-content: center; padding: 14px; z-index: 9; }
     .ov[hidden] { display: none; }
-    .mod {
-      width: min(560px, 100%);
-      max-height: 88vh;
-      overflow: auto;
-      margin: 0;
-    }
-    .mod.mod-tree {
-      width: min(1220px, 98vw);
-      height: 90vh;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-    }
+    .mod { width: min(560px, 100%); max-height: 88vh; overflow: auto; margin: 0; }
+    .mod.mod-tree { width: min(1220px, 98vw); height: 90vh; max-height: 90vh; display: flex; flex-direction: column; }
 
-    .tree-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      font-size: 11px;
-      padding: 6px 10px;
-      margin-bottom: 8px;
-      background: var(--card2);
-      border: 1px solid var(--line);
-      border-radius: 7px;
-    }
-    .leg-dot {
-      display: inline-block;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      margin-right: 4px;
-    }
+    .tree-legend { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 11px; padding: 6px 10px; margin-bottom: 8px; background: var(--card2); border: 1px solid var(--line); border-radius: 7px; }
+    .leg-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; }
 
     .tree-view-wrap {
       flex: 1;
@@ -476,50 +470,20 @@
     .tnode.block { border-color: #e05555; opacity: 0.62; }
     .tnode.selected { outline: 2px solid #fff; outline-offset: 2px; }
 
-    /* Badges por Tipo de Nó (Igual ao Editor) */
-    .tbadge {
-      display: inline-block;
-      font: 700 9px monospace;
-      padding: 1px 5px;
-      border-radius: 4px;
-      text-transform: uppercase;
-    }
+    .tbadge { display: inline-block; font: 700 9px monospace; padding: 1px 5px; border-radius: 4px; text-transform: uppercase; }
     .tb-atributo { background: #3da5d928; color: #5cc2f5; border: 1px solid #3da5d966; }
     .tb-pericia  { background: #4cc36f28; color: #67df89; border: 1px solid #4cc36f66; }
     .tb-habilidade { background: #e0a03028; color: #f5b949; border: 1px solid #e0a03066; }
     .tb-ambiguo  { background: #b480e628; color: #cfa6f7; border: 1px solid #b480e666; }
 
-    .branch-pill {
-      position: absolute;
-      transform: translate(-50%, -50%);
-      font: 700 9px monospace;
-      padding: 2px 6px;
-      border-radius: 99px;
-      pointer-events: none;
-      white-space: nowrap;
-      z-index: 2;
-    }
+    .branch-pill { position: absolute; transform: translate(-50%, -50%); font: 700 9px monospace; padding: 2px 6px; border-radius: 99px; pointer-events: none; white-space: nowrap; z-index: 2; }
     .bp-exclusiva { background: #2c1810; color: #ff8c5a; border: 1px solid #ff8c5a; }
     .bp-restritiva { background: #221430; color: #c78aff; border: 1px solid #c78aff; }
 
     .sw { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; }
     .sw.on { border-color: var(--txt); }
 
-    #toast {
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translate(-50%, 20px);
-      background: var(--acc);
-      color: var(--on);
-      padding: 6px 14px;
-      border-radius: 8px;
-      opacity: 0;
-      transition: 0.2s;
-      pointer-events: none;
-      z-index: 20;
-      font-weight: 600;
-    }
+    #toast { position: fixed; left: 50%; bottom: 18px; transform: translate(-50%, 20px); background: var(--acc); color: var(--on); padding: 6px 14px; border-radius: 8px; opacity: 0; transition: 0.2s; pointer-events: none; z-index: 20; font-weight: 600; }
     #toast.show { opacity: 1; transform: translate(-50%, 0); }
     .mut { color: var(--mut); font-size: 12px; font-style: italic; }
 
@@ -546,14 +510,14 @@
       <button class="btn" onclick="abrirConfiguracaoAparencia()" title="Aparência">⚙</button>
     </div>
 
-    <!-- Linha 2: Raiz e Status Derivados -->
+    <!-- Linha 2: Origem Familiar & Status Derivados -->
     <div class="rz">
-      <label for="tipo">Origem</label>
+      <label for="tipo">Condição Familiar</label>
       <select id="tipo">
-        <option value="singular">Raiz Singular (misto)</option>
-        <option value="heranca">Herança Singular</option>
-        <option value="dupla">Raiz Dupla</option>
-        <option value="auto">Autodidata (Órfão)</option>
+        <option value="singular">Raiz Singular (Misto · +2/+2, +1 Sec, +1 Mundo)</option>
+        <option value="heranca">Herança Singular (Foco · +3/+2, +2 Sec, +2 Mundo)</option>
+        <option value="dupla">Raiz Dupla (Tradição · +2/+2, +1/+1 Sec, +1 Mundo)</option>
+        <option value="auto">Autodidata / Órfão (+2 Sobrev, Atlet, Refl, Intui)</option>
       </select>
       <label id="lbl-raiz1" for="raiz1">Raiz</label>
       <select id="raiz1"></select>
@@ -564,8 +528,8 @@
       <span class="chip" id="chip-status-derivados">RD: 0 · DESL: 5m · Teto: 2</span>
     </div>
 
-    <!-- Linha 3: Passatempos Infantis (Seleção cadastrada na Mesa) -->
-    <div id="box-passatempos" class="rz" style="border-top:1px solid var(--line); padding-top:8px"></div>
+    <!-- Linha 3: Perícia Secundária da Raiz + Passatempos Infantis (Organizados e Intuitivos) -->
+    <div id="painel-formacao" class="form-grid"></div>
   </header>
 
   <!-- Área Principal -->
@@ -657,7 +621,6 @@
         </div>
         <div class="out" id="out" hidden></div>
 
-        <!-- Rolador Livre -->
         <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap; margin-top:8px; padding-top:8px; border-top:1px solid var(--line)">
           <span class="mut" style="font-style:normal; font-size:11px">Dado Livre:</span>
           <input type="number" id="lv-qtd" value="1" min="1" max="20" style="width:40px; text-align:center">
@@ -709,6 +672,7 @@
       <h2>
         <span class="grip">⠿</span>Inventário
         <span class="r">
+          <button class="btn" id="btn-modo-inv" onclick="alternarModoInventario()" title="Alternar entre Blocos Visuais e Lista">☰ Lista</button>
           <button class="btn" onclick="abrirModalCatalogoItens()">+ Catálogo</button>
           <button class="btn min-btn" onclick="alternarMinBloco('inventario')">−</button>
         </span>
@@ -766,6 +730,59 @@
       ['pem', 'PE-M (Energia Mental)', '#3da5d9']
     ];
 
+    /* ============================================================ */
+    /* DADOS OFICIAIS DO LIVRO (RAÍZES + PASSATEMPOS + PERÍCIAS)     */
+    /* ============================================================ */
+    const PERICIAS_LIVRO = [
+      'Sobrevivência', 'Furtividade', 'Encontrar', 'Atletismo', 'Tenacidade',
+      'Luta', 'Pontaria', 'Defesa', 'Reflexo',
+      'Investigação', 'Erudição', 'Doutrina', 'Sigilos',
+      'Ferramentas', 'Medicina', 'Culinária', 'Improviso',
+      'Persuasão', 'Enganação', 'Intimidação', 'Intuição', 'Vontade'
+    ];
+
+    const PROFISSOES_LIVRO = {
+      "Caçador":              { main: ["Sobrevivência", "Pontaria"], world: "Encontrar",    sec: ["Furtividade", "Reflexo"] },
+      "Lenhador":             { main: ["Atletismo", "Tenacidade"],   world: "Luta",         sec: ["Ferramentas", "Defesa"] },
+      "Ferreiro":             { main: ["Ferramentas", "Tenacidade"], world: "Erudição",     sec: ["Luta", "Improviso"] },
+      "Carpinteiro":          { main: ["Ferramentas", "Improviso"],  world: "Encontrar",    sec: ["Atletismo", "Erudição"] },
+      "Curandeiro":           { main: ["Medicina", "Erudição"],      world: "Intuição",     sec: ["Culinária", "Sigilos"] },
+      "Cozinheiro / Padeiro": { main: ["Culinária", "Tenacidade"],   world: "Persuasão",    sec: ["Encontrar", "Medicina"] },
+      "Pastor / Criador":     { main: ["Sobrevivência", "Tenacidade"], world: "Intuição",   sec: ["Encontrar", "Atletismo"] },
+      "Mercador":             { main: ["Persuasão", "Enganação"],    world: "Erudição",     sec: ["Intuição", "Investigação"] },
+      "Escriba / Devoto":     { main: ["Doutrina", "Erudição"],      world: "Investigação", sec: ["Persuasão", "Sigilos"] },
+      "Guarda / Vigia":       { main: ["Defesa", "Encontrar"],       world: "Intimidação",  sec: ["Luta", "Tenacidade"] }
+    };
+
+    const PASSATEMPOS_LIVRO_DB = [
+      // 12 Focados (+2)
+      { nome: "Pique-Pega",        tipo: "focado", pericias: ["Atletismo"],                  desc: "+2 Atletismo" },
+      { nome: "Rezar até Passar",  tipo: "focado", pericias: ["Vontade"],                    desc: "+2 Vontade" },
+      { nome: "Briga de Rua",      tipo: "focado", pericias: ["Luta"],                       desc: "+2 Luta" },
+      { nome: "Tiro ao Alvo",      tipo: "focado", pericias: ["Pontaria"],                   desc: "+2 Pontaria" },
+      { nome: "Ficar de Vigia",    tipo: "focado", pericias: ["Encontrar"],                  desc: "+2 Encontrar" },
+      { nome: "Caça ao Tesouro",   tipo: "focado", pericias: ["Investigação"],               desc: "+2 Investigação" },
+      { nome: "Ler Livros",        tipo: "focado", pericias: ["Erudição"],                   desc: "+2 Erudição" },
+      { nome: "Ajudar na Cozinha", tipo: "focado", pericias: ["Culinária"],                  desc: "+2 Culinária" },
+      { nome: "Trabalhar Duro",    tipo: "focado", pericias: ["Tenacidade"],                 desc: "+2 Tenacidade" },
+      { nome: "Contar Histórias",  tipo: "focado", pericias: ["Persuasão"],                  desc: "+2 Persuasão" },
+      { nome: "Desviar de Pedras", tipo: "focado", pericias: ["Reflexo"],                    desc: "+2 Reflexo" },
+      { nome: "Mentir",            tipo: "focado", pericias: ["Enganação"],                  desc: "+2 Enganação" },
+      // 12 Mistos (+1 / +1)
+      { nome: "Explorar o Mato",   tipo: "misto",  pericias: ["Sobrevivência", "Encontrar"], desc: "+1 Sobrevivência, +1 Encontrar" },
+      { nome: "Subir em Telhados", tipo: "misto",  pericias: ["Atletismo", "Reflexo"],       desc: "+1 Atletismo, +1 Reflexo" },
+      { nome: "Brincar de Guarda", tipo: "misto",  pericias: ["Defesa", "Intimidação"],      desc: "+1 Defesa, +1 Intimidação" },
+      { nome: "Ouvir os Velhos",   tipo: "misto",  pericias: ["Doutrina", "Intuição"],       desc: "+1 Doutrina, +1 Intuição" },
+      { nome: "Fazer Gambiarras",  tipo: "misto",  pericias: ["Improviso", "Ferramentas"],   desc: "+1 Improviso, +1 Ferramentas" },
+      { nome: "Primeiros Socorros",tipo: "misto",  pericias: ["Medicina", "Vontade"],        desc: "+1 Medicina, +1 Vontade" },
+      { nome: "Pique-Esconde",     tipo: "misto",  pericias: ["Furtividade", "Encontrar"],   desc: "+1 Furtividade, +1 Encontrar" },
+      { nome: "Jogo de Queimado",  tipo: "misto",  pericias: ["Reflexo", "Pontaria"],        desc: "+1 Reflexo, +1 Pontaria" },
+      { nome: "Estudo Dirigido",   tipo: "misto",  pericias: ["Erudição", "ESCOLHA"],        desc: "+1 Erudição, +1 à Escolha" },
+      { nome: "Ajudar no Templo",  tipo: "misto",  pericias: ["Doutrina", "Vontade"],        desc: "+1 Doutrina, +1 Vontade" },
+      { nome: "Lidar com Bichos",  tipo: "misto",  pericias: ["Sobrevivência", "Intuição"],  desc: "+1 Sobrevivência, +1 Intuição" },
+      { nome: "Malandragem",       tipo: "misto",  pericias: ["Enganação", "Intuição"],      desc: "+1 Enganação, +1 Intuição" }
+    ];
+
     const BONUS_ORFAO = [2, -2, 2, 2];
     const QTD_SLOTS_RAIZ = { singular: 2, heranca: 1, dupla: 1, auto: 0 };
 
@@ -785,26 +802,22 @@
       travaAscendenteCarga: true
     };
 
-    const PASSATEMPOS_FALLBACK = [
-      'Atletismo', 'Acrobacia', 'Furtividade', 'Pontaria', 'Luta',
-      'Investigação', 'Percepção', 'Medicina', 'Ocultismo', 'História',
-      'Persuasão', 'Intimidação', 'Enganação', 'Intuição', 'Sobrevivência', 'Ofício'
-    ];
+    const ICONE_CAT = { arma: '⚔️', escudo: '🛡️', armadura: '🦺', cura: '🩹', utilitario: '🎒' };
 
     // Estado Firebase
-    let usuarioAtual = null;
     let mesaDados = null;
     let fichaDoc = null;
     let regras = { ...REGRAS_PADRAO };
     let RAIZES = {};
     let computado = null;
 
-    // Preferências visuais locais do jogador
+    // Preferências visuais locais
     let layoutAtual = LAYOUT_PADRAO;
     let temaAtual = 'dark';
     let paletaAtual = 'ouro';
     let blocosMinimizados = {};
     let historicoOculto = false;
+    let modoInvLista = false;
 
     // Estado de interação
     let modoArmado = null;
@@ -813,7 +826,6 @@
     let maximosRecursos = {};
     let arvoreAtivaId = null;
     let noInspecionadoId = null;
-    let modoExploracaoCriacao = false;
     let tZoom = 1, tPanX = 0, tPanY = 0;
 
     try {
@@ -824,6 +836,7 @@
         paletaAtual = prefs.pal || paletaAtual;
         blocosMinimizados = prefs.min || {};
         historicoOculto = Boolean(prefs.histHide);
+        modoInvLista = Boolean(prefs.invLista);
       }
     } catch (e) {}
 
@@ -834,7 +847,8 @@
           theme: temaAtual,
           pal: paletaAtual,
           min: blocosMinimizados,
-          histHide: historicoOculto
+          histHide: historicoOculto,
+          invLista: modoInvLista
         }));
       } catch (e) {}
     }
@@ -844,7 +858,7 @@
       toast.textContent = mensagem;
       toast.classList.add('show');
       clearTimeout(mostrarToast.timer);
-      mostrarToast.timer = setTimeout(() => toast.classList.remove('show'), 2400);
+      mostrarToast.timer = setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
     const obterSiglaAtributo = chave => ATRIBUTOS.find(a => a[0] === chave)?.[1] || chave.toUpperCase();
@@ -863,6 +877,8 @@
       document.documentElement.dataset.theme = temaAtual;
       document.documentElement.dataset.pal = paletaAtual;
       getEl('#workspace').classList.toggle('no-hist', historicoOculto);
+      getEl('#btn-modo-inv').textContent = modoInvLista ? '⊞ Blocos' : '☰ Lista';
+
       Object.entries(blocosMinimizados).forEach(([id, isMin]) => {
         const blk = getEl('#b-' + id);
         if (blk) {
@@ -883,6 +899,13 @@
       historicoOculto = !historicoOculto;
       aplicarVisual();
       salvarPrefsLocais();
+    };
+
+    window.alternarModoInventario = () => {
+      modoInvLista = !modoInvLista;
+      aplicarVisual();
+      salvarPrefsLocais();
+      renderizarInventario();
     };
 
     window.abrirLegendaSiglas = () => {
@@ -944,7 +967,6 @@
       getEl('#modal').hidden = true;
       getEl('#modal-box').classList.remove('mod-tree');
       noInspecionadoId = null;
-      modoExploracaoCriacao = false;
     };
     getEl('#modal').onclick = e => { if (e.target.id === 'modal') fecharModal(); };
 
@@ -1007,10 +1029,25 @@
       });
     }
 
+    /* ---------- Catálogo de Passatempos (Livro + Customizados da Mesa) ---------- */
+    function obterCatalogoPassatempos() {
+      const mapa = new Map(PASSATEMPOS_LIVRO_DB.map(p => [p.nome, p]));
+      const listaMesa = mesaDados?.passatemposDisponiveis;
+
+      if (Array.isArray(listaMesa) && listaMesa.length > 0) {
+        return listaMesa.map(nome => {
+          if (mapa.has(nome)) return mapa.get(nome);
+          // Caso o Mestre tenha cadastrado o nome direto de uma perícia
+          return { nome, tipo: 'custom', pericias: [nome], desc: `+2 ${nome} (Focado) / +1 (Misto)` };
+        });
+      }
+      return PASSATEMPOS_LIVRO_DB;
+    }
+
     /* ---------- Cálculo Consolidado da Ficha ---------- */
     function calcularEstadoFicha() {
       const f = fichaDoc;
-      const h = f.raizesHeranca || { tipo: 'heranca', r1: '', r2: '' };
+      const h = f.raizesHeranca || { tipo: 'heranca', r1: '', r2: '', secEscolhida: '' };
       const estagio = f.estagioBiologico || 1;
       const teto = f.tetoIndividualOverride || regras.tetosPorEstagio[estagio] || 2;
 
@@ -1030,12 +1067,79 @@
       const bonusRecArvore = { hp: 0, san: 0, pef: 0, pem: 0 };
 
       const addPericia = (pNome, pVal, fonte) => {
-        if (!pNome) return;
+        if (!pNome || pNome === 'ESCOLHA') return;
         if (!pericias[pNome]) pericias[pNome] = { val: 0, fontes: [] };
         pericias[pNome].val += pVal;
         pericias[pNome].fontes.push(`${fonte} (+${pVal})`);
       };
 
+      // 1. Perícias da Raiz / Condição Familiar (Livro)
+      if (h.tipo === 'auto') {
+        addPericia('Sobrevivência', 2, 'Órfão');
+        addPericia('Atletismo', 2, 'Órfão');
+        addPericia('Reflexo', 2, 'Órfão');
+        addPericia('Intuição', 2, 'Órfão');
+      } else if (h.r1 && PROFISSOES_LIVRO[h.r1]) {
+        const prof1 = PROFISSOES_LIVRO[h.r1];
+        const secValida = prof1.sec.includes(h.secEscolhida) ? h.secEscolhida : prof1.sec[0];
+
+        if (h.tipo === 'singular') {
+          // +2 em duas principais, +1 em uma secundária escolhida, +1 visão de mundo (r2 ou r1)
+          addPericia(prof1.main[0], 2, `Raiz (${h.r1})`);
+          addPericia(prof1.main[1], 2, `Raiz (${h.r1})`);
+          if (secValida) addPericia(secValida, 1, `Secundária (${h.r1})`);
+          const profMundo = (h.r2 && PROFISSOES_LIVRO[h.r2]) ? PROFISSOES_LIVRO[h.r2] : prof1;
+          addPericia(profMundo.world, 1, `Mundo (${h.r2 || h.r1})`);
+        } else if (h.tipo === 'heranca') {
+          // +3 principal A, +2 principal B, +2 secundária escolhida, +2 visão de mundo
+          addPericia(prof1.main[0], 3, `Herança (${h.r1})`);
+          addPericia(prof1.main[1], 2, `Herança (${h.r1})`);
+          if (secValida) addPericia(secValida, 2, `Secundária (${h.r1})`);
+          addPericia(prof1.world, 2, `Mundo (${h.r1})`);
+        } else if (h.tipo === 'dupla') {
+          // +2 em duas principais, +1 nas duas secundárias, +1 visão de mundo
+          addPericia(prof1.main[0], 2, `Raiz Dupla (${h.r1})`);
+          addPericia(prof1.main[1], 2, `Raiz Dupla (${h.r1})`);
+          prof1.sec.forEach(s => addPericia(s, 1, `Secundária (${h.r1})`));
+          addPericia(prof1.world, 1, `Mundo (${h.r1})`);
+        }
+      }
+
+      // 2. Perícias dos Passatempos Infantis
+      const catPass = obterCatalogoPassatempos();
+      const mapPass = new Map(catPass.map(p => [p.nome, p]));
+      const pass = f.passatempos || { focados: [], mistos: [], mistosEscolha: [], extrasOrfao: [] };
+
+      const aplicarPassatempo = (nomePass, modoSlot, escolhaExtra = '') => {
+        if (!nomePass) return;
+        const obj = mapPass.get(nomePass);
+        if (!obj) {
+          addPericia(nomePass, modoSlot === 'focado' ? 2 : 1, nomePass);
+          return;
+        }
+        if (obj.tipo === 'focado') {
+          addPericia(obj.pericias[0], 2, obj.nome);
+        } else if (obj.tipo === 'misto') {
+          obj.pericias.forEach(p => {
+            if (p === 'ESCOLHA') {
+              if (escolhaExtra) addPericia(escolhaExtra, 1, `${obj.nome} (Escolha)`);
+            } else {
+              addPericia(p, 1, obj.nome);
+            }
+          });
+        } else {
+          // Passatempo customizado cadastrado pelo Mestre
+          addPericia(obj.pericias[0], modoSlot === 'focado' ? 2 : 1, obj.nome);
+        }
+      };
+
+      (pass.focados || []).forEach(nomeP => aplicarPassatempo(nomeP, 'focado'));
+      (pass.mistos || []).forEach((nomeP, i) => aplicarPassatempo(nomeP, 'misto', (pass.mistosEscolha || [])[i] || ''));
+      if (h.tipo === 'auto') {
+        (pass.extrasOrfao || []).forEach((nomeP, i) => aplicarPassatempo(nomeP, 'orfao', (pass.extrasOrfaoEscolha || [])[i] || ''));
+      }
+
+      // 3. Árvores de Evolução
       const addHabilidadeDeObj = (id, titulo, c, singAtiva, herancaSing) => {
         const bonusSing = singAtiva ? (parseInt(herancaSing?.bonusExtra) || 0) : 0;
         const redPeSing = singAtiva ? (parseInt(herancaSing?.reducaoPe) || 0) : 0;
@@ -1097,13 +1201,7 @@
         });
       });
 
-      const pass = f.passatempos || { focados: [], mistos: [], extrasOrfao: [] };
-      (pass.focados || []).forEach(pNome => addPericia(pNome, 2, 'Focado'));
-      (pass.mistos || []).forEach(par => (par || []).forEach(pNome => addPericia(pNome, 1, 'Misto')));
-      if (h.tipo === 'auto') {
-        (pass.extrasOrfao || []).forEach(pNome => addPericia(pNome, 1, 'Órfão'));
-      }
-
+      // 4. Conversões de Maestria (5 Perícia -> +1 Atributo)
       (f.conversoesMaestria || []).forEach(c => {
         if (c.pericia && pericias[c.pericia]) {
           pericias[c.pericia].val = Math.max(0, pericias[c.pericia].val - 5);
@@ -1160,27 +1258,24 @@
       };
     }
 
-    /* ---------- Cabeçalho, Raízes e Passatempos por Seleção ---------- */
-    function obterListaPassatemposMesa() {
-      const listaMesa = mesaDados?.passatemposDisponiveis;
-      if (Array.isArray(listaMesa) && listaMesa.length > 0) return listaMesa;
-      return PASSATEMPOS_FALLBACK;
-    }
+    /* ---------- Cabeçalho, Perícias da Raiz e Passatempos Intuitivos ---------- */
+    function construirSelectPassatempoIntuitivo(attrData, filtroTipo, valorAtual, travado, jaEscolhidos) {
+      const catalogo = obterCatalogoPassatempos();
+      const opcoes = catalogo.filter(p => p.tipo === 'custom' || p.tipo === filtroTipo);
 
-    function construirSelectPassatempo(attrData, valorAtual, travado, placeholder, jaEscolhidos) {
-      const lista = obterListaPassatemposMesa();
-      const todos = valorAtual && !lista.includes(valorAtual) ? [valorAtual, ...lista] : lista;
-      const opts = `<option value="">${placeholder}</option>` + todos.map(p => {
-        const ocupado = p !== valorAtual && jaEscolhidos.has(p);
-        return `<option value="${p}" ${p === valorAtual ? 'selected' : ''} ${ocupado ? 'disabled' : ''}>${p}</option>`;
-      }).join('');
-      return `<select ${attrData} ${travado ? 'disabled' : ''} style="min-width:130px">${opts}</select>`;
+      const optsHtml = `<option value="">— Escolher Passatempo (${filtroTipo === 'focado' ? '+2' : '+1/+1'}) —</option>` +
+        opcoes.map(p => {
+          const ocupado = p.nome !== valorAtual && jaEscolhidos.has(p.nome);
+          return `<option value="${p.nome}" ${p.nome === valorAtual ? 'selected' : ''} ${ocupado ? 'disabled' : ''}>${p.nome} (${p.desc})</option>`;
+        }).join('');
+
+      return `<select ${attrData} ${travado ? 'disabled' : ''} style="width:100%">${optsHtml}</select>`;
     }
 
     function construirCabecalho() {
       const f = fichaDoc;
       const travado = Boolean(f.criacaoFinalizada);
-      const h = f.raizesHeranca || { tipo: 'heranca', r1: '', r2: '' };
+      const h = f.raizesHeranca || { tipo: 'heranca', r1: '', r2: '', secEscolhida: '' };
 
       getEl('#nome').value = f.nome || '';
       getEl('#pt-badge').textContent = f.pontosEvolucao || 0;
@@ -1206,64 +1301,168 @@
       const qtdSlots = QTD_SLOTS_RAIZ[h.tipo] ?? 1;
       getEl('#raiz1').hidden = getEl('#lbl-raiz1').hidden = qtdSlots < 1;
       getEl('#raiz2').hidden = getEl('#lbl-raiz2').hidden = qtdSlots < 2;
-      getEl('#lbl-raiz1').textContent = qtdSlots > 1 ? 'Raiz principal' : 'Raiz';
+      getEl('#lbl-raiz1').textContent = qtdSlots > 1 ? 'Raiz Principal' : 'Raiz';
+      getEl('#lbl-raiz2').textContent = 'Raiz Secundária (Mundo)';
 
       const bonus = h.tipo === 'auto' ? BONUS_ORFAO : (RAIZES[h.r1] || [0, 0, 0, 0]);
       const nomesStatus = ['HP', 'SAN', 'PE-F', 'PE-M'];
-      getEl('#bonus-raiz').textContent = (h.tipo === 'auto' ? 'Órfão: ' : 'Bônus Raiz: ') +
+      getEl('#bonus-raiz').textContent = (h.tipo === 'auto' ? 'Órfão: ' : 'Status Raiz: ') +
         nomesStatus.map((nome, i) => `${nome} ${bonus[i] >= 0 ? '+' : ''}${bonus[i]}`).join(' · ');
 
       getEl('#chip-status-derivados').textContent = `RD: ${computado.rd} · DESL: ${computado.desl}m · Teto: ${computado.teto}`;
 
-      // Passatempos Infantis (Seleção)
+      // Painel Limpo e Intuitivo de Perícias da Raiz + Passatempos Infantis
+      const painel = getEl('#painel-formacao');
+      let boxesHtml = '';
+
+      // Bloco A: Formação da Raiz & Escolha da Perícia Secundária
+      if (h.tipo === 'auto') {
+        boxesHtml += `
+          <div class="form-box">
+            <label>Formação Autodidata (Órfão)</label>
+            <small>Perícias fixas das ruas: <b>Sobrevivência +2</b>, <b>Atletismo +2</b>, <b>Reflexo +2</b>, <b>Intuição +2</b> (+2 Passatempos Extras).</small>
+          </div>
+        `;
+      } else if (h.r1 && PROFISSOES_LIVRO[h.r1]) {
+        const prof = PROFISSOES_LIVRO[h.r1];
+        const secAtiva = prof.sec.includes(h.secEscolhida) ? h.secEscolhida : prof.sec[0];
+
+        if (h.tipo === 'dupla') {
+          boxesHtml += `
+            <div class="form-box">
+              <label>Tradição Familiar · ${h.r1} (Dupla)</label>
+              <small>Principais: <b>${prof.main[0]} +2</b>, <b>${prof.main[1]} +2</b> · Mundo: <b>${prof.world} +1</b></small>
+              <small>Secundárias (Ambas): <b>${prof.sec[0]} +1</b> e <b>${prof.sec[1]} +1</b></small>
+            </div>
+          `;
+        } else {
+          const ptsSec = h.tipo === 'heranca' ? '+2' : '+1';
+          const ptsMain = h.tipo === 'heranca' ? '+3 / +2' : '+2 / +2';
+          const profMundo = (h.tipo === 'singular' && h.r2 && PROFISSOES_LIVRO[h.r2]) ? PROFISSOES_LIVRO[h.r2] : prof;
+          const ptsMundo = h.tipo === 'heranca' ? '+2' : '+1';
+
+          boxesHtml += `
+            <div class="form-box">
+              <label>Perícia Secundária de ${h.r1} (${ptsSec})</label>
+              <select id="sel-sec-raiz" ${travado ? 'disabled' : ''}>
+                ${prof.sec.map(s => `<option value="${s}" ${s === secAtiva ? 'selected' : ''}>${s} (${ptsSec} · ${travado ? 'Travada' : 'Escolha na Criação'})</option>`).join('')}
+              </select>
+              <small>Fixas: <b>${prof.main.join(' / ')}</b> (${ptsMain}) · Mundo: <b>${profMundo.world}</b> (${ptsMundo})</small>
+            </div>
+          `;
+        }
+      }
+
+      // Bloco B: Passatempos Infantis (Focados, Mistos e Extras Órfão)
       const qtdFoc = regras.passatemposFocados || 0;
       const qtdMis = regras.passatemposMistos || 0;
-      const pass = f.passatempos || { focados: [], mistos: [], extrasOrfao: [] };
+      const pass = f.passatempos || { focados: [], mistos: [], mistosEscolha: [], extrasOrfao: [], extrasOrfaoEscolha: [] };
 
       const escolhidos = new Set([
         ...(pass.focados || []),
-        ...(pass.mistos || []).flat(),
+        ...(pass.mistos || []),
         ...(h.tipo === 'auto' ? (pass.extrasOrfao || []) : [])
       ].filter(Boolean));
 
-      let htmlPass = `<label>Passatempos:</label>`;
       for (let i = 0; i < qtdFoc; i++) {
-        htmlPass += construirSelectPassatempo(`data-pfoc="${i}"`, pass.focados?.[i] || '', travado, `Focado #${i + 1} (+2)`, escolhidos);
+        const val = pass.focados?.[i] || '';
+        boxesHtml += `
+          <div class="form-box">
+            <label>Passatempo Focado #${i + 1} (+2)</label>
+            ${construirSelectPassatempoIntuitivo(`data-pfoc="${i}"`, 'focado', val, travado, escolhidos)}
+          </div>
+        `;
       }
+
       for (let i = 0; i < qtdMis; i++) {
-        const par = pass.mistos?.[i] || ['', ''];
-        htmlPass += construirSelectPassatempo(`data-pmis="${i}:0"`, par[0] || '', travado, `Misto A (+1)`, escolhidos);
-        htmlPass += construirSelectPassatempo(`data-pmis="${i}:1"`, par[1] || '', travado, `Misto B (+1)`, escolhidos);
+        const val = pass.mistos?.[i] || '';
+        const precisaEscolha = val === 'Estudo Dirigido';
+        const escAtual = (pass.mistosEscolha || [])[i] || '';
+        boxesHtml += `
+          <div class="form-box">
+            <label>Passatempo Misto #${i + 1} (+1 / +1)</label>
+            ${construirSelectPassatempoIntuitivo(`data-pmis="${i}"`, 'misto', val, travado, escolhidos)}
+            ${precisaEscolha ? `
+              <select data-pmis-esc="${i}" ${travado ? 'disabled' : ''}>
+                <option value="">— Escolha a 2ª Perícia (+1) —</option>
+                ${PERICIAS_LIVRO.filter(p => p !== 'Erudição').map(p => `<option value="${p}" ${p === escAtual ? 'selected' : ''}>+1 ${p}</option>`).join('')}
+              </select>
+            ` : ''}
+          </div>
+        `;
       }
+
       if (h.tipo === 'auto') {
         for (let i = 0; i < 2; i++) {
-          htmlPass += construirSelectPassatempo(`data-porf="${i}"`, pass.extrasOrfao?.[i] || '', travado, `Órfão #${i + 1} (+1)`, escolhidos);
+          const val = pass.extrasOrfao?.[i] || '';
+          const precisaEscolha = val === 'Estudo Dirigido';
+          const escAtual = (pass.extrasOrfaoEscolha || [])[i] || '';
+          boxesHtml += `
+            <div class="form-box">
+              <label>Passatempo Extra Órfão #${i + 1} (+1 / +1)</label>
+              ${construirSelectPassatempoIntuitivo(`data-porf="${i}"`, 'misto', val, travado, escolhidos)}
+              ${precisaEscolha ? `
+                <select data-porf-esc="${i}" ${travado ? 'disabled' : ''}>
+                  <option value="">— Escolha a 2ª Perícia (+1) —</option>
+                  ${PERICIAS_LIVRO.filter(p => p !== 'Erudição').map(p => `<option value="${p}" ${p === escAtual ? 'selected' : ''}>+1 ${p}</option>`).join('')}
+                </select>
+              ` : ''}
+            </div>
+          `;
         }
       }
-      getEl('#box-passatempos').innerHTML = htmlPass;
+
+      painel.innerHTML = boxesHtml;
 
       if (!travado) {
-        getEl('#box-passatempos').querySelectorAll('[data-pfoc]').forEach(sel => {
+        const selSec = getEl('#sel-sec-raiz');
+        if (selSec) {
+          selSec.onchange = async () => {
+            await updateDoc(doc(db, "fichas", fichaId), { "raizesHeranca.secEscolhida": selSec.value });
+          };
+        }
+
+        painel.querySelectorAll('[data-pfoc]').forEach(sel => {
           sel.onchange = async () => {
             const arr = [...(fichaDoc.passatempos?.focados || [])];
             arr[parseInt(sel.dataset.pfoc)] = sel.value;
             await updateDoc(doc(db, "fichas", fichaId), { "passatempos.focados": arr });
           };
         });
-        getEl('#box-passatempos').querySelectorAll('[data-pmis]').forEach(sel => {
+
+        painel.querySelectorAll('[data-pmis]').forEach(sel => {
           sel.onchange = async () => {
-            const [idx, pos] = sel.dataset.pmis.split(':').map(Number);
-            const arr = JSON.parse(JSON.stringify(fichaDoc.passatempos?.mistos || []));
-            if (!arr[idx]) arr[idx] = ['', ''];
-            arr[idx][pos] = sel.value;
+            const idx = parseInt(sel.dataset.pmis);
+            const arr = [...(fichaDoc.passatempos?.mistos || [])];
+            arr[idx] = sel.value;
             await updateDoc(doc(db, "fichas", fichaId), { "passatempos.mistos": arr });
           };
         });
-        getEl('#box-passatempos').querySelectorAll('[data-porf]').forEach(sel => {
+
+        painel.querySelectorAll('[data-pmis-esc]').forEach(sel => {
           sel.onchange = async () => {
+            const idx = parseInt(sel.dataset.pmisEsc);
+            const arr = [...(fichaDoc.passatempos?.mistosEscolha || [])];
+            arr[idx] = sel.value;
+            await updateDoc(doc(db, "fichas", fichaId), { "passatempos.mistosEscolha": arr });
+          };
+        });
+
+        painel.querySelectorAll('[data-porf]').forEach(sel => {
+          sel.onchange = async () => {
+            const idx = parseInt(sel.dataset.porf);
             const arr = [...(fichaDoc.passatempos?.extrasOrfao || [])];
-            arr[parseInt(sel.dataset.porf)] = sel.value;
+            arr[idx] = sel.value;
             await updateDoc(doc(db, "fichas", fichaId), { "passatempos.extrasOrfao": arr });
+          };
+        });
+
+        painel.querySelectorAll('[data-porf-esc]').forEach(sel => {
+          sel.onchange = async () => {
+            const idx = parseInt(sel.dataset.porfEsc);
+            const arr = [...(fichaDoc.passatempos?.extrasOrfaoEscolha || [])];
+            arr[idx] = sel.value;
+            await updateDoc(doc(db, "fichas", fichaId), { "passatempos.extrasOrfaoEscolha": arr });
           };
         });
       }
@@ -1279,13 +1478,26 @@
       if ((QTD_SLOTS_RAIZ[novoTipo] ?? 1) < 2) upd["raizesHeranca.r2"] = '';
       await updateDoc(doc(db, "fichas", fichaId), upd);
     };
-    getEl('#raiz1').onchange = async e => await updateDoc(doc(db, "fichas", fichaId), { "raizesHeranca.r1": e.target.value });
+    getEl('#raiz1').onchange = async e => {
+      const novaRaiz = e.target.value;
+      const primeiraSec = PROFISSOES_LIVRO[novaRaiz]?.sec?.[0] || '';
+      await updateDoc(doc(db, "fichas", fichaId), {
+        "raizesHeranca.r1": novaRaiz,
+        "raizesHeranca.secEscolhida": primeiraSec
+      });
+    };
     getEl('#raiz2').onchange = async e => await updateDoc(doc(db, "fichas", fichaId), { "raizesHeranca.r2": e.target.value });
 
     window.finalizarCriacaoFicha = async () => {
-      if (!confirm("Finalizar a criação da ficha? Atributos iniciais, raízes e passatempos ficarão travados, e você poderá evoluir nas Árvores.")) return;
+      if (!confirm("Finalizar a criação da ficha? Atributos iniciais, raízes, perícia secundária e passatempos ficarão travados permanentemente.")) return;
+      const h = fichaDoc.raizesHeranca || {};
+      const secFixa = PROFISSOES_LIVRO[h.r1]?.sec?.includes(h.secEscolhida)
+        ? h.secEscolhida
+        : (PROFISSOES_LIVRO[h.r1]?.sec?.[0] || '');
+
       await updateDoc(doc(db, "fichas", fichaId), {
         criacaoFinalizada: true,
+        "raizesHeranca.secEscolhida": secFixa,
         recursosAtuais: { ...computado.maxRec }
       });
     };
@@ -1412,7 +1624,7 @@
     /* ---------- Perícias ---------- */
     function renderizarPericias() {
       const chaves = Object.keys(computado.pericias);
-      getEl('#pericias').innerHTML = chaves.length ? '' : '<span class="mut">Escolha seus Passatempos no topo ou evolua nas Árvores.</span>';
+      getEl('#pericias').innerHTML = chaves.length ? '' : '<span class="mut">Escolha sua Raiz e Passatempos no topo ou evolua nas Árvores.</span>';
 
       chaves.forEach(nome => {
         const info = computado.pericias[nome];
@@ -1485,42 +1697,245 @@
       mostrarToast(`"${nome}" ativada!`);
     };
 
-    /* ---------- Inventário ---------- */
-    function renderizarInventario() {
+    /* ============================================================ */
+    /* INVENTÁRIO EM BLOCOS SUBDIVISÍVEIS + DRAG & DROP + MODAL     */
+    /* ============================================================ */
+    function construirLayoutBlocosInventario() {
       const vig = computado.attr.vigor || 0;
       const cap = { pesado: vig, medio: vig + 1, leve: vig + 2, miudeza: 10 };
       const inv = fichaDoc.inventario || [];
+      const modos = fichaDoc.blocosSubdivididos || {}; // { "pesado_0": "1m1l" | "3l", "medio_0": "2l" }
+
+      // Cria estrutura de blocos físicos
+      const blocos = { pesado: [], medio: [], leve: [], miudeza: [] };
+      for (let i = 0; i < cap.pesado; i++) {
+        const key = `pesado_${i}`;
+        const modo = ['1m1l', '3l'].includes(modos[key]) ? modos[key] : '1p';
+        const subslots = modo === '1m1l'
+          ? [{ peso: 'medio', item: null }, { peso: 'leve', item: null }]
+          : modo === '3l'
+            ? [{ peso: 'leve', item: null }, { peso: 'leve', item: null }, { peso: 'leve', item: null }]
+            : [{ peso: 'pesado', item: null }];
+        blocos.pesado.push({ key, base: 'pesado', index: i, modo, subslots });
+      }
+      for (let i = 0; i < cap.medio; i++) {
+        const key = `medio_${i}`;
+        const modo = modos[key] === '2l' ? '2l' : '1m';
+        const subslots = modo === '2l'
+          ? [{ peso: 'leve', item: null }, { peso: 'leve', item: null }]
+          : [{ peso: 'medio', item: null }];
+        blocos.medio.push({ key, base: 'medio', index: i, modo, subslots });
+      }
+      for (let i = 0; i < cap.leve; i++) {
+        blocos.leve.push({ key: `leve_${i}`, base: 'leve', index: i, modo: '1l', subslots: [{ peso: 'leve', item: null }] });
+      }
+      for (let i = 0; i < cap.miudeza; i++) {
+        blocos.miudeza.push({ key: `miudeza_${i}`, base: 'miudeza', index: i, modo: '1mi', subslots: [{ peso: 'miudeza', item: null }] });
+      }
+
+      const todasSubcelulas = [];
+      ['pesado', 'medio', 'leve', 'miudeza'].forEach(cat => {
+        blocos[cat].forEach(blk => {
+          blk.subslots.forEach((sc, subIdx) => {
+            todasSubcelulas.push({ blk, subIdx, sc });
+          });
+        });
+      });
+
+      const excedentes = [];
+
+      // 1º Passo: Alocar itens que já têm posição explícita (slotKey + subIdx)
+      const naoAlocados = [];
+      inv.forEach(it => {
+        if (it.slotKey && typeof it.subIdx === 'number') {
+          const alvo = todasSubcelulas.find(x => x.blk.key === it.slotKey && x.subIdx === it.subIdx);
+          if (alvo && !alvo.sc.item && alvo.sc.peso === it.peso) {
+            alvo.sc.item = it;
+            return;
+          }
+        }
+        naoAlocados.push(it);
+      });
+
+      // 2º Passo: Auto-encaixar itens sem posição nos blocos compatíveis (e subdividir automaticamente se necessário)
+      naoAlocados.forEach(it => {
+        let vaga = todasSubcelulas.find(x => !x.sc.item && x.sc.peso === it.peso);
+        if (!vaga && it.peso === 'medio') {
+          // Tenta subdividir um bloco Pesado vazio em 1M+1L
+          const blkPesadoVazio = blocos.pesado.find(b => b.modo === '1p' && !b.subslots[0].item);
+          if (blkPesadoVazio) {
+            blkPesadoVazio.modo = '1m1l';
+            blkPesadoVazio.subslots = [{ peso: 'medio', item: null }, { peso: 'leve', item: null }];
+            vaga = { blk: blkPesadoVazio, subIdx: 0, sc: blkPesadoVazio.subslots[0] };
+          }
+        }
+        if (!vaga && it.peso === 'leve') {
+          // Tenta subdividir um bloco Médio vazio em 2L
+          const blkMedioVazio = blocos.medio.find(b => b.modo === '1m' && !b.subslots[0].item);
+          if (blkMedioVazio) {
+            blkMedioVazio.modo = '2l';
+            blkMedioVazio.subslots = [{ peso: 'leve', item: null }, { peso: 'leve', item: null }];
+            vaga = { blk: blkMedioVazio, subIdx: 0, sc: blkMedioVazio.subslots[0] };
+          } else {
+            // Tenta subdividir um bloco Pesado vazio em 3L
+            const blkPesadoVazio = blocos.pesado.find(b => b.modo === '1p' && !b.subslots[0].item);
+            if (blkPesadoVazio) {
+              blkPesadoVazio.modo = '3l';
+              blkPesadoVazio.subslots = [{ peso: 'leve', item: null }, { peso: 'leve', item: null }, { peso: 'leve', item: null }];
+              vaga = { blk: blkPesadoVazio, subIdx: 0, sc: blkPesadoVazio.subslots[0] };
+            }
+          }
+        }
+
+        if (vaga) {
+          vaga.sc.item = it;
+        } else {
+          excedentes.push(it);
+        }
+      });
+
+      return { cap, blocos, excedentes };
+    }
+
+    function renderizarTileItem(it) {
+      const visual = it.imagem
+        ? `<img src="${it.imagem}" alt="${it.nome}" draggable="false">`
+        : `<span style="font-size:16px; line-height:1">${ICONE_CAT[it.categoria] || '🎒'}</span>`;
+
+      return `
+        <div class="inv-item-tile ${it.equipado ? 'equipped' : ''}" draggable="true" data-drag-uid="${it.uid}" data-open-uid="${it.uid}" title="${it.nome} (Clique para detalhes ou arraste)">
+          ${it.equipado ? '<span class="inv-eq-dot" title="Equipado"></span>' : ''}
+          ${visual}
+          <span class="inv-item-name">${it.nome}</span>
+        </div>
+      `;
+    }
+
+    function renderizarInventario() {
+      const inv = fichaDoc.inventario || [];
+      const { cap, blocos, excedentes } = construirLayoutBlocosInventario();
+
       const usados = { pesado: 0, medio: 0, leve: 0, miudeza: 0 };
       inv.forEach(it => { if (usados[it.peso] !== undefined) usados[it.peso]++; });
 
       getEl('#slots-carga').innerHTML = `
-        <span>Pesado: ${usados.pesado}/${cap.pesado}</span>
-        <span>Médio: ${usados.medio}/${cap.medio}</span>
-        <span>Leve: ${usados.leve}/${cap.leve}</span>
-        <span>Miud.: ${usados.miudeza}/${cap.miudeza}</span>
+        <span style="color:#f87171">Pesado: ${usados.pesado}/${cap.pesado}</span>
+        <span style="color:#facc15">Médio: ${usados.medio}/${cap.medio}</span>
+        <span style="color:#4ade80">Leve: ${usados.leve}/${cap.leve}</span>
+        <span style="color:#38bdf8">Miud.: ${usados.miudeza}/${cap.miudeza}</span>
       `;
 
       const cont = getEl('#inv-list');
-      cont.innerHTML = inv.length ? '' : '<span class="mut">Mochila vazia.</span>';
 
-      inv.forEach(it => {
-        const podeEquipar = ['arma', 'escudo', 'armadura'].includes(it.categoria);
-        const div = document.createElement('div');
-        div.className = 'hcard' + (it.equipado ? ' on' : '');
-        div.innerHTML = `
-          <div class="t"><span>${it.nome}</span><span class="tag">${it.peso}</span></div>
-          <p>${it.descricao || ''}</p>
-          <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; margin-top:4px">
-            <span>
-              ${podeEquipar ? `<button class="btn ${it.equipado ? 'pri' : ''}" onclick="alternarEquiparItem('${it.uid}')">${it.equipado ? '✓ Equipado' : 'Equipar'}</button>` : ''}
-              ${it.categoria === 'cura' ? `<button class="btn pri" onclick="usarItemCura('${it.uid}')">🩹 Curar (${it.usosAtuais ?? it.usosMax}/${it.usosMax})</button>` : ''}
-            </span>
-            <button class="x" onclick="removerItemInventario('${it.uid}')">Remover</button>
-          </div>
-        `;
-        cont.appendChild(div);
-      });
+      // MODO LISTA COMPACTA
+      if (modoInvLista) {
+        cont.innerHTML = inv.length ? inv.map(it => {
+          const podeEquipar = ['arma', 'escudo', 'armadura'].includes(it.categoria);
+          return `
+            <div class="hcard ${it.equipado ? 'on' : ''}">
+              <div class="t">
+                <span style="cursor:pointer" onclick="abrirModalDetalhesItem('${it.uid}')">${ICONE_CAT[it.categoria] || '🎒'} ${it.nome}</span>
+                <span class="tag">${it.peso}</span>
+              </div>
+              <p>${it.descricao || ''}</p>
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; margin-top:4px">
+                <span>
+                  ${podeEquipar ? `<button class="btn ${it.equipado ? 'pri' : ''}" onclick="alternarEquiparItem('${it.uid}')">${it.equipado ? '✓ Equipado' : 'Equipar'}</button>` : ''}
+                  ${it.categoria === 'cura' ? `<button class="btn pri" onclick="usarItemCura('${it.uid}')">🩹 Curar (${it.usosAtuais ?? it.usosMax}/${it.usosMax})</button>` : ''}
+                </span>
+                <span style="display:flex; gap:6px">
+                  <button class="btn" onclick="abrirModalDetalhesItem('${it.uid}')">Detalhes</button>
+                  <button class="x" onclick="removerItemInventario('${it.uid}')">✕</button>
+                </span>
+              </div>
+            </div>
+          `;
+        }).join('') : '<span class="mut">Mochila vazia. Clique em "+ Catálogo" para pegar itens.</span>';
+      } else {
+        // MODO BLOCOS SUBDIVISÍVEIS (PADRÃO)
+        const grupos = [
+          { key: 'pesado',  titulo: 'Blocos Pesados (Vigor)',     cor: '#f87171', lista: blocos.pesado },
+          { key: 'medio',   titulo: 'Blocos Médios (Vigor + 1)',  cor: '#facc15', lista: blocos.medio },
+          { key: 'leve',    titulo: 'Blocos Leves (Vigor + 2)',   cor: '#4ade80', lista: blocos.leve },
+          { key: 'miudeza', titulo: 'Bolso de Miudezas (10)',     cor: '#38bdf8', lista: blocos.miudeza }
+        ];
 
+        let html = grupos.map(g => {
+          if (!g.lista.length) {
+            return `
+              <div class="inv-group">
+                <div class="inv-group-hdr"><span style="color:${g.cor}">${g.titulo}</span><span>0 blocos</span></div>
+                <span class="mut" style="font-size:11px">Vigor 0: sem blocos pesados disponíveis.</span>
+              </div>
+            `;
+          }
+
+          const cardsHtml = g.lista.map(blk => {
+            const labelModo = blk.modo === '1p' ? 'PESADO'
+              : blk.modo === '1m1l' ? '1M + 1L'
+              : blk.modo === '3l' ? '3 LEVES'
+              : blk.modo === '1m' ? 'MÉDIO'
+              : blk.modo === '2l' ? '2 LEVES'
+              : blk.base === 'leve' ? 'LEVE' : 'MIUD';
+
+            const podeDividir = blk.base === 'pesado' || blk.base === 'medio';
+            const btnSplit = podeDividir
+              ? `<button class="inv-split-btn" data-cycle-blk="${blk.key}" title="Subdividir ou reagrupar este bloco">⇄</button>`
+              : '';
+
+            let corpoHtml = '';
+            if (blk.subslots.length === 1) {
+              const it = blk.subslots[0].item;
+              corpoHtml = `
+                <div class="inv-subslots" data-drop-blk="${blk.key}" data-drop-sub="0">
+                  ${it ? renderizarTileItem(it) : `<div class="inv-subcell">Vazio</div>`}
+                </div>
+              `;
+            } else {
+              corpoHtml = `
+                <div class="inv-subslots ${blk.subslots.length === 3 ? 'grid-3' : ''}">
+                  ${blk.subslots.map((sc, idx) => `
+                    <div class="inv-subcell sc-${sc.peso}" data-drop-blk="${blk.key}" data-drop-sub="${idx}">
+                      ${sc.item ? renderizarTileItem(sc.item) : (sc.peso === 'medio' ? 'MÉDIO' : 'LEVE')}
+                    </div>
+                  `).join('')}
+                </div>
+              `;
+            }
+
+            return `
+              <div class="inv-block ${blk.base === 'miudeza' ? 'miudeza' : ''} b-${blk.base}" data-blk-wrap="${blk.key}">
+                <div class="inv-block-top">
+                  <span>${labelModo}</span>
+                  ${btnSplit}
+                </div>
+                ${corpoHtml}
+              </div>
+            `;
+          }).join('');
+
+          return `
+            <div class="inv-group">
+              <div class="inv-group-hdr"><span style="color:${g.cor}">${g.titulo}</span><span>${g.lista.length}</span></div>
+              <div class="inv-grid ${g.key === 'miudeza' ? 'miudeza-grid' : ''}">${cardsHtml}</div>
+            </div>
+          `;
+        }).join('');
+
+        if (excedentes.length > 0) {
+          html += `
+            <div class="inv-group" style="border:1px dashed #e05555; border-radius:8px; padding:6px">
+              <div class="inv-group-hdr"><span style="color:#f87171">⚠ Sobrecarga (Sem Bloco Livre)</span><span>${excedentes.length}</span></div>
+              <div class="inv-grid">${excedentes.map(it => `<div class="inv-block b-${it.peso}">${renderizarTileItem(it)}</div>`).join('')}</div>
+            </div>
+          `;
+        }
+
+        cont.innerHTML = html;
+        vincularEventosBlocosInventario(cont, blocos);
+      }
+
+      // Atualiza seletor de equipamento do Motor de Teste
       const selEq = getEl('#sel-equip-teste');
       const prev = selEq.value;
       const equips = inv.filter(i => i.equipado && (i.categoria === 'arma' || i.categoria === 'escudo'));
@@ -1530,6 +1945,147 @@
       if (prev) selEq.value = prev;
       atualizarBotaoDanoArma();
     }
+
+    function vincularEventosBlocosInventario(cont, blocos) {
+      // Abrir detalhes ao clicar no item
+      cont.querySelectorAll('[data-open-uid]').forEach(tile => {
+        tile.onclick = (e) => {
+          e.stopPropagation();
+          abrirModalDetalhesItem(tile.dataset.openUid);
+        };
+        tile.ondragstart = (e) => {
+          e.stopPropagation();
+          e.dataTransfer.setData('text/inv-uid', tile.dataset.dragUid);
+          e.dataTransfer.effectAllowed = 'move';
+        };
+      });
+
+      // Botão ⇄ para alternar subdivisão manual do bloco
+      cont.querySelectorAll('[data-cycle-blk]').forEach(btn => {
+        btn.onclick = async (e) => {
+          e.stopPropagation();
+          const key = btn.dataset.cycleBlk;
+          const isPesado = key.startsWith('pesado_');
+          const allBlks = [...blocos.pesado, ...blocos.medio];
+          const blk = allBlks.find(b => b.key === key);
+          if (!blk) return;
+
+          const temItem = blk.subslots.some(s => s.item !== null);
+          if (temItem) {
+            return mostrarToast('Esvazie os itens deste bloco antes de mudar a subdivisão!');
+          }
+
+          const ordem = isPesado ? ['1p', '1m1l', '3l'] : ['1m', '2l'];
+          const prox = ordem[(ordem.indexOf(blk.modo) + 1) % ordem.length];
+          await updateDoc(doc(db, "fichas", fichaId), { [`blocosSubdivididos.${key}`]: prox });
+        };
+      });
+
+      // Zonas de Drop (Subcélulas e Blocos inteiros)
+      cont.querySelectorAll('[data-drop-blk]').forEach(zone => {
+        zone.ondragover = (e) => {
+          if (!e.dataTransfer.types.includes('text/inv-uid')) return;
+          e.preventDefault();
+          e.stopPropagation();
+          zone.classList.add('drag-over');
+        };
+        zone.ondragleave = () => zone.classList.remove('drag-over');
+        zone.ondrop = async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          zone.classList.remove('drag-over');
+
+          const uid = e.dataTransfer.getData('text/inv-uid');
+          if (!uid) return;
+          const item = (fichaDoc.inventario || []).find(x => x.uid === uid);
+          if (!item) return;
+
+          const blkKey = zone.dataset.dropBlk;
+          const subIdx = parseInt(zone.dataset.dropSub);
+          const allBlks = [...blocos.pesado, ...blocos.medio, ...blocos.leve, ...blocos.miudeza];
+          const blk = allBlks.find(b => b.key === blkKey);
+          if (!blk) return;
+
+          const subcell = blk.subslots[subIdx];
+          if (!subcell) return;
+
+          // Se soltou um item Médio ou Leve num bloco Pesado ou Médio ainda inteiro (1p / 1m), subdivide automaticamente!
+          if (subcell.peso !== item.peso) {
+            const vazio = blk.subslots.every(s => !s.item || s.item.uid === uid);
+            if (!vazio) {
+              return mostrarToast(`Este espaço aceita apenas item "${subcell.peso.toUpperCase()}"!`);
+            }
+            if (blk.base === 'pesado' && item.peso === 'medio') {
+              await moverItemParaBloco(uid, blkKey, 0, '1m1l');
+              return;
+            }
+            if (blk.base === 'pesado' && item.peso === 'leve') {
+              await moverItemParaBloco(uid, blkKey, 0, '3l');
+              return;
+            }
+            if (blk.base === 'medio' && item.peso === 'leve') {
+              await moverItemParaBloco(uid, blkKey, 0, '2l');
+              return;
+            }
+            return mostrarToast(`Item "${item.peso}" não cabe em bloco "${blk.base}" (Trava Ascendente).`);
+          }
+
+          if (subcell.item && subcell.item.uid !== uid) {
+            return mostrarToast('Já existe um item neste espaço!');
+          }
+
+          await moverItemParaBloco(uid, blkKey, subIdx, blk.modo);
+        };
+      });
+    }
+
+    async function moverItemParaBloco(uid, slotKey, subIdx, novoModoBloco) {
+      const invAtualizado = (fichaDoc.inventario || []).map(it =>
+        it.uid === uid ? { ...it, slotKey, subIdx } : it
+      );
+      const upd = { inventario: invAtualizado };
+      if (novoModoBloco) upd[`blocosSubdivididos.${slotKey}`] = novoModoBloco;
+      await updateDoc(doc(db, "fichas", fichaId), upd);
+    }
+
+    window.abrirModalDetalhesItem = (uid) => {
+      const it = (fichaDoc.inventario || []).find(i => i.uid === uid);
+      if (!it) return;
+
+      const podeEquipar = ['arma', 'escudo', 'armadura'].includes(it.categoria);
+      let stats = '';
+      if (it.categoria === 'arma') {
+        stats = `Dano: <b>${it.dano}</b> · Crítico: <b>${it.criticoMargem}+ (×${it.criticoMult})</b> · GA: <b>${it.ga}</b> · GD: <b>${it.gd}</b>`;
+      } else if (it.categoria === 'escudo') {
+        stats = `Escudo · Grau de Defesa (GD): <b>${it.gd}</b> (+${it.gd * 2} Bloqueio)`;
+      } else if (it.categoria === 'armadura') {
+        stats = `Armadura · Redução de Dano (RD): <b>${it.rd}</b>${it.penalidadeDesl ? ` · Deslocamento: <b>${it.penalidadeDesl}m</b>` : ''}`;
+      } else if (it.categoria === 'cura') {
+        stats = `Cura: <b>${it.curaFormula}</b> · Bônus Medicina: <b>${it.curaBonus >= 0 ? '+' + it.curaBonus : it.curaBonus}</b> · Usos: <b>${it.usosAtuais ?? it.usosMax}/${it.usosMax}</b>`;
+      }
+
+      abrirModal(`${ICONE_CAT[it.categoria] || '🎒'} ${it.nome}`, `
+        <div style="display:flex; gap:12px; align-items:flex-start; margin-bottom:10px">
+          ${it.imagem
+            ? `<img src="${it.imagem}" alt="${it.nome}" style="width:84px; height:84px; object-fit:cover; border-radius:8px; border:1px solid var(--acc)">`
+            : `<div style="width:84px; height:84px; border-radius:8px; background:var(--card2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:34px">${ICONE_CAT[it.categoria] || '🎒'}</div>`
+          }
+          <div style="flex:1; space-y:4px">
+            <div><span class="tag">${it.categoria}</span> <span class="tag">Peso: ${it.peso}</span> ${it.equipado ? '<span class="chip" style="color:var(--acc)">✓ Equipado</span>' : ''}</div>
+            ${stats ? `<p style="margin:6px 0; font-family:monospace; font-size:12px">${stats}</p>` : ''}
+            <p style="margin:4px 0; font-size:13px">${it.descricao || 'Sem descrição adicional.'}</p>
+            ${it.habilidade?.nome ? `<div class="hcard" style="margin-top:6px"><div class="t"><span>✨ ${it.habilidade.nome}</span><span class="tag">${it.habilidade.custo || ''}</span></div><p>${it.habilidade.efeito || ''}</p></div>` : ''}
+          </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:8px">
+          <div style="display:flex; gap:6px">
+            ${podeEquipar ? `<button class="btn pri" onclick="alternarEquiparItem('${it.uid}'); fecharModal()">${it.equipado ? 'Desequipar' : '✓ Equipar Item'}</button>` : ''}
+            ${it.categoria === 'cura' ? `<button class="btn pri" onclick="usarItemCura('${it.uid}'); fecharModal()">🩹 Usar Cura</button>` : ''}
+          </div>
+          <button class="btn" style="color:#e05555; border-color:#e0555566" onclick="removerItemInventario('${it.uid}'); fecharModal()">🗑 Descartar Item</button>
+        </div>
+      `);
+    };
 
     function atualizarBotaoDanoArma() {
       const uid = getEl('#sel-equip-teste').value;
@@ -1572,12 +2128,16 @@
     window.abrirModalCatalogoItens = () => {
       const cat = mesaDados?.catalogoItens || [];
       abrirModal('Catálogo de Itens da Mesa', cat.length ? cat.map(it => `
-        <div class="hcard">
-          <div class="t"><span>${it.nome}</span><span class="tag">${it.categoria} · ${it.peso}</span></div>
-          <p>${it.descricao || ''}</p>
-          <div style="text-align:right; margin-top:4px">
-            <button class="btn pri" onclick="adicionarItemDaMesa('${it.id}')">+ Pegar Item</button>
+        <div class="hcard" style="display:flex; gap:10px; align-items:center">
+          ${it.imagem
+            ? `<img src="${it.imagem}" alt="${it.nome}" style="width:44px; height:44px; object-fit:cover; border-radius:6px; border:1px solid var(--line)">`
+            : `<div style="width:44px; height:44px; border-radius:6px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:20px">${ICONE_CAT[it.categoria] || '🎒'}</div>`
+          }
+          <div style="flex:1; min-width:0">
+            <div class="t"><span>${it.nome}</span><span class="tag">${it.categoria} · ${it.peso}</span></div>
+            <p>${it.descricao || ''}</p>
           </div>
+          <button class="btn pri" onclick="adicionarItemDaMesa('${it.id}')">+ Pegar</button>
         </div>
       `).join('') : '<span class="mut">O Mestre ainda não cadastrou itens no catálogo desta mesa.</span>');
     };
@@ -1587,7 +2147,7 @@
       if (!base) return;
       const inv = [...(fichaDoc.inventario || []), { ...JSON.parse(JSON.stringify(base)), uid: 'inv_' + Date.now(), equipado: false, usosAtuais: base.usosMax || 1 }];
       await updateDoc(doc(db, "fichas", fichaId), { inventario: inv });
-      mostrarToast(`${base.nome} adicionado!`);
+      mostrarToast(`${base.nome} adicionado à mochila!`);
     };
 
     /* ---------- Seleção para Testes ---------- */
@@ -1860,10 +2420,9 @@
       fecharModal();
     };
 
-    /* ---------- Visualizador de Árvores (Estilo Editor + Exploração na Criação) ---------- */
+    /* ---------- Visualizador de Árvores ---------- */
     function obterArvoresParaModal(modo) {
       const todas = mesaDados?.arvores || [];
-      // Durante a criação ou no modo explorar, permite ver TODAS as árvores da mesa para estudar
       if (!fichaDoc?.criacaoFinalizada || modo === 'explorar') {
         return todas;
       }
@@ -1897,8 +2456,6 @@
       if (!acessiveis.length) return mostrarToast('Nenhuma árvore cadastrada na mesa.');
 
       const emCriacao = !fichaDoc?.criacaoFinalizada;
-      modoExploracaoCriacao = emCriacao || modo === 'explorar';
-
       const h = fichaDoc?.raizesHeranca || {};
       if (modo === 'explorar' && h.r1) {
         const daRaizAtual = acessiveis.find(a => a.raizAssociada === h.r1);
@@ -2144,7 +2701,6 @@
           const tEl = getEl(`#tv-n-${n.id}`);
           if (!tEl) return;
 
-          // Etiqueta de ramificação no topo do nó pai (Exclusiva ou Restritiva)
           const filhos = (arvore.nos || []).filter(f => (f.requisitos || []).includes(n.id));
           if (filhos.length > 1 && (n.tipoRamificacao === 'exclusiva' || n.tipoRamificacao === 'restritiva')) {
             const px = grid.offsetLeft + tEl.offsetLeft;
@@ -2310,7 +2866,6 @@
 
     onAuthStateChanged(auth, (user) => {
       if (!user) return window.location.href = '../index.html';
-      usuarioAtual = user;
 
       construirInterfaceRecursos();
       montarColunasLayout();
