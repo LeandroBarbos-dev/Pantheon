@@ -13,26 +13,25 @@
       --h: 40;
       --acc: hsl(var(--h) 70% 50%);
       --on: #140f08;
-      --bg: hsl(var(--h) 10% 2%);
-      --card: hsl(var(--h) 15% 4%);
-      --card2: hsl(var(--h) 20% 14%);
-      --line: hsl(var(--h) 35% 30%);
-      --txt: hsl(var(--h) 30% 85%);
-      --mut: hsl(var(--h) 12% 58%);
+      --bg: hsl(var(--h) 10% 3%);
+      --card: hsl(var(--h) 15% 6%);
+      --card2: hsl(var(--h) 20% 13%);
+      --line: hsl(var(--h) 30% 26%);
+      --txt: hsl(var(--h) 25% 88%);
+      --mut: hsl(var(--h) 12% 60%);
     }
 
     [data-theme="light"] {
       --acc: hsl(var(--h) 65% 36%);
       --on: #fff;
-      --bg: hsl(var(--h) 35% 91%);
-      --card: hsl(var(--h) 40% 97%);
-      --card2: hsl(var(--h) 30% 90%);
+      --bg: hsl(var(--h) 35% 92%);
+      --card: hsl(var(--h) 40% 98%);
+      --card2: hsl(var(--h) 30% 91%);
       --line: hsl(var(--h) 25% 76%);
       --txt: hsl(var(--h) 30% 12%);
       --mut: hsl(var(--h) 15% 38%);
     }
 
-    /* Paletas de Cor Primária */
     [data-pal="carmesim"] { --h: 355; }
     [data-pal="esmeralda"] { --h: 150; }
     [data-pal="safira"] { --h: 210; }
@@ -42,27 +41,27 @@
 
     body {
       margin: 0;
-      padding: 12px;
+      padding: 14px;
       background: var(--bg);
       color: var(--txt);
       font-family: Faustina, Georgia, serif;
       font-size: 14px;
-      line-height: 1.35;
+      line-height: 1.4;
     }
 
     .cz, h2, .btn, .nome-personagem { font-family: Cinzel, Georgia, serif; }
 
-    /* Cartões e Blocos Layout */
+    /* Cartões e Blocos */
     .card {
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 10px;
-      padding: 10px 12px;
+      padding: 12px 14px;
       margin-bottom: 12px;
     }
 
     h2 {
-      margin: 0 0 8px;
+      margin: 0 0 10px;
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.06em;
@@ -90,16 +89,17 @@
       align-items: center;
     }
 
-    /* Formulários e Controles */
+    /* Controles */
     button, input, select { font: inherit; color: inherit; }
 
     .btn {
       background: var(--card2);
       border: 1px solid var(--line);
       border-radius: 6px;
-      padding: 3px 9px;
+      padding: 4px 10px;
       cursor: pointer;
       font-size: 11px;
+      transition: border-color 0.15s, color 0.15s;
     }
 
     .btn:hover:not(:disabled), .btn.on {
@@ -107,7 +107,7 @@
       color: var(--acc);
     }
 
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn:disabled { opacity: 0.42; cursor: not-allowed; }
 
     .btn.pri {
       background: var(--acc) !important;
@@ -120,7 +120,7 @@
       background: var(--card2);
       border: 1px solid var(--line);
       border-radius: 6px;
-      padding: 3px 6px;
+      padding: 4px 8px;
       min-width: 0;
     }
 
@@ -129,11 +129,11 @@
     input[type=number] { -moz-appearance: textfield; }
     input::-webkit-inner-spin-button, input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
-    /* Cabeçalho */
-    .head { display: grid; gap: 8px; }
+    /* Cabeçalho Limpo */
+    .head { display: grid; gap: 10px; }
 
     .nome-personagem {
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 700;
       width: 100%;
       background: transparent;
@@ -147,18 +147,18 @@
     .rz {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
       font-size: 12px;
     }
 
-    .rz label { color: var(--mut); }
+    .rz label { color: var(--mut); font-weight: 600; }
 
     .chip {
       display: inline-flex;
-      gap: 4px;
+      gap: 5px;
       align-items: center;
-      padding: 2px 8px;
+      padding: 3px 9px;
       border-radius: 99px;
       border: 1px solid var(--line);
       background: var(--card2);
@@ -180,7 +180,6 @@
       .workspace { grid-template-columns: 1fr; }
     }
 
-    /* Grid de Colunas Arrastáveis */
     .cols {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -215,7 +214,7 @@
     }
 
     /* Barras de Recursos */
-    .res { margin-bottom: 10px; }
+    .res { margin-bottom: 11px; }
     .rt { display: flex; justify-content: space-between; font: 700 12px monospace; }
     .bar {
       height: 9px;
@@ -223,10 +222,10 @@
       background: var(--card2);
       border: 1px solid var(--line);
       overflow: hidden;
-      margin-top: 2px;
+      margin-top: 3px;
     }
     .bar i { display: block; height: 100%; transition: width 0.25s; }
-    .ctl { display: flex; gap: 4px; margin-top: 5px; }
+    .ctl { display: flex; gap: 5px; margin-top: 5px; }
     .ctl input { width: 64px; text-align: center; }
     .sg { width: 28px; font-weight: 700; padding: 0; }
     .sg.add { color: #4cc36f; }
@@ -235,9 +234,9 @@
     /* Sigilo / Roda de Atributos */
     .wheel {
       position: relative;
-      width: min(100%, 300px);
+      width: min(100%, 295px);
       aspect-ratio: 1;
-      margin: 4px auto;
+      margin: 6px auto;
     }
     .wheel svg { position: absolute; inset: 0; width: 100%; height: 100%; }
     .ctr {
@@ -254,7 +253,7 @@
 
     .node {
       position: absolute;
-      width: 19%;
+      width: 19.5%;
       aspect-ratio: 1;
       border-radius: 50%;
       transform: translate(-50%, -50%);
@@ -269,7 +268,7 @@
     }
     .node b { font: 700 9px Cinzel, serif; letter-spacing: 0.04em; }
     .node input {
-      width: 70%;
+      width: 72%;
       text-align: center;
       background: transparent;
       border: 0;
@@ -288,8 +287,8 @@
       background: var(--card2);
       border: 1px solid var(--line);
       border-radius: 7px;
-      padding: 5px 8px;
-      margin-bottom: 5px;
+      padding: 6px 9px;
+      margin-bottom: 6px;
       font-size: 13px;
     }
     .prow, .mrow {
@@ -302,7 +301,7 @@
       border-color: var(--acc);
       box-shadow: 0 0 0 1px var(--acc);
     }
-    .hcard p { margin: 2px 0; font-size: 12px; color: var(--mut); }
+    .hcard p { margin: 3px 0; font-size: 12px; color: var(--mut); }
     .hcard .t {
       display: flex;
       justify-content: space-between;
@@ -329,19 +328,19 @@
       gap: 6px;
       align-items: center;
       flex-wrap: wrap;
-      margin-bottom: 6px;
+      margin-bottom: 7px;
       min-height: 28px;
     }
     .sl > span.k {
-      width: 66px;
+      width: 68px;
       font-size: 11px;
       color: var(--mut);
       font-family: Cinzel, serif;
     }
     .hint {
       display: none;
-      margin: 4px 0;
-      padding: 5px 8px;
+      margin: 5px 0;
+      padding: 6px 9px;
       border-radius: 6px;
       background: var(--card2);
       border: 1px dashed var(--acc);
@@ -365,9 +364,9 @@
       justify-content: space-between;
       font: 600 12px monospace;
       background: var(--card2);
-      padding: 5px 8px;
+      padding: 6px 9px;
       border-radius: 6px;
-      margin: 6px 0;
+      margin: 7px 0;
     }
     .out {
       margin-top: 8px;
@@ -391,11 +390,11 @@
     }
     .die.pk { opacity: 1; border-color: var(--acc); color: var(--acc); }
 
-    /* Modal e Toasts */
+    /* Modal e Visualizador de Árvores (Estilo Editor) */
     .ov {
       position: fixed;
       inset: 0;
-      background: #000b;
+      background: #000c;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -404,25 +403,46 @@
     }
     .ov[hidden] { display: none; }
     .mod {
-      width: min(500px, 100%);
+      width: min(560px, 100%);
       max-height: 88vh;
       overflow: auto;
       margin: 0;
     }
     .mod.mod-tree {
-      width: min(1150px, 98vw);
-      height: 88vh;
-      max-height: 88vh;
+      width: min(1220px, 98vw);
+      height: 90vh;
+      max-height: 90vh;
       display: flex;
       flex-direction: column;
     }
 
-    /* Visualizador de Árvores na Ficha */
+    .tree-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      font-size: 11px;
+      padding: 6px 10px;
+      margin-bottom: 8px;
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+    }
+    .leg-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+
     .tree-view-wrap {
       flex: 1;
       position: relative;
       overflow: hidden;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--line) 45%, transparent) 1px, transparent 0) 0 0 / 24px 24px,
+        var(--bg);
       border: 1px solid var(--line);
       border-radius: 8px;
       cursor: grab;
@@ -431,26 +451,56 @@
     }
     .tree-view-wrap.panning { cursor: grabbing; }
     .tree-stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
-    .tree-grid { position: absolute; left: 320px; top: 320px; display: flex; flex-direction: column; gap: 82px; padding: 30px 0; }
-    .tree-lvl { position: relative; height: 74px; width: 100%; }
+    .tree-grid { position: absolute; left: 320px; top: 320px; display: flex; flex-direction: column; gap: 96px; padding: 30px 0; }
+    .tree-lvl { position: relative; height: 84px; width: 100%; }
+
     .tnode {
       position: absolute;
       top: 0;
       transform: translateX(-50%);
-      width: 185px;
-      min-height: 60px;
-      padding: 6px 8px;
-      border-radius: 8px;
-      border: 1px solid var(--line);
+      width: 210px;
+      min-height: 74px;
+      padding: 7px 9px;
+      border-radius: 9px;
+      border: 2px solid var(--line);
       background: var(--card);
       cursor: pointer;
       font-size: 12px;
+      box-shadow: 0 3px 10px #0007;
+      transition: transform 0.12s, box-shadow 0.12s;
     }
+    .tnode:hover { transform: translateX(-50%) translateY(-2px); }
     .tnode.done { border-color: #4cc36f; background: color-mix(in srgb, #4cc36f 14%, var(--card)); }
-    .tnode.avail { border-color: var(--acc); box-shadow: 0 0 10px color-mix(in srgb, var(--acc) 35%, transparent); }
-    .tnode.lock { opacity: 0.52; }
-    .tnode.block { border-color: #e05555; opacity: 0.55; }
-    .tnode.selected { outline: 2px solid var(--acc); outline-offset: 2px; }
+    .tnode.avail { border-color: var(--acc); box-shadow: 0 0 12px color-mix(in srgb, var(--acc) 35%, transparent); }
+    .tnode.lock { opacity: 0.82; }
+    .tnode.block { border-color: #e05555; opacity: 0.62; }
+    .tnode.selected { outline: 2px solid #fff; outline-offset: 2px; }
+
+    /* Badges por Tipo de Nó (Igual ao Editor) */
+    .tbadge {
+      display: inline-block;
+      font: 700 9px monospace;
+      padding: 1px 5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .tb-atributo { background: #3da5d928; color: #5cc2f5; border: 1px solid #3da5d966; }
+    .tb-pericia  { background: #4cc36f28; color: #67df89; border: 1px solid #4cc36f66; }
+    .tb-habilidade { background: #e0a03028; color: #f5b949; border: 1px solid #e0a03066; }
+    .tb-ambiguo  { background: #b480e628; color: #cfa6f7; border: 1px solid #b480e666; }
+
+    .branch-pill {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      font: 700 9px monospace;
+      padding: 2px 6px;
+      border-radius: 99px;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 2;
+    }
+    .bp-exclusiva { background: #2c1810; color: #ff8c5a; border: 1px solid #ff8c5a; }
+    .bp-restritiva { background: #221430; color: #c78aff; border: 1px solid #c78aff; }
 
     .sw { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; }
     .sw.on { border-color: var(--txt); }
@@ -473,7 +523,7 @@
     #toast.show { opacity: 1; transform: translate(-50%, 0); }
     .mut { color: var(--mut); font-size: 12px; font-style: italic; }
 
-    .sigla-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 6px; font-size: 12px; }
+    .sigla-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px; font-size: 12px; }
     .sigla-item { background: var(--card2); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
     .sigla-item b { color: var(--acc); font-family: monospace; }
   </style>
@@ -488,35 +538,37 @@
       <input class="nome-personagem" id="nome" placeholder="Nome do personagem" style="flex:1; min-width:180px">
       <span class="chip" id="badge-etapa">Carregando...</span>
       <button class="btn pri" id="btn-finalizar" hidden onclick="finalizarCriacaoFicha()">🔒 Finalizar Criação</button>
-      <button class="btn on" id="btn-arvores" onclick="abrirModalArvores('raiz')">🌳 Raízes (<span id="pt-badge">0</span> PT)</button>
-      <button class="btn" id="btn-arvore-padrao" onclick="abrirModalArvorePadrao()" title="Árvore de evolução comum a todos os personagens da mesa">🧭 Evolução Padrão</button>
+      <button class="btn on" id="btn-arvores" onclick="abrirModalArvores('raiz')">🌳 Árvores (<span id="pt-badge">0</span> PT)</button>
+      <button class="btn" id="btn-arvore-padrao" onclick="abrirModalArvorePadrao()" title="Árvore comum a todos os personagens">🧭 Padrão</button>
       <button class="btn" onclick="abrirModalDescanso()" title="Descanso">🏕 Descanso</button>
-      <button class="btn" onclick="abrirLegendaSiglas()" title="Legenda das siglas">? Siglas</button>
+      <button class="btn" onclick="abrirLegendaSiglas()" title="Legenda das siglas e atributos">? Siglas</button>
       <button class="btn" id="btn-toggle-hist" onclick="alternarHistoricoLateral()">📜 Histórico</button>
-      <button class="btn" onclick="abrirConfiguracaoAparencia()" title="Aparência">⚙ Aparência</button>
+      <button class="btn" onclick="abrirConfiguracaoAparencia()" title="Aparência">⚙</button>
     </div>
 
+    <!-- Linha 2: Raiz e Status Derivados -->
     <div class="rz">
-      <label for="tipo">Tipo</label>
+      <label for="tipo">Origem</label>
       <select id="tipo">
         <option value="singular">Raiz Singular (misto)</option>
         <option value="heranca">Herança Singular</option>
         <option value="dupla">Raiz Dupla</option>
         <option value="auto">Autodidata (Órfão)</option>
       </select>
-      <label id="lbl-raiz1" for="raiz1">Raiz principal</label>
+      <label id="lbl-raiz1" for="raiz1">Raiz</label>
       <select id="raiz1"></select>
       <label id="lbl-raiz2" for="raiz2">Secundária</label>
       <select id="raiz2"></select>
+      <button class="btn" id="btn-estudar-raiz" onclick="abrirModalArvores('explorar')" title="Visualizar as árvores das raízes para escolher a sua">👁 Estudar Árvores</button>
       <span class="chip" id="bonus-raiz"></span>
       <span class="chip" id="chip-status-derivados">RD: 0 · DESL: 5m · Teto: 2</span>
     </div>
 
-    <!-- Passatempos Infantis (Editáveis na Criação) -->
-    <div id="box-passatempos" class="rz" style="border-top:1px solid var(--line); padding-top:6px"></div>
+    <!-- Linha 3: Passatempos Infantis (Seleção cadastrada na Mesa) -->
+    <div id="box-passatempos" class="rz" style="border-top:1px solid var(--line); padding-top:8px"></div>
   </header>
 
-  <!-- Área Principal (Colunas Arrastáveis + Histórico Lateral Recolhível) -->
+  <!-- Área Principal -->
   <div class="workspace" id="workspace">
     <div class="cols" id="cols">
       <div class="col"></div>
@@ -524,7 +576,6 @@
       <div class="col"></div>
     </div>
 
-    <!-- Lateral de Histórico de Rolagens -->
     <aside class="card hist-side" id="hist-side">
       <h2>
         📜 Histórico da Mesa
@@ -538,11 +589,11 @@
     </aside>
   </div>
 
-  <!-- Blocos de Conteúdo (Gerenciados via JS) -->
+  <!-- Blocos de Conteúdo -->
   <div id="store" hidden>
     <section class="card blk" id="b-recursos">
       <h2>
-        <span class="grip">⠿</span>Recursos de Vida
+        <span class="grip">⠿</span>Recursos
         <span class="r"><button class="btn min-btn" onclick="alternarMinBloco('recursos')">−</button></span>
       </h2>
       <div class="blk-body" id="res"></div>
@@ -550,7 +601,7 @@
 
     <section class="card blk" id="b-atributos">
       <h2>
-        <span class="grip">⠿</span>Sigilo de Atributos
+        <span class="grip">⠿</span>Atributos
         <span class="r">
           <span class="mut" id="info-pts-attr" style="font-style:normal; font-family:monospace; font-size:10px"></span>
           <button class="btn min-btn" onclick="alternarMinBloco('atributos')">−</button>
@@ -563,9 +614,8 @@
 
     <section class="card blk" id="b-teste">
       <h2>
-        <span class="grip">⠿</span>Motor de Teste
+        <span class="grip">⠿</span>Rolagem de Teste
         <span class="r">
-          <span class="mut">d20s</span>
           <button class="btn min-btn" onclick="alternarMinBloco('teste')">−</button>
         </span>
       </h2>
@@ -607,9 +657,9 @@
         </div>
         <div class="out" id="out" hidden></div>
 
-        <!-- Rolador Livre Compacto -->
+        <!-- Rolador Livre -->
         <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap; margin-top:8px; padding-top:8px; border-top:1px solid var(--line)">
-          <span class="mut" style="font-style:normal; font-size:11px">Livre:</span>
+          <span class="mut" style="font-style:normal; font-size:11px">Dado Livre:</span>
           <input type="number" id="lv-qtd" value="1" min="1" max="20" style="width:40px; text-align:center">
           <select id="lv-faces">
             <option value="4">d4</option>
@@ -634,10 +684,7 @@
     <section class="card blk" id="b-macros">
       <h2>
         <span class="grip">⠿</span>Macros
-        <span class="r">
-          <span class="mut">1 clique</span>
-          <button class="btn min-btn" onclick="alternarMinBloco('macros')">−</button>
-        </span>
+        <span class="r"><button class="btn min-btn" onclick="alternarMinBloco('macros')">−</button></span>
       </h2>
       <div class="blk-body" id="macros"></div>
     </section>
@@ -645,10 +692,7 @@
     <section class="card blk" id="b-pericias">
       <h2>
         <span class="grip">⠿</span>Perícias
-        <span class="r">
-          <span class="mut" style="font-size:10px">Passatempos & Árvores</span>
-          <button class="btn min-btn" onclick="alternarMinBloco('pericias')">−</button>
-        </span>
+        <span class="r"><button class="btn min-btn" onclick="alternarMinBloco('pericias')">−</button></span>
       </h2>
       <div class="blk-body" id="pericias"></div>
     </section>
@@ -656,10 +700,7 @@
     <section class="card blk" id="b-habilidades">
       <h2>
         <span class="grip">⠿</span>Habilidades
-        <span class="r">
-          <span class="mut" style="font-size:10px">Árvores & Itens</span>
-          <button class="btn min-btn" onclick="alternarMinBloco('habilidades')">−</button>
-        </span>
+        <span class="r"><button class="btn min-btn" onclick="alternarMinBloco('habilidades')">−</button></span>
       </h2>
       <div class="blk-body" id="habs"></div>
     </section>
@@ -719,10 +760,10 @@
     ];
 
     const ESTRUTURA_RECURSOS = [
-      ['hp', 'HP', '#d64545'],
-      ['san', 'SAN', '#9b59d0'],
-      ['pef', 'PE-F (Físico)', '#e0a030'],
-      ['pem', 'PE-M (Mental)', '#3da5d9']
+      ['hp', 'HP (Vida)', '#d64545'],
+      ['san', 'SAN (Sanidade)', '#9b59d0'],
+      ['pef', 'PE-F (Energia Física)', '#e0a030'],
+      ['pem', 'PE-M (Energia Mental)', '#3da5d9']
     ];
 
     const BONUS_ORFAO = [2, -2, 2, 2];
@@ -743,6 +784,12 @@
       passatemposMistos: 1,
       travaAscendenteCarga: true
     };
+
+    const PASSATEMPOS_FALLBACK = [
+      'Atletismo', 'Acrobacia', 'Furtividade', 'Pontaria', 'Luta',
+      'Investigação', 'Percepção', 'Medicina', 'Ocultismo', 'História',
+      'Persuasão', 'Intimidação', 'Enganação', 'Intuição', 'Sobrevivência', 'Ofício'
+    ];
 
     // Estado Firebase
     let usuarioAtual = null;
@@ -766,6 +813,7 @@
     let maximosRecursos = {};
     let arvoreAtivaId = null;
     let noInspecionadoId = null;
+    let modoExploracaoCriacao = false;
     let tZoom = 1, tPanX = 0, tPanY = 0;
 
     try {
@@ -796,7 +844,7 @@
       toast.textContent = mensagem;
       toast.classList.add('show');
       clearTimeout(mostrarToast.timer);
-      mostrarToast.timer = setTimeout(() => toast.classList.remove('show'), 2300);
+      mostrarToast.timer = setTimeout(() => toast.classList.remove('show'), 2400);
     }
 
     const obterSiglaAtributo = chave => ATRIBUTOS.find(a => a[0] === chave)?.[1] || chave.toUpperCase();
@@ -838,16 +886,27 @@
     };
 
     window.abrirLegendaSiglas = () => {
-      abrirModal('Legenda de Siglas do Sistema', `
+      abrirModal('Siglas e Atributos do Sistema', `
+        <p class="cz" style="color:var(--acc); font-size:11px; margin:0 0 6px">7 Atributos Fundamentais</p>
+        <div class="sigla-grid" style="margin-bottom:12px">
+          <div class="sigla-item"><b class="c-r">POT (Potência)</b> — Força física bruta, impacto e dano corpo a corpo.</div>
+          <div class="sigla-item"><b class="c-r">VIG (Vigor)</b> — Resistência corporal, HP máximo, PE-F e capacidade de carga.</div>
+          <div class="sigla-item"><b class="c-r">DES (Destreza)</b> — Agilidade, reflexos, pontaria, PE-F e deslocamento.</div>
+          <div class="sigla-item"><b class="c-b">PER (Percepção)</b> — Sentidos apurados, atenção aos detalhes e iniciativa.</div>
+          <div class="sigla-item"><b class="c-b">ERU (Erudição)</b> — Conhecimento teórico, raciocínio lógico e PE-M.</div>
+          <div class="sigla-item"><b class="c-p">AUT (Autoridade)</b> — Presença social, liderança, persuasão e comando.</div>
+          <div class="sigla-item"><b class="c-p">ÍMP (Ímpeto)</b> — Força de vontade, resiliência mental, SAN e PE-M.</div>
+        </div>
+        <p class="cz" style="color:var(--acc); font-size:11px; margin:0 0 6px">Recursos e Combate</p>
         <div class="sigla-grid">
           <div class="sigla-item"><b>HP</b> — Pontos de Vida (Vitalidade física).</div>
-          <div class="sigla-item"><b>SAN</b> — Sanidade (Estabilidade contra o Véu).</div>
-          <div class="sigla-item"><b>PE-F</b> — Energia Física (Vigor e agilidade).</div>
-          <div class="sigla-item"><b>PE-M</b> — Energia Mística / Mental.</div>
-          <div class="sigla-item"><b>PT</b> — Pontos de Evolução das Árvores.</div>
-          <div class="sigla-item"><b>GA / GD</b> — Grau de Ataque / Grau de Defesa.</div>
-          <div class="sigla-item"><b>RD</b> — Redução de Dano (Armaduras).</div>
-          <div class="sigla-item"><b>DESL</b> — Deslocamento em metros (5 + DES).</div>
+          <div class="sigla-item"><b>SAN</b> — Sanidade (Estabilidade mental contra o Véu).</div>
+          <div class="sigla-item"><b>PE-F</b> — Pontos de Energia Física (habilidades corporais).</div>
+          <div class="sigla-item"><b>PE-M</b> — Pontos de Energia Mental (habilidades místicas).</div>
+          <div class="sigla-item"><b>PT</b> — Pontos de Evolução para desbloquear nós nas Árvores.</div>
+          <div class="sigla-item"><b>GA / GD</b> — Grau de Ataque / Grau de Defesa da arma ou escudo.</div>
+          <div class="sigla-item"><b>RD</b> — Redução de Dano fornecida por armaduras.</div>
+          <div class="sigla-item"><b>DESL</b> — Deslocamento em metros por turno (5 + DES).</div>
         </div>
       `);
     };
@@ -885,6 +944,7 @@
       getEl('#modal').hidden = true;
       getEl('#modal-box').classList.remove('mod-tree');
       noInspecionadoId = null;
+      modoExploracaoCriacao = false;
     };
     getEl('#modal').onclick = e => { if (e.target.id === 'modal') fecharModal(); };
 
@@ -947,7 +1007,7 @@
       });
     }
 
-    /* ---------- Cálculo Consolidado da Ficha (Regras Pantheon) ---------- */
+    /* ---------- Cálculo Consolidado da Ficha ---------- */
     function calcularEstadoFicha() {
       const f = fichaDoc;
       const h = f.raizesHeranca || { tipo: 'heranca', r1: '', r2: '' };
@@ -965,7 +1025,7 @@
         if (c.atributo && attrMaestria[c.atributo] !== undefined) attrMaestria[c.atributo] += 1;
       });
 
-      const pericias = {}; // { Nome: { val, fontes } }
+      const pericias = {};
       const habilidades = [];
       const bonusRecArvore = { hp: 0, san: 0, pef: 0, pem: 0 };
 
@@ -997,7 +1057,6 @@
         });
       };
 
-      // 1. Nós desbloqueados nas Árvores (Raízes + Árvore Padrão)
       const arvoresMesa = mesaDados?.arvores || [];
       Object.entries(f.nosDesbloqueados || {}).forEach(([arvId, nosIds]) => {
         const arv = arvoresMesa.find(a => a.id === arvId);
@@ -1038,7 +1097,6 @@
         });
       });
 
-      // 2. Passatempos Infantis
       const pass = f.passatempos || { focados: [], mistos: [], extrasOrfao: [] };
       (pass.focados || []).forEach(pNome => addPericia(pNome, 2, 'Focado'));
       (pass.mistos || []).forEach(par => (par || []).forEach(pNome => addPericia(pNome, 1, 'Misto')));
@@ -1046,7 +1104,6 @@
         (pass.extrasOrfao || []).forEach(pNome => addPericia(pNome, 1, 'Órfão'));
       }
 
-      // 3. Conversão de Maestria (-5 perícia -> +1 atributo)
       (f.conversoesMaestria || []).forEach(c => {
         if (c.pericia && pericias[c.pericia]) {
           pericias[c.pericia].val = Math.max(0, pericias[c.pericia].val - 5);
@@ -1054,13 +1111,11 @@
         }
       });
 
-      // 4. Soma Final Atributos
       const attr = {};
       ATRIBUTOS.forEach(([k]) => {
         attr[k] = (attrBase[k] || 0) + (attrArvore[k] || 0) + (attrMaestria[k] || 0);
       });
 
-      // 5. Recursos Máximos
       const b = h.tipo === 'auto' ? BONUS_ORFAO : (RAIZES[h.r1] || [0, 0, 0, 0]);
       const maxRec = {
         hp: 10 + attr.vigor * 3 + (b[0] || 0) + bonusRecArvore.hp,
@@ -1069,7 +1124,6 @@
         pem: 5 + attr.impeto + attr.erudicao + (b[3] || 0) + bonusRecArvore.pem
       };
 
-      // 6. Inventário (RD, Deslocamento e Habilidades de Itens Equipados)
       let rd = 0, penDesl = 0;
       (f.inventario || []).forEach(it => {
         if (!it.equipado) return;
@@ -1106,7 +1160,23 @@
       };
     }
 
-    /* ---------- Cabeçalho, Raízes e Passatempos ---------- */
+    /* ---------- Cabeçalho, Raízes e Passatempos por Seleção ---------- */
+    function obterListaPassatemposMesa() {
+      const listaMesa = mesaDados?.passatemposDisponiveis;
+      if (Array.isArray(listaMesa) && listaMesa.length > 0) return listaMesa;
+      return PASSATEMPOS_FALLBACK;
+    }
+
+    function construirSelectPassatempo(attrData, valorAtual, travado, placeholder, jaEscolhidos) {
+      const lista = obterListaPassatemposMesa();
+      const todos = valorAtual && !lista.includes(valorAtual) ? [valorAtual, ...lista] : lista;
+      const opts = `<option value="">${placeholder}</option>` + todos.map(p => {
+        const ocupado = p !== valorAtual && jaEscolhidos.has(p);
+        return `<option value="${p}" ${p === valorAtual ? 'selected' : ''} ${ocupado ? 'disabled' : ''}>${p}</option>`;
+      }).join('');
+      return `<select ${attrData} ${travado ? 'disabled' : ''} style="min-width:130px">${opts}</select>`;
+    }
+
     function construirCabecalho() {
       const f = fichaDoc;
       const travado = Boolean(f.criacaoFinalizada);
@@ -1116,12 +1186,13 @@
       getEl('#pt-badge').textContent = f.pontosEvolucao || 0;
 
       const badge = getEl('#badge-etapa');
-      badge.textContent = travado ? '🔒 Finalizada' : '✏ Em Criação';
+      badge.textContent = travado ? '🔒 Ficha Ativa' : '✏ Em Criação';
       getEl('#btn-finalizar').hidden = travado;
+      getEl('#btn-estudar-raiz').hidden = travado;
 
       const listaRaizes = Object.keys(RAIZES).filter(r => r !== 'Órfão');
       const gerarOpcoes = (selecionada, permitirVazio) =>
-        (permitirVazio ? '<option value="">—</option>' : '') +
+        (permitirVazio ? '<option value="">— Escolher —</option>' : '') +
         listaRaizes.map(r => `<option value="${r}" ${r === selecionada ? 'selected' : ''}>${r}</option>`).join('');
 
       getEl('#raiz1').innerHTML = gerarOpcoes(h.r1, true);
@@ -1139,53 +1210,59 @@
 
       const bonus = h.tipo === 'auto' ? BONUS_ORFAO : (RAIZES[h.r1] || [0, 0, 0, 0]);
       const nomesStatus = ['HP', 'SAN', 'PE-F', 'PE-M'];
-      getEl('#bonus-raiz').textContent = (h.tipo === 'auto' ? 'Órfão: ' : 'Bônus: ') +
+      getEl('#bonus-raiz').textContent = (h.tipo === 'auto' ? 'Órfão: ' : 'Bônus Raiz: ') +
         nomesStatus.map((nome, i) => `${nome} ${bonus[i] >= 0 ? '+' : ''}${bonus[i]}`).join(' · ');
 
       getEl('#chip-status-derivados').textContent = `RD: ${computado.rd} · DESL: ${computado.desl}m · Teto: ${computado.teto}`;
 
-      // Passatempos Infantis
+      // Passatempos Infantis (Seleção)
       const qtdFoc = regras.passatemposFocados || 0;
       const qtdMis = regras.passatemposMistos || 0;
       const pass = f.passatempos || { focados: [], mistos: [], extrasOrfao: [] };
 
+      const escolhidos = new Set([
+        ...(pass.focados || []),
+        ...(pass.mistos || []).flat(),
+        ...(h.tipo === 'auto' ? (pass.extrasOrfao || []) : [])
+      ].filter(Boolean));
+
       let htmlPass = `<label>Passatempos:</label>`;
       for (let i = 0; i < qtdFoc; i++) {
-        htmlPass += `<input type="text" data-pfoc="${i}" value="${pass.focados?.[i] || ''}" ${travado ? 'disabled' : ''} placeholder="Focado #${i + 1} (+2)" style="width:135px">`;
+        htmlPass += construirSelectPassatempo(`data-pfoc="${i}"`, pass.focados?.[i] || '', travado, `Focado #${i + 1} (+2)`, escolhidos);
       }
       for (let i = 0; i < qtdMis; i++) {
         const par = pass.mistos?.[i] || ['', ''];
-        htmlPass += `<input type="text" data-pmis="${i}:0" value="${par[0] || ''}" ${travado ? 'disabled' : ''} placeholder="Misto A (+1)" style="width:110px">`;
-        htmlPass += `<input type="text" data-pmis="${i}:1" value="${par[1] || ''}" ${travado ? 'disabled' : ''} placeholder="Misto B (+1)" style="width:110px">`;
+        htmlPass += construirSelectPassatempo(`data-pmis="${i}:0"`, par[0] || '', travado, `Misto A (+1)`, escolhidos);
+        htmlPass += construirSelectPassatempo(`data-pmis="${i}:1"`, par[1] || '', travado, `Misto B (+1)`, escolhidos);
       }
       if (h.tipo === 'auto') {
         for (let i = 0; i < 2; i++) {
-          htmlPass += `<input type="text" data-porf="${i}" value="${pass.extrasOrfao?.[i] || ''}" ${travado ? 'disabled' : ''} placeholder="Órfão #${i + 1} (+1)" style="width:115px">`;
+          htmlPass += construirSelectPassatempo(`data-porf="${i}"`, pass.extrasOrfao?.[i] || '', travado, `Órfão #${i + 1} (+1)`, escolhidos);
         }
       }
       getEl('#box-passatempos').innerHTML = htmlPass;
 
       if (!travado) {
-        getEl('#box-passatempos').querySelectorAll('[data-pfoc]').forEach(inp => {
-          inp.onchange = async () => {
+        getEl('#box-passatempos').querySelectorAll('[data-pfoc]').forEach(sel => {
+          sel.onchange = async () => {
             const arr = [...(fichaDoc.passatempos?.focados || [])];
-            arr[parseInt(inp.dataset.pfoc)] = inp.value.trim();
+            arr[parseInt(sel.dataset.pfoc)] = sel.value;
             await updateDoc(doc(db, "fichas", fichaId), { "passatempos.focados": arr });
           };
         });
-        getEl('#box-passatempos').querySelectorAll('[data-pmis]').forEach(inp => {
-          inp.onchange = async () => {
-            const [idx, pos] = inp.dataset.pmis.split(':').map(Number);
+        getEl('#box-passatempos').querySelectorAll('[data-pmis]').forEach(sel => {
+          sel.onchange = async () => {
+            const [idx, pos] = sel.dataset.pmis.split(':').map(Number);
             const arr = JSON.parse(JSON.stringify(fichaDoc.passatempos?.mistos || []));
             if (!arr[idx]) arr[idx] = ['', ''];
-            arr[idx][pos] = inp.value.trim();
+            arr[idx][pos] = sel.value;
             await updateDoc(doc(db, "fichas", fichaId), { "passatempos.mistos": arr });
           };
         });
-        getEl('#box-passatempos').querySelectorAll('[data-porf]').forEach(inp => {
-          inp.onchange = async () => {
+        getEl('#box-passatempos').querySelectorAll('[data-porf]').forEach(sel => {
+          sel.onchange = async () => {
             const arr = [...(fichaDoc.passatempos?.extrasOrfao || [])];
-            arr[parseInt(inp.dataset.porf)] = inp.value.trim();
+            arr[parseInt(sel.dataset.porf)] = sel.value;
             await updateDoc(doc(db, "fichas", fichaId), { "passatempos.extrasOrfao": arr });
           };
         });
@@ -1206,7 +1283,7 @@
     getEl('#raiz2').onchange = async e => await updateDoc(doc(db, "fichas", fichaId), { "raizesHeranca.r2": e.target.value });
 
     window.finalizarCriacaoFicha = async () => {
-      if (!confirm("Finalizar a criação da ficha? Atributos iniciais, raízes e passatempos ficarão travados.")) return;
+      if (!confirm("Finalizar a criação da ficha? Atributos iniciais, raízes e passatempos ficarão travados, e você poderá evoluir nas Árvores.")) return;
       await updateDoc(doc(db, "fichas", fichaId), {
         criacaoFinalizada: true,
         recursosAtuais: { ...computado.maxRec }
@@ -1294,10 +1371,10 @@
 
       getEl('#info-pts-attr').textContent = travado
         ? `Teto ${computado.teto}`
-        : `Pts: ${ptsMax - ptsGastos}/${ptsMax}`;
+        : `Distribuir: ${ptsMax - ptsGastos}/${ptsMax}`;
 
       const nosHtml = ATRIBUTOS.map((attr, i) => `
-        <div class="node" data-k="${attr[0]}" style="left:${pontos[i][0]}%; top:${pontos[i][1]}%" title="${attr[0]} (Base: ${computado.attrBase[attr[0]]})">
+        <div class="node" data-k="${attr[0]}" style="left:${pontos[i][0]}%; top:${pontos[i][1]}%" title="${attr[0].toUpperCase()} (Base: ${computado.attrBase[attr[0]]})">
           <b class="c-${attr[2]}">${attr[1]}</b>
           <input type="number" min="0" max="${computado.teto}" value="${computado.attr[attr[0]]}" ${travado ? 'disabled' : ''}>
         </div>
@@ -1325,17 +1402,17 @@
           const outrosGastos = ptsGastos - (computado.attrBase[key] || 0);
           if (outrosGastos + novoBase > ptsMax) {
             novoBase = Math.max(0, ptsMax - outrosGastos);
-            mostrarToast(`Limite de ${ptsMax} pontos de atributo iniciais!`);
+            mostrarToast(`Limite de ${ptsMax} pontos iniciais!`);
           }
           await updateDoc(doc(db, "fichas", fichaId), { [`atributosBase.${key}`]: novoBase });
         };
       });
     }
 
-    /* ---------- Perícias (Automáticas + Conversão de Maestria) ---------- */
+    /* ---------- Perícias ---------- */
     function renderizarPericias() {
       const chaves = Object.keys(computado.pericias);
-      getEl('#pericias').innerHTML = chaves.length ? '' : '<span class="mut">Nenhuma perícia adquirida (preencha Passatempos ou evolua nas Árvores).</span>';
+      getEl('#pericias').innerHTML = chaves.length ? '' : '<span class="mut">Escolha seus Passatempos no topo ou evolua nas Árvores.</span>';
 
       chaves.forEach(nome => {
         const info = computado.pericias[nome];
@@ -1372,7 +1449,7 @@
       mostrarToast(`+1 em ${obterSiglaAtributo(key)} via Maestria!`);
     };
 
-    /* ---------- Habilidades (Árvores + Itens Equipados) ---------- */
+    /* ---------- Habilidades ---------- */
     function renderizarHabilidades() {
       const lista = computado.habilidades;
       getEl('#habs').innerHTML = lista.length ? '' : '<span class="mut">Nenhuma habilidade desbloqueada.</span>';
@@ -1408,7 +1485,7 @@
       mostrarToast(`"${nome}" ativada!`);
     };
 
-    /* ---------- Inventário & Catálogo da Mesa ---------- */
+    /* ---------- Inventário ---------- */
     function renderizarInventario() {
       const vig = computado.attr.vigor || 0;
       const cap = { pesado: vig, medio: vig + 1, leve: vig + 2, miudeza: 10 };
@@ -1513,7 +1590,7 @@
       mostrarToast(`${base.nome} adicionado!`);
     };
 
-    /* ---------- Seleção para Testes (Modo "Armar") ---------- */
+    /* ---------- Seleção para Testes ---------- */
     const TEXTOS_AJUDA = {
       attr: 'Clique em até 2 atributos na roda.',
       per: 'Clique em uma perícia da lista.',
@@ -1607,7 +1684,7 @@
       getEl('#cost').textContent = habObj ? `Custo: ${habObj.f} PE-F / ${habObj.m} PE-M` : 'Custo: 0 PE';
     }
 
-    /* ---------- Rolagens (Motor Pantheon + Dano + Livre + Macros) ---------- */
+    /* ---------- Rolagens ---------- */
     window.executarRolarDado = async () => {
       if (!selecaoTeste.attrs.length) return mostrarToast('Adicione ao menos um atributo.');
 
@@ -1783,9 +1860,13 @@
       fecharModal();
     };
 
-    /* ---------- Visualizador de Árvores na Ficha (Raízes + Árvore Padrão) ---------- */
-    function obterArvoresAcessiveis(incluirPadrao = true) {
+    /* ---------- Visualizador de Árvores (Estilo Editor + Exploração na Criação) ---------- */
+    function obterArvoresParaModal(modo) {
       const todas = mesaDados?.arvores || [];
+      // Durante a criação ou no modo explorar, permite ver TODAS as árvores da mesa para estudar
+      if (!fichaDoc?.criacaoFinalizada || modo === 'explorar') {
+        return todas;
+      }
       const h = fichaDoc?.raizesHeranca || {};
       const permitidas = new Set();
       if (h.tipo === 'auto') permitidas.add('Órfão');
@@ -1794,16 +1875,16 @@
         if (h.tipo === 'dupla' && h.r2) permitidas.add(h.r2);
       }
       (fichaDoc?.raizesExtras || []).forEach(r => permitidas.add(r));
-      return todas.filter(a => (incluirPadrao && ehArvorePadrao(a)) || permitidas.has(a.raizAssociada));
+      return todas.filter(a => ehArvorePadrao(a) || permitidas.has(a.raizAssociada));
     }
 
     window.abrirModalArvorePadrao = () => {
       const padrao = (mesaDados?.arvores || []).find(a => ehArvorePadrao(a));
       if (!padrao) {
         return abrirModal('🧭 Árvore de Evolução Padrão', `
-          <div style="padding:12px; text-align:center">
+          <div style="padding:14px; text-align:center">
             <p class="cz" style="color:var(--acc); font-size:14px; margin:0 0 6px">Árvore Comum em Construção</p>
-            <p class="mut" style="font-style:normal">Esta árvore compartilhada por todos os personagens da mesa ainda não foi cadastrada pelo Mestre.<br>Assim que uma árvore com raiz <b>"Padrão"</b> for salva na mesa, ela aparecerá automaticamente aqui.</p>
+            <p class="mut" style="font-style:normal">Assim que o Mestre salvar uma árvore com raiz <b>"Padrão"</b>, ela aparecerá aqui para todos os jogadores.</p>
           </div>
         `);
       }
@@ -1812,10 +1893,17 @@
     };
 
     window.abrirModalArvores = (modo = 'raiz') => {
-      const acessiveis = obterArvoresAcessiveis(true);
-      if (!acessiveis.length) return mostrarToast('Nenhuma árvore vinculada às suas raízes.');
+      const acessiveis = obterArvoresParaModal(modo);
+      if (!acessiveis.length) return mostrarToast('Nenhuma árvore cadastrada na mesa.');
 
-      if (modo === 'raiz') {
+      const emCriacao = !fichaDoc?.criacaoFinalizada;
+      modoExploracaoCriacao = emCriacao || modo === 'explorar';
+
+      const h = fichaDoc?.raizesHeranca || {};
+      if (modo === 'explorar' && h.r1) {
+        const daRaizAtual = acessiveis.find(a => a.raizAssociada === h.r1);
+        if (daRaizAtual) arvoreAtivaId = daRaizAtual.id;
+      } else if (modo === 'raiz') {
         const deRaiz = acessiveis.filter(a => !ehArvorePadrao(a));
         if (!arvoreAtivaId || !acessiveis.some(a => a.id === arvoreAtivaId)) {
           arvoreAtivaId = (deRaiz[0] || acessiveis[0]).id;
@@ -1828,13 +1916,26 @@
       noInspecionadoId = null;
 
       const selHtml = `<select id="sel-arv-modal" onchange="trocarArvoreModal(this.value)">${acessiveis.map(a =>
-        `<option value="${a.id}" ${a.id === arvoreAtivaId ? 'selected' : ''}>${ehArvorePadrao(a) ? '🧭 [Padrão] ' : '🌳 '}${a.nome}${a.raizAssociada ? ` (${a.raizAssociada})` : ''}</option>`
+        `<option value="${a.id}" ${a.id === arvoreAtivaId ? 'selected' : ''}>${ehArvorePadrao(a) ? '🧭 [Padrão] ' : '🌳 '}${a.nome}${a.raizAssociada ? ` — ${a.raizAssociada}` : ''}</option>`
       ).join('')}</select>`;
 
-      abrirModal(`Evolução · ${selHtml} <span class="chip" id="mod-pt">PT: ${fichaDoc.pontosEvolucao || 0}</span>`, `
+      const avisoCriacao = emCriacao
+        ? `<span class="chip" style="border-color:var(--acc); color:var(--acc)">👁 Modo Estudo (Finalize a criação para comprar nós)</span>`
+        : `<span class="chip" id="mod-pt">PT: ${fichaDoc.pontosEvolucao || 0}</span>`;
+
+      abrirModal(`Árvore · ${selHtml} ${avisoCriacao}`, `
+        <div class="tree-legend">
+          <span><i class="leg-dot" style="background:#5cc2f5"></i>Atributo</span>
+          <span><i class="leg-dot" style="background:#67df89"></i>Perícia</span>
+          <span><i class="leg-dot" style="background:#f5b949"></i>Habilidade</span>
+          <span><i class="leg-dot" style="background:#cfa6f7"></i>Ambíguo (Escolha A/B)</span>
+          <span style="margin-left:auto; color:#ff8c5a">⚡ Exclusiva (1 caminho)</span>
+          <span style="color:#c78aff">🔒 Restritiva (limite de nós)</span>
+        </div>
         <div class="tree-view-wrap" id="tv-wrap">
           <div class="tree-stage" id="tv-stage">
             <svg id="tv-svg" style="position:absolute;top:0;left:0;pointer-events:none;overflow:visible"></svg>
+            <div id="tv-badges" style="position:absolute;top:0;left:0;pointer-events:none"></div>
             <div class="tree-grid" id="tv-grid"></div>
           </div>
           <div style="position:absolute; right:10px; bottom:10px; display:flex; gap:4px; z-index:5">
@@ -1843,7 +1944,7 @@
             <button class="btn" onclick="resetZoomArvore()">↺</button>
           </div>
         </div>
-        <div id="tv-detalhes" class="card" style="margin:8px 0 0; padding:8px" hidden></div>
+        <div id="tv-detalhes" class="card" style="margin:8px 0 0; padding:10px" hidden></div>
       `, true);
 
       iniciarPanZoomArvore();
@@ -1899,6 +2000,10 @@
     }
 
     function statusNoArvore(arvore, node) {
+      if (!fichaDoc?.criacaoFinalizada) {
+        return { st: 'lock', msg: 'Finalize a criação da ficha para evoluir' };
+      }
+
       const desb = new Set((fichaDoc.nosDesbloqueados || {})[arvore.id] || []);
       if (desb.has(node.id)) return { st: 'done', msg: 'Desbloqueado' };
 
@@ -1931,14 +2036,24 @@
       return { st: 'avail', msg: `Comprar por ${custo} PT` };
     }
 
-    function resumirSubtituloNo(n) {
-      if ((n.tipoRecompensa === 'atributo' || n.tipoRecompensa === 'ambiguo') && n.opcoesAmbiguas?.length >= 2) {
-        return `${n.opcoesAmbiguas[0].efeito || 'A'} / ${n.opcoesAmbiguas[1].efeito || 'B'}`;
+    function infoVisualTipoNo(n) {
+      const t = n.tipoRecompensa || 'habilidade';
+      if (t === 'atributo' || t === 'ambiguo') {
+        const opA = n.opcoesAmbiguas?.[0]?.efeito || 'Opção A';
+        const opB = n.opcoesAmbiguas?.[1]?.efeito || 'Opção B';
+        return {
+          badge: t === 'atributo' ? 'ATRIBUTO / ALT' : 'AMBÍGUO',
+          cls: t === 'atributo' ? 'tb-atributo' : 'tb-ambiguo',
+          resumo: `A: ${opA} · B: ${opB}`
+        };
       }
-      if (n.tipoRecompensa === 'pericia' && n.conteudo?.bonusPericia) {
-        return Object.entries(n.conteudo.bonusPericia).map(([k, v]) => `+${v} ${k}`).join(' · ');
+      if (t === 'pericia') {
+        const perTxt = n.conteudo?.bonusPericia
+          ? Object.entries(n.conteudo.bonusPericia).map(([k, v]) => `+${v} ${k}`).join(' · ')
+          : '';
+        return { badge: 'PERÍCIA', cls: 'tb-pericia', resumo: perTxt || n.conteudo?.descricao || '' };
       }
-      return n.conteudo?.descricao || '';
+      return { badge: 'HABILIDADE', cls: 'tb-habilidade', resumo: n.conteudo?.descricao || '' };
     }
 
     function renderizarArvoreNoModal() {
@@ -1947,7 +2062,8 @@
       const stage = getEl('#tv-stage');
       if (!arvore || !grid || !stage) return;
 
-      getEl('#mod-pt').textContent = `PT: ${fichaDoc.pontosEvolucao || 0}`;
+      const elPt = getEl('#mod-pt');
+      if (elPt) elPt.textContent = `PT: ${fichaDoc.pontosEvolucao || 0}`;
       grid.innerHTML = '';
 
       const nodeMap = new Map((arvore.nos || []).map(n => [n.id, n]));
@@ -1959,7 +2075,7 @@
       });
 
       const roots = (arvore.nos || []).filter(n => !parent.has(n.id));
-      const pos = new Map(), vis = new Set(), step = 225;
+      const pos = new Map(), vis = new Set(), step = 245;
       function place(n, d, cur) {
         if (vis.has(n.id)) return { cur, c: 0 };
         vis.add(n.id);
@@ -1983,26 +2099,28 @@
       const levels = Array.from({ length: maxD + 1 }, () => []);
       (arvore.nos || []).forEach(n => { const p = pos.get(n.id); if (p) levels[p.d].push(n); });
 
-      const gridW = Math.max(820, cur);
+      const gridW = Math.max(880, cur);
       grid.style.width = `${gridW}px`;
       stage.style.width = `${gridW + 640}px`;
-      stage.style.height = `${(maxD + 1) * 160 + 640}px`;
+      stage.style.height = `${(maxD + 1) * 180 + 640}px`;
 
       for (let d = maxD; d >= 0; d--) {
         const row = document.createElement('div');
         row.className = 'tree-lvl';
         (levels[d] || []).forEach(n => {
           const st = statusNoArvore(arvore, n);
+          const visTipo = infoVisualTipoNo(n);
           const el = document.createElement('div');
           el.id = `tv-n-${n.id}`;
           el.className = `tnode ${st.st}${noInspecionadoId === n.id ? ' selected' : ''}`;
           el.style.left = `${pos.get(n.id).x}px`;
           el.innerHTML = `
-            <div style="display:flex; justify-content:space-between; font-weight:700; gap:4px" class="cz">
-              <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${n.titulo}</span>
-              <span class="tag">${st.st === 'done' ? '✓' : `${n.custoPontos || 1}PT`}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:4px; margin-bottom:3px">
+              <span class="tbadge ${visTipo.cls}">${visTipo.badge}</span>
+              <span class="tag">${st.st === 'done' ? '✓ Obtido' : `${n.custoPontos || 1} PT`}</span>
             </div>
-            <div class="mut" style="font-style:normal; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${resumirSubtituloNo(n)}</div>
+            <div class="cz" style="font-weight:700; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${n.titulo}</div>
+            <div class="mut" style="font-style:normal; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${visTipo.resumo}</div>
           `;
           el.onclick = () => selecionarNoParaCompra(arvore, n, st);
           row.appendChild(el);
@@ -2012,28 +2130,60 @@
 
       requestAnimationFrame(() => {
         const svg = getEl('#tv-svg');
-        if (!svg) return;
+        const badgesLayer = getEl('#tv-badges');
+        if (!svg || !badgesLayer) return;
+
         svg.setAttribute('width', grid.offsetWidth + 640);
         svg.setAttribute('height', grid.offsetHeight + 640);
         svg.innerHTML = '';
+        badgesLayer.innerHTML = '';
+
         const desb = new Set((fichaDoc.nosDesbloqueados || {})[arvore.id] || []);
+
         (arvore.nos || []).forEach(n => {
           const tEl = getEl(`#tv-n-${n.id}`);
           if (!tEl) return;
+
+          // Etiqueta de ramificação no topo do nó pai (Exclusiva ou Restritiva)
+          const filhos = (arvore.nos || []).filter(f => (f.requisitos || []).includes(n.id));
+          if (filhos.length > 1 && (n.tipoRamificacao === 'exclusiva' || n.tipoRamificacao === 'restritiva')) {
+            const px = grid.offsetLeft + tEl.offsetLeft;
+            const py = grid.offsetTop + tEl.parentElement.offsetTop + tEl.offsetTop - 12;
+            const pill = document.createElement('div');
+            pill.className = `branch-pill bp-${n.tipoRamificacao}`;
+            pill.style.left = `${px}px`;
+            pill.style.top = `${py}px`;
+            pill.textContent = n.tipoRamificacao === 'exclusiva'
+              ? '⚡ EXCLUSIVA (Escolha 1)'
+              : `🔒 RESTRITIVA (Máx ${n.limiteNosSecundarios || 1} nó)`;
+            badgesLayer.appendChild(pill);
+          }
+
           (n.requisitos || []).forEach(rId => {
             const sEl = getEl(`#tv-n-${rId}`);
+            const paiObj = nodeMap.get(rId);
             if (!sEl) return;
+
             const x1 = grid.offsetLeft + sEl.offsetLeft;
             const y1 = grid.offsetTop + sEl.parentElement.offsetTop + sEl.offsetTop;
             const x2 = grid.offsetLeft + tEl.offsetLeft;
             const y2 = grid.offsetTop + tEl.parentElement.offsetTop + tEl.offsetTop + tEl.offsetHeight;
-            const deltaY = Math.max(24, Math.abs(y2 - y1) / 2);
+            const deltaY = Math.max(26, Math.abs(y2 - y1) / 2);
+
             const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             p.setAttribute('d', Math.abs(x1 - x2) < 5
               ? `M ${x1} ${y1} L ${x2} ${y2}`
               : `M ${x1} ${y1} C ${x1} ${y1 - deltaY}, ${x2} ${y2 + deltaY}, ${x2} ${y2}`);
-            p.setAttribute('stroke', desb.has(n.id) && desb.has(rId) ? '#4cc36f' : '#665');
-            p.setAttribute('stroke-width', '2');
+
+            const comprado = desb.has(n.id) && desb.has(rId);
+            const corLinha = comprado ? '#4cc36f'
+              : paiObj?.tipoRamificacao === 'exclusiva' ? '#ff8c5a'
+              : paiObj?.tipoRamificacao === 'restritiva' ? '#c78aff'
+              : '#776';
+
+            p.setAttribute('stroke', corLinha);
+            p.setAttribute('stroke-width', comprado ? '2.5' : '2');
+            if (!comprado && paiObj?.tipoRamificacao === 'exclusiva') p.setAttribute('stroke-dasharray', '6 4');
             p.setAttribute('fill', 'none');
             svg.appendChild(p);
           });
@@ -2047,6 +2197,7 @@
 
       const box = getEl('#tv-detalhes');
       box.hidden = false;
+      const visTipo = infoVisualTipoNo(node);
       const temOpcoes = (node.tipoRecompensa === 'atributo' || node.tipoRecompensa === 'ambiguo') && node.opcoesAmbiguas?.length >= 2;
       const jaDesbloqueado = st.st === 'done';
       const escolhaSalva = (fichaDoc.escolhasAmbiguas || {})[node.id];
@@ -2061,16 +2212,23 @@
             const disp = opcaoEstaDisponivel(o);
             return `<option value="${o.idOpcao}" ${!disp ? 'disabled' : ''}>${o.efeito}${!disp ? ` (Teto ${computado.teto})` : ''}</option>`;
           }).join('');
-          seletorHtml = `<select id="sel-opt-amb">${optsHtml}</select>`;
+          seletorHtml = `<select id="sel-opt-amb" ${st.st !== 'avail' ? 'disabled' : ''}>${optsHtml}</select>`;
         }
       }
 
+      const infoOpcoesTexto = temOpcoes
+        ? `<div style="margin-top:4px; font-size:12px"><b>Opção A:</b> ${node.opcoesAmbiguas[0].efeito} &nbsp;|&nbsp; <b>Opção B:</b> ${node.opcoesAmbiguas[1].efeito}</div>`
+        : '';
+
       box.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap">
-          <div style="flex:1; min-width:220px">
-            <b class="cz" style="color:var(--acc)">${node.titulo}</b> <span class="tag">${node.custoPontos || 1} PT</span>
-            <p style="margin:2px 0; font-size:12px">${node.conteudo?.descricao || ''}</p>
-            ${node.herancaSingular?.descricao ? `<p style="margin:2px 0; font-size:11px; color:var(--acc)">★ Herança Singular: ${node.herancaSingular.descricao}</p>` : ''}
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap">
+          <div style="flex:1; min-width:240px">
+            <span class="tbadge ${visTipo.cls}">${visTipo.badge}</span>
+            <b class="cz" style="color:var(--acc); margin-left:4px">${node.titulo}</b>
+            <span class="tag">${node.custoPontos || 1} PT</span>
+            <p style="margin:3px 0; font-size:12px">${node.conteudo?.descricao || visTipo.resumo}</p>
+            ${infoOpcoesTexto}
+            ${node.herancaSingular?.descricao ? `<p style="margin:3px 0; font-size:11px; color:var(--acc)">★ Herança Singular: ${node.herancaSingular.descricao}</p>` : ''}
           </div>
           <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap">
             ${seletorHtml}
@@ -2079,7 +2237,6 @@
         </div>
       `;
 
-      // Pré-seleciona automaticamente a primeira opção válida (caso Opção A esteja no teto)
       if (temOpcoes && !jaDesbloqueado) {
         const sel = getEl('#sel-opt-amb');
         const primeiraValida = node.opcoesAmbiguas.find(opcaoEstaDisponivel);
