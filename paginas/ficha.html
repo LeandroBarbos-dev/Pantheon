@@ -1215,13 +1215,22 @@
         }
       });
 
+      // Verifica se a árvore pertence à raiz única do personagem (Herança Singular ou Raiz Dupla)
+      // Árvore Padrão e árvores extras (raizesExtras) não recebem esse bônus
+      const ehArvoreDaRaizUnica = (arv) => {
+        if (!arv || ehArvorePadrao(arv)) return false;
+        const temRaizUnica = h.tipo === 'heranca' || h.tipo === 'dupla';
+        if (!temRaizUnica || !h.r1) return false;
+        return arv.raizAssociada === h.r1;
+      };
+
       // 3. Árvores de Evolução (Base + Mesa)
-      const addHabilidadeDeObj = (id, titulo, c, singAtiva, herancaSing, origemRaiz = 'Geral') => {
+      const addHabilidadeDeObj = (id, titulo, c, singAtiva, herancaSing, origemRaiz = 'Geral', bonusRaizUnicaRec = 0) => {
         const bonusSing = singAtiva ? (parseInt(herancaSing?.bonusExtra) || 0) : 0;
         const redPeSing = singAtiva ? (parseInt(herancaSing?.reducaoPe) || 0) : 0;
 
         if (c.efTipo && ['hp', 'san', 'pef', 'pem'].includes(c.efTipo)) {
-          bonusRecArvore[c.efTipo] += (parseInt(c.efVal) || 0) + bonusSing;
+          bonusRecArvore[c.efTipo] += (parseInt(c.efVal) || 0) + bonusSing + bonusRaizUnicaRec;
         }
         habilidades.push({
           id,
@@ -1243,6 +1252,7 @@
         const arv = arvoresDisponiveis.find(a => a.id === arvId);
         if (!arv) return;
         const temSingular = h.tipo === 'heranca' && h.r1 === arv.raizAssociada;
+        const bonusRaizUnicaRec = ehArvoreDaRaizUnica(arv) ? 2 : 0;
         const origemRaiz = ehArvorePadrao(arv) ? 'Padrão' : (arv.raizAssociada || arv.nome || 'Árvore');
 
         (nosIds || []).forEach(noId => {
@@ -1262,7 +1272,7 @@
               } else if (tipoOpt === 'pericia' && opt.periciaNome) {
                 addPericia(opt.periciaNome, (parseInt(opt.periciaVal) || 1) + bonusSing, no.titulo);
               } else if (tipoOpt === 'habilidade' && opt.habilidade) {
-                addHabilidadeDeObj(`${no.id}_${esc}`, opt.habilidade.nome || no.titulo, opt.habilidade, singAtiva, no.herancaSingular, origemRaiz);
+                addHabilidadeDeObj(`${no.id}_${esc}`, opt.habilidade.nome || no.titulo, opt.habilidade, singAtiva, no.herancaSingular, origemRaiz, bonusRaizUnicaRec);
               }
             }
           }
@@ -1274,7 +1284,7 @@
           }
 
           if (no.tipoRecompensa === 'habilidade') {
-            addHabilidadeDeObj(no.id, no.titulo, no.conteudo || {}, singAtiva, no.herancaSingular, origemRaiz);
+            addHabilidadeDeObj(no.id, no.titulo, no.conteudo || {}, singAtiva, no.herancaSingular, origemRaiz, bonusRaizUnicaRec);
           }
         });
       });
@@ -2829,7 +2839,13 @@
       return { st: 'avail', msg: `Comprar por ${custo} PT` };
     }
 
-    function formatarResumoStatsHabilidade(c, herancaSing = null, singAtiva = false) {
+    function arvoreConcedeBonusRaizUnica(arvore) {
+      if (!arvore || ehArvorePadrao(arvore)) return false;
+      const h = fichaDoc?.raizesHeranca || {};
+      return (h.tipo === 'heranca' || h.tipo === 'dupla') && Boolean(h.r1) && arvore.raizAssociada === h.r1;
+    }
+
+    function formatarResumoStatsHabilidade(c, herancaSing = null, singAtiva = false, bonusRaizUnicaRec = 0) {
       if (!c) return [];
       const pills = [];
       const redPe = singAtiva ? (parseInt(herancaSing?.reducaoPe) || 0) : 0;
@@ -2847,12 +2863,15 @@
       }
 
       if (c.efTipo && c.efTipo !== 'nenhum') {
-        const vTotal = (parseInt(c.efVal) || 0) + bonusSing;
+        const ehRecurso = ['hp', 'san', 'pef', 'pem'].includes(c.efTipo);
+        const extraUnica = ehRecurso ? bonusRaizUnicaRec : 0;
+        const vTotal = (parseInt(c.efVal) || 0) + bonusSing + extraUnica;
+        const sufixoUnica = extraUnica > 0 ? ' (inclui +2 Raiz Única)' : '';
         const mapaEf = {
-          hp: `+${vTotal} HP Máx`,
-          san: `+${vTotal} SAN Máx`,
-          pef: `+${vTotal} PE-F Máx`,
-          pem: `+${vTotal} PE-M Máx`,
+          hp: `+${vTotal} HP Máx${sufixoUnica}`,
+          san: `+${vTotal} SAN Máx${sufixoUnica}`,
+          pef: `+${vTotal} PE-F Máx${sufixoUnica}`,
+          pem: `+${vTotal} PE-M Máx${sufixoUnica}`,
           teste: `+${vTotal} no Teste`
         };
         pills.push({ cls: 'bonus', txt: `Efeito: ${mapaEf[c.efTipo] || `${c.efTipo} +${vTotal}`}` });
@@ -3068,7 +3087,8 @@
 
       const h = fichaDoc?.raizesHeranca || {};
       const singAtiva = h.tipo === 'heranca' && h.r1 === arvore.raizAssociada && Boolean(node.herancaSingular);
-      const pills = formatarResumoStatsHabilidade(node.conteudo || {}, node.herancaSingular, singAtiva);
+      const bonusRaizUnicaRec = arvoreConcedeBonusRaizUnica(arvore) ? 2 : 0;
+      const pills = formatarResumoStatsHabilidade(node.conteudo || {}, node.herancaSingular, singAtiva, bonusRaizUnicaRec);
       const pillsHtml = pills.length
         ? `<div class="hab-stats-row">${pills.map(p => `<span class="stat-pill ${p.cls}">${p.txt}</span>`).join('')}</div>`
         : '';
@@ -3077,7 +3097,7 @@
         ? `<div style="margin-top:5px; font-size:12px; display:grid; gap:3px">${node.opcoesAmbiguas.map((op, i) => {
             const letra = op.idOpcao ? op.idOpcao.toUpperCase() : String.fromCharCode(65 + i);
             const descOp = op.habilidade?.descricao ? ` — <span class="mut" style="font-style:normal">${op.habilidade.descricao}</span>` : '';
-            const pillsOp = op.habilidade ? formatarResumoStatsHabilidade(op.habilidade).map(p => `<span class="stat-pill ${p.cls}">${p.txt}</span>`).join(' ') : '';
+            const pillsOp = op.habilidade ? formatarResumoStatsHabilidade(op.habilidade, null, false, bonusRaizUnicaRec).map(p => `<span class="stat-pill ${p.cls}">${p.txt}</span>`).join(' ') : '';
             return `<div><b>Opção ${letra}:</b> ${op.efeito}${descOp} ${pillsOp}</div>`;
           }).join('')}</div>`
         : '';
