@@ -306,6 +306,39 @@
     .prow, .mrow { display: flex; align-items: center; gap: 6px; justify-content: space-between; }
     .prow.on, .hcard.on { border-color: var(--acc); box-shadow: 0 0 0 1px var(--acc); }
     .hcard p { margin: 3px 0; font-size: 12px; color: var(--mut); }
+    .hab-filters {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .hab-filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+    }
+    .hab-stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 5px;
+    }
+    .stat-pill {
+      font: 700 10px monospace;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--card2);
+      border: 1px solid var(--line);
+      color: var(--txt);
+    }
+    .stat-pill.pef { border-color: #e0a03088; color: #f5b949; }
+    .stat-pill.pem { border-color: #3da5d988; color: #5cc2f5; }
+    .stat-pill.bonus { border-color: #4cc36f88; color: #67df89; }
+    .stat-pill.crit { border-color: #e0555588; color: #f87171; }
+    .stat-pill.sing { border-color: var(--acc); color: var(--acc); }
     .hcard .t { display: flex; justify-content: space-between; gap: 6px; font-family: Cinzel, serif; font-weight: 700; color: var(--acc); font-size: 12px; }
     .tag { font: 700 9px monospace; text-transform: uppercase; padding: 1px 5px; border: 1px solid var(--line); border-radius: 4px; color: var(--mut); }
     .x { background: none; border: 0; color: var(--mut); cursor: pointer; }
@@ -1183,7 +1216,7 @@
       });
 
       // 3. Árvores de Evolução (Base + Mesa)
-      const addHabilidadeDeObj = (id, titulo, c, singAtiva, herancaSing) => {
+      const addHabilidadeDeObj = (id, titulo, c, singAtiva, herancaSing, origemRaiz = 'Geral') => {
         const bonusSing = singAtiva ? (parseInt(herancaSing?.bonusExtra) || 0) : 0;
         const redPeSing = singAtiva ? (parseInt(herancaSing?.reducaoPe) || 0) : 0;
 
@@ -1193,6 +1226,7 @@
         habilidades.push({
           id,
           nome: titulo,
+          raiz: origemRaiz,
           cat: c.cat || 'passivo',
           f: Math.max(0, (parseInt(c.f) || 0) - redPeSing),
           m: Math.max(0, (parseInt(c.m) || 0) - redPeSing),
@@ -1209,6 +1243,7 @@
         const arv = arvoresDisponiveis.find(a => a.id === arvId);
         if (!arv) return;
         const temSingular = h.tipo === 'heranca' && h.r1 === arv.raizAssociada;
+        const origemRaiz = ehArvorePadrao(arv) ? 'Padrão' : (arv.raizAssociada || arv.nome || 'Árvore');
 
         (nosIds || []).forEach(noId => {
           const no = (arv.nos || []).find(n => n.id === noId);
@@ -1227,7 +1262,7 @@
               } else if (tipoOpt === 'pericia' && opt.periciaNome) {
                 addPericia(opt.periciaNome, (parseInt(opt.periciaVal) || 1) + bonusSing, no.titulo);
               } else if (tipoOpt === 'habilidade' && opt.habilidade) {
-                addHabilidadeDeObj(`${no.id}_${esc}`, opt.habilidade.nome || no.titulo, opt.habilidade, singAtiva, no.herancaSingular);
+                addHabilidadeDeObj(`${no.id}_${esc}`, opt.habilidade.nome || no.titulo, opt.habilidade, singAtiva, no.herancaSingular, origemRaiz);
               }
             }
           }
@@ -1239,7 +1274,7 @@
           }
 
           if (no.tipoRecompensa === 'habilidade') {
-            addHabilidadeDeObj(no.id, no.titulo, no.conteudo || {}, singAtiva, no.herancaSingular);
+            addHabilidadeDeObj(no.id, no.titulo, no.conteudo || {}, singAtiva, no.herancaSingular, origemRaiz);
           }
         });
       });
@@ -1277,6 +1312,7 @@
           habilidades.push({
             id: `item_${it.uid}`,
             nome: `${it.habilidade.nome} (${it.nome})`,
+            raiz: 'Equipamento',
             cat: 'ativo',
             f: 0,
             m: 0,
@@ -1783,21 +1819,116 @@
     };
 
     /* ---------- Habilidades ---------- */
-    function renderizarHabilidades() {
-      const lista = computado.habilidades;
-      getEl('#habs').innerHTML = lista.length ? '' : '<span class="mut">Nenhuma habilidade desbloqueada.</span>';
+    let filtroHabilidades = {
+      busca: '',
+      raiz: 'todas',
+      apenasAtivas: false,
+      apenasComPe: false
+    };
 
-      lista.forEach(hab => {
+    function renderizarHabilidades() {
+      const cont = getEl('#habs');
+      // Ignora bônus puros de estatística cujo título começa com "+"
+      const baseHabs = (computado.habilidades || []).filter(h => !String(h.nome || '').trim().startsWith('+'));
+
+      if (!baseHabs.length) {
+        cont.innerHTML = '<span class="mut">Nenhuma habilidade desbloqueada.</span>';
+        return;
+      }
+
+      const raizesDisponiveis = [...new Set(baseHabs.map(h => h.raiz).filter(Boolean))];
+      if (filtroHabilidades.raiz !== 'todas' && !raizesDisponiveis.includes(filtroHabilidades.raiz)) {
+        filtroHabilidades.raiz = 'todas';
+      }
+
+      const cur = obterRecursosAtuais();
+      const termo = filtroHabilidades.busca.trim().toLowerCase();
+
+      const filtradas = baseHabs.filter(hab => {
+        if (filtroHabilidades.raiz !== 'todas' && hab.raiz !== filtroHabilidades.raiz) return false;
+        if (filtroHabilidades.apenasAtivas && hab.cat !== 'ativo' && hab.cat !== 'reativo') return false;
+        if (filtroHabilidades.apenasComPe && (cur.pef < (hab.f || 0) || cur.pem < (hab.m || 0))) return false;
+        if (termo && !hab.nome.toLowerCase().includes(termo) && !(hab.desc || '').toLowerCase().includes(termo)) return false;
+        return true;
+      });
+
+      const ativoFoco = document.activeElement?.id === 'hab-search-inp';
+      const selStart = ativoFoco ? document.activeElement.selectionStart : null;
+
+      cont.innerHTML = `
+        <div class="hab-filters">
+          <div class="hab-filter-row">
+            <input type="text" id="hab-search-inp" placeholder="🔍 Buscar habilidade por nome..." value="${filtroHabilidades.busca.replace(/"/g, '&quot;')}" style="flex:1; min-width:130px; font-size:12px">
+            <select id="hab-raiz-sel" style="font-size:11px; max-width:135px" title="Filtrar por Raiz / Origem">
+              <option value="todas" ${filtroHabilidades.raiz === 'todas' ? 'selected' : ''}>Todas as Raízes</option>
+              ${raizesDisponiveis.map(r => `<option value="${r}" ${filtroHabilidades.raiz === r ? 'selected' : ''}>${r}</option>`).join('')}
+            </select>
+          </div>
+          <div class="hab-filter-row">
+            <button class="btn ${filtroHabilidades.apenasAtivas ? 'on' : ''}" id="btn-hab-ativas" style="font-size:10px; padding:3px 7px">⚡ Ativas / Reativas</button>
+            <button class="btn ${filtroHabilidades.apenasComPe ? 'on' : ''}" id="btn-hab-pe" style="font-size:10px; padding:3px 7px" title="Oculta habilidades cujo custo de PE-F ou PE-M excede seus pontos atuais">🔋 Tenho PE (${cur.pef}F / ${cur.pem}M)</button>
+            ${(filtroHabilidades.busca || filtroHabilidades.raiz !== 'todas' || filtroHabilidades.apenasAtivas || filtroHabilidades.apenasComPe)
+              ? `<button class="btn" id="btn-hab-limpar" style="font-size:10px; padding:3px 6px; margin-left:auto" title="Limpar filtros">✕</button>`
+              : ''}
+          </div>
+        </div>
+        <div id="hab-cards-list"></div>
+      `;
+
+      const inpBusca = getEl('#hab-search-inp');
+      inpBusca.oninput = (e) => {
+        filtroHabilidades.busca = e.target.value;
+        renderizarHabilidades();
+      };
+      if (ativoFoco) {
+        inpBusca.focus();
+        if (selStart !== null) inpBusca.setSelectionRange(selStart, selStart);
+      }
+
+      getEl('#hab-raiz-sel').onchange = (e) => {
+        filtroHabilidades.raiz = e.target.value;
+        renderizarHabilidades();
+      };
+      getEl('#btn-hab-ativas').onclick = () => {
+        filtroHabilidades.apenasAtivas = !filtroHabilidades.apenasAtivas;
+        renderizarHabilidades();
+      };
+      getEl('#btn-hab-pe').onclick = () => {
+        filtroHabilidades.apenasComPe = !filtroHabilidades.apenasComPe;
+        renderizarHabilidades();
+      };
+      const btnLimpar = getEl('#btn-hab-limpar');
+      if (btnLimpar) {
+        btnLimpar.onclick = () => {
+          filtroHabilidades = { busca: '', raiz: 'todas', apenasAtivas: false, apenasComPe: false };
+          renderizarHabilidades();
+        };
+      }
+
+      const listEl = getEl('#hab-cards-list');
+      if (!filtradas.length) {
+        listEl.innerHTML = '<span class="mut">Nenhuma habilidade corresponde aos filtros atuais.</span>';
+        return;
+      }
+
+      filtradas.forEach(hab => {
         const div = document.createElement('div');
         const elegivelTeste = hab.cat === 'ativo' || hab.cat === 'reativo' || Boolean(hab.ef) || Boolean(hab.critMod);
-        div.className = 'hcard' + (elegivelTeste ? ' el' : '');
+        const semPe = cur.pef < (hab.f || 0) || cur.pem < (hab.m || 0);
+        div.className = 'hcard' + (elegivelTeste ? ' el' : '') + (selecaoTeste.hab === hab.id ? ' on' : '');
         div.dataset.id = hab.id;
         div.innerHTML = `
-          <div class="t"><span>${hab.nome}</span><span class="tag">${hab.cat}</span></div>
+          <div class="t">
+            <span>${hab.nome}</span>
+            <span style="display:flex; gap:4px; align-items:center">
+              ${hab.raiz ? `<span class="tag" style="color:var(--acc); border-color:color-mix(in srgb, var(--acc) 45%, transparent)">${hab.raiz}</span>` : ''}
+              <span class="tag">${hab.cat}</span>
+            </span>
+          </div>
           <p>${hab.desc}</p>
-          <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--mut)">
-            <span>${hab.custoTxt ? `Custo: ${hab.custoTxt}` : `PE F:${hab.f} / M:${hab.m}`}${hab.critMod ? ` · Crít ${hab.critMod}` : ''}</span>
-            ${(hab.f > 0 || hab.m > 0) ? `<button class="btn" style="padding:1px 6px; font-size:10px" onclick="event.stopPropagation(); gastarPeHabilidade(${hab.f}, ${hab.m}, '${hab.nome.replace(/'/g, '')}')">Ativar</button>` : ''}
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--mut); margin-top:4px">
+            <span>${hab.custoTxt ? `Custo: ${hab.custoTxt}` : `PE F:${hab.f} / M:${hab.m}`}${hab.ef ? ` · +${hab.ef.v} Teste` : ''}${hab.critMod ? ` · Crít ${hab.critMod}` : ''}</span>
+            ${(hab.f > 0 || hab.m > 0) ? `<button class="btn ${semPe ? '' : 'pri'}" ${semPe ? 'disabled title="PE insuficiente"' : ''} style="padding:1px 7px; font-size:10px" onclick="event.stopPropagation(); gastarPeHabilidade(${hab.f}, ${hab.m}, '${hab.nome.replace(/'/g, '')}')">Ativar</button>` : ''}
           </div>
         `;
         div.onclick = () => {
@@ -1805,7 +1936,7 @@
             elegivelTeste ? selecionarHabilidade(hab.id) : mostrarToast('Esta habilidade passiva não altera rolagens.');
           }
         };
-        getEl('#habs').appendChild(div);
+        listEl.appendChild(div);
       });
     }
 
@@ -2603,11 +2734,37 @@
       wrap.onpointercancel = stopPan;
     }
 
-    function contarSubarvore(arvore, rootId, desbSet) {
-      if (!desbSet.has(rootId)) return 0;
+    function contarSubarvore(arvore, rootId, desbSet, visitados = new Set()) {
+      if (!desbSet.has(rootId) || visitados.has(rootId)) return 0;
+      visitados.add(rootId);
       let c = 1;
-      (arvore.nos || []).filter(n => (n.requisitos || []).includes(rootId)).forEach(ch => { c += contarSubarvore(arvore, ch.id, desbSet); });
+      (arvore.nos || [])
+        .filter(n => (n.requisitos || []).includes(rootId))
+        .forEach(ch => { c += contarSubarvore(arvore, ch.id, desbSet, visitados); });
       return c;
+    }
+
+    function noPertenceSubarvore(arvore, rootId, targetId, visitados = new Set()) {
+      if (rootId === targetId) return true;
+      if (visitados.has(rootId)) return false;
+      visitados.add(rootId);
+      const filhos = (arvore.nos || []).filter(n => (n.requisitos || []).includes(rootId));
+      return filhos.some(ch => noPertenceSubarvore(arvore, ch.id, targetId, visitados));
+    }
+
+    function obterAncestraisNo(arvore, nodeId, visitados = new Set()) {
+      const no = (arvore.nos || []).find(n => n.id === nodeId);
+      if (!no) return [];
+      const res = [];
+      (no.requisitos || []).forEach(paiId => {
+        if (visitados.has(paiId)) return;
+        visitados.add(paiId);
+        const pai = (arvore.nos || []).find(n => n.id === paiId);
+        if (pai) {
+          res.push(pai, ...obterAncestraisNo(arvore, paiId, visitados));
+        }
+      });
+      return res;
     }
 
     function opcaoEstaDisponivel(opt) {
@@ -2627,22 +2784,38 @@
       const desb = new Set((fichaDoc.nosDesbloqueados || {})[arvore.id] || []);
       if (desb.has(node.id)) return { st: 'done', msg: 'Desbloqueado' };
 
-      const reqs = node.requisitos || [];
-      if (reqs.length && !reqs.every(r => desb.has(r))) return { st: 'lock', msg: 'Requer nó anterior.' };
-
       const ehDupla = fichaDoc.raizesHeranca?.tipo === 'dupla';
-      for (const paiId of reqs) {
-        const pai = (arvore.nos || []).find(n => n.id === paiId);
-        if (!pai) continue;
-        const irmaos = (arvore.nos || []).filter(n => (n.requisitos || []).includes(paiId));
-        const comp = irmaos.filter(ir => desb.has(ir.id));
-        if (pai.tipoRamificacao === 'exclusiva' && comp.length > 0) return { st: 'block', msg: 'Bloqueado por Escolha Exclusiva.' };
-        if (pai.tipoRamificacao === 'restritiva' && !ehDupla && comp.length > 0) {
-          const lim = parseInt(pai.limiteNosSecundarios) || 1;
-          const tot = comp.reduce((a, ir) => a + contarSubarvore(arvore, ir.id, desb), 0);
-          if (tot >= lim) return { st: 'block', msg: `Limite restritivo (${lim}) atingido.` };
+      const ancestrais = obterAncestraisNo(arvore, node.id);
+
+      // Verifica bloqueios exclusivos e restritivos em toda a cadeia ancestral
+      for (const anc of ancestrais) {
+        const caminhos = (arvore.nos || []).filter(n => (n.requisitos || []).includes(anc.id));
+        if (caminhos.length <= 1) continue;
+
+        const meusCaminhos = caminhos.filter(c => noPertenceSubarvore(arvore, c.id, node.id));
+        const outrosCaminhos = caminhos.filter(c => !meusCaminhos.some(mc => mc.id === c.id));
+
+        if (anc.tipoRamificacao === 'exclusiva') {
+          const outroEscolhido = outrosCaminhos.some(oc => contarSubarvore(arvore, oc.id, desb) > 0);
+          if (outroEscolhido) {
+            return { st: 'block', msg: 'Bloqueado por Escolha Exclusiva.' };
+          }
+        }
+
+        if (anc.tipoRamificacao === 'restritiva' && !ehDupla) {
+          const lim = parseInt(anc.limiteNosSecundarios) || 1;
+          const outroPassouLimite = outrosCaminhos.some(oc => contarSubarvore(arvore, oc.id, desb) > lim);
+          if (outroPassouLimite) {
+            const nosNoMeuCaminho = meusCaminhos.reduce((acc, mc) => Math.max(acc, contarSubarvore(arvore, mc.id, desb)), 0);
+            if (nosNoMeuCaminho >= lim) {
+              return { st: 'block', msg: `Bloqueado: limite restritivo de ${lim} nó(s) atingido neste caminho.` };
+            }
+          }
         }
       }
+
+      const reqs = node.requisitos || [];
+      if (reqs.length && !reqs.every(r => desb.has(r))) return { st: 'lock', msg: 'Requer nó anterior.' };
 
       if (node.tipoRecompensa === 'atributo' || node.tipoRecompensa === 'ambiguo') {
         const opts = node.opcoesAmbiguas || [];
@@ -2654,6 +2827,59 @@
       const custo = parseInt(node.custoPontos) || 1;
       if ((fichaDoc.pontosEvolucao || 0) < custo) return { st: 'lock', msg: `Requer ${custo} PT.` };
       return { st: 'avail', msg: `Comprar por ${custo} PT` };
+    }
+
+    function formatarResumoStatsHabilidade(c, herancaSing = null, singAtiva = false) {
+      if (!c) return [];
+      const pills = [];
+      const redPe = singAtiva ? (parseInt(herancaSing?.reducaoPe) || 0) : 0;
+      const bonusSing = singAtiva ? (parseInt(herancaSing?.bonusExtra) || 0) : 0;
+
+      const catMap = { ativo: 'Ativo', reativo: 'Reativo', passivo: 'Passivo', estatistico: 'Estatístico' };
+      if (c.cat) pills.push({ cls: '', txt: `Tipo: ${catMap[c.cat] || c.cat}` });
+
+      const fVal = Math.max(0, (parseInt(c.f) || 0) - redPe);
+      const mVal = Math.max(0, (parseInt(c.m) || 0) - redPe);
+      if (fVal > 0) pills.push({ cls: 'pef', txt: `Custo: ${fVal} PE-F` });
+      if (mVal > 0) pills.push({ cls: 'pem', txt: `Custo: ${mVal} PE-M` });
+      if (fVal === 0 && mVal === 0 && (c.cat === 'ativo' || c.cat === 'reativo')) {
+        pills.push({ cls: 'bonus', txt: 'Custo: 0 PE' });
+      }
+
+      if (c.efTipo && c.efTipo !== 'nenhum') {
+        const vTotal = (parseInt(c.efVal) || 0) + bonusSing;
+        const mapaEf = {
+          hp: `+${vTotal} HP Máx`,
+          san: `+${vTotal} SAN Máx`,
+          pef: `+${vTotal} PE-F Máx`,
+          pem: `+${vTotal} PE-M Máx`,
+          teste: `+${vTotal} no Teste`
+        };
+        pills.push({ cls: 'bonus', txt: `Efeito: ${mapaEf[c.efTipo] || `${c.efTipo} +${vTotal}`}` });
+      }
+
+      if (c.bonusPericia) {
+        Object.entries(c.bonusPericia).forEach(([k, v]) => {
+          pills.push({ cls: 'bonus', txt: `Perícia: +${(parseInt(v) || 0) + bonusSing} ${k}` });
+        });
+      }
+
+      const crit = parseInt(c.critMod) || 0;
+      if (crit !== 0) {
+        pills.push({ cls: 'crit', txt: `Margem Crít.: ${crit > 0 ? '+' + crit : crit}` });
+      }
+
+      if (herancaSing && (herancaSing.descricao || herancaSing.reducaoPe || herancaSing.bonusExtra)) {
+        const extras = [];
+        if (herancaSing.reducaoPe) extras.push(`-${herancaSing.reducaoPe} PE`);
+        if (herancaSing.bonusExtra) extras.push(`+${herancaSing.bonusExtra} Bônus`);
+        pills.push({
+          cls: 'sing',
+          txt: `★ Herança${singAtiva ? ' (Ativa)' : ''}${extras.length ? ': ' + extras.join(', ') : ''}`
+        });
+      }
+
+      return pills;
     }
 
     function infoVisualTipoNo(n) {
@@ -2673,7 +2899,12 @@
           : '';
         return { badge: 'PERÍCIA', cls: 'tb-pericia', resumo: perTxt || n.conteudo?.descricao || '' };
       }
-      return { badge: 'HABILIDADE', cls: 'tb-habilidade', resumo: n.conteudo?.descricao || '' };
+      const c = n.conteudo || {};
+      const custos = [];
+      if (parseInt(c.f) > 0) custos.push(`${c.f} PE-F`);
+      if (parseInt(c.m) > 0) custos.push(`${c.m} PE-M`);
+      const prefixo = custos.length ? `[${custos.join(' + ')}] ` : '';
+      return { badge: 'HABILIDADE', cls: 'tb-habilidade', resumo: prefixo + (c.descricao || '') };
     }
 
     function renderizarArvoreNoModal() {
@@ -2835,21 +3066,41 @@
         }
       }
 
-      const infoOpcoesTexto = temOpcoes
-        ? `<div style="margin-top:4px; font-size:12px"><b>Opção A:</b> ${node.opcoesAmbiguas[0].efeito} &nbsp;|&nbsp; <b>Opção B:</b> ${node.opcoesAmbiguas[1].efeito}</div>`
+      const h = fichaDoc?.raizesHeranca || {};
+      const singAtiva = h.tipo === 'heranca' && h.r1 === arvore.raizAssociada && Boolean(node.herancaSingular);
+      const pills = formatarResumoStatsHabilidade(node.conteudo || {}, node.herancaSingular, singAtiva);
+      const pillsHtml = pills.length
+        ? `<div class="hab-stats-row">${pills.map(p => `<span class="stat-pill ${p.cls}">${p.txt}</span>`).join('')}</div>`
         : '';
 
+      const infoOpcoesTexto = temOpcoes
+        ? `<div style="margin-top:5px; font-size:12px; display:grid; gap:3px">${node.opcoesAmbiguas.map((op, i) => {
+            const letra = op.idOpcao ? op.idOpcao.toUpperCase() : String.fromCharCode(65 + i);
+            const descOp = op.habilidade?.descricao ? ` — <span class="mut" style="font-style:normal">${op.habilidade.descricao}</span>` : '';
+            const pillsOp = op.habilidade ? formatarResumoStatsHabilidade(op.habilidade).map(p => `<span class="stat-pill ${p.cls}">${p.txt}</span>`).join(' ') : '';
+            return `<div><b>Opção ${letra}:</b> ${op.efeito}${descOp} ${pillsOp}</div>`;
+          }).join('')}</div>`
+        : '';
+
+      const reqNomes = (node.requisitos || [])
+        .map(rId => (arvore.nos || []).find(x => x.id === rId)?.titulo)
+        .filter(Boolean);
+
       box.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap">
-          <div style="flex:1; min-width:240px">
-            <span class="tbadge ${visTipo.cls}">${visTipo.badge}</span>
-            <b class="cz" style="color:var(--acc); margin-left:4px">${node.titulo}</b>
-            <span class="tag">${node.custoPontos || 1} PT</span>
-            <p style="margin:3px 0; font-size:12px">${node.conteudo?.descricao || visTipo.resumo}</p>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap">
+          <div style="flex:1; min-width:260px">
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap">
+              <span class="tbadge ${visTipo.cls}">${visTipo.badge}</span>
+              <b class="cz" style="color:var(--acc); font-size:14px">${node.titulo}</b>
+              <span class="tag">Custo: ${node.custoPontos || 1} PT</span>
+              ${reqNomes.length ? `<span class="tag">Req.: ${reqNomes.join(', ')}</span>` : '<span class="tag">Nó Inicial</span>'}
+            </div>
+            ${pillsHtml}
+            <p style="margin:6px 0 3px; font-size:12.5px; line-height:1.45">${node.conteudo?.descricao || visTipo.resumo}</p>
             ${infoOpcoesTexto}
-            ${node.herancaSingular?.descricao ? `<p style="margin:3px 0; font-size:11px; color:var(--acc)">★ Herança Singular: ${node.herancaSingular.descricao}</p>` : ''}
+            ${node.herancaSingular?.descricao ? `<p style="margin:4px 0 0; font-size:11.5px; color:var(--acc)">★ <b>Herança Singular${singAtiva ? ' (Ativa no seu personagem)' : ''}:</b> ${node.herancaSingular.descricao}</p>` : ''}
           </div>
-          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap">
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:2px">
             ${seletorHtml}
             <button class="btn pri" id="btn-exec-compra" ${st.st !== 'avail' ? 'disabled' : ''}>${st.msg}</button>
           </div>
