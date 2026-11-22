@@ -228,6 +228,42 @@
 
           <div id="lista-passatempos-mesa" class="flex flex-wrap gap-1.5"></div>
         </div>
+
+        <!-- 7. Vocações Adultas & Estigmas (Paranormal / RP) -->
+        <div class="space-y-3 pt-2 border-t border-stone-800 text-xs">
+          <h3 class="font-cinzel text-xs font-bold text-purple-400 uppercase tracking-wider">7. Vocações Adultas & Estigmas (Poderes Únicos)</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-stone-950 p-3.5 rounded border border-stone-800 space-y-2">
+              <h4 class="font-cinzel font-bold text-gold-300">Maturidade para Vocação Adulta</h4>
+              <div>
+                <label class="text-stone-400 text-[10px] block">Estágio Biológico que libera Vocações</label>
+                <select id="cfg-estagio-vocacao" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1 text-gold-300 font-semibold">
+                  <option value="1">1. Desde a Criação</option>
+                  <option value="2">2. Evolução da Raiz</option>
+                  <option value="3" selected>3. Fase Adulta (Padrão)</option>
+                  <option value="4">4. Transgressão Mística</option>
+                </select>
+              </div>
+              <p class="text-[10px] text-stone-500">Você também pode liberar a fase adulta individualmente na ficha de cada jogador.</p>
+            </div>
+
+            <div class="bg-stone-950 p-3.5 rounded border border-purple-900/50 space-y-2">
+              <h4 class="font-cinzel font-bold text-purple-300">Controle de Estigmas na Mesa</h4>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="cfg-estigmas-visiveis" class="w-4 h-4 accent-purple-500">
+                <span class="text-stone-200">Permitir jogadores visualizarem catálogo de Estigmas</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="cfg-estigmas-criacao" class="w-4 h-4 accent-purple-500">
+                <span class="text-stone-200">Permitir escolher Estigma na criação</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="cfg-estigmas-pt-separado" class="w-4 h-4 accent-purple-500">
+                <span class="text-stone-200">Usar Pontos de Estigma (PT-E) separados</span>
+              </label>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- GAVETA 2: CATÁLOGO OFICIAL DE ITENS DA MESA (EXCLUSIVA DO MESTRE) -->
@@ -706,6 +742,23 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL INTERATIVO DO MESTRE: GERENCIAR FICHA DO JOGADOR                    -->
+  <!-- ========================================================================= -->
+  <div id="modal-gerenciar-ficha" class="fixed inset-0 bg-black/85 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
+    <div class="bg-parchment gold-border rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl">
+      <div class="px-5 py-4 border-b border-gold-600/40 flex items-center justify-between gap-3">
+        <div>
+          <h3 id="gf-titulo" class="font-cinzel text-lg font-bold text-gold-400">Gerenciar Personagem</h3>
+          <p id="gf-subtitulo" class="text-xs text-stone-400">Ajuste pontos, estágio, maturidade, raízes extras e estigmas.</p>
+        </div>
+        <button id="btn-fechar-gf" class="px-2.5 py-1.5 rounded bg-stone-900 border border-stone-700 text-stone-400 hover:text-white text-xs">✕</button>
+      </div>
+
+      <div id="gf-corpo" class="p-5 overflow-y-auto flex-1 space-y-5 text-xs"></div>
+    </div>
+  </div>
+
   <script type="module">
     import {
       auth, db, onAuthStateChanged,
@@ -715,6 +768,8 @@
 
     import {
       REGRAS_PADRAO,
+      CONDICOES_FAMILIARES_PADRAO,
+      CATEGORIAS_ARVORE,
       PERICIAS_LIVRO,
       RAIZES_PADRAO,
       PASSATEMPOS_PADRAO,
@@ -925,6 +980,11 @@
         document.getElementById('cfg-pass-focado').value = regrasAtuais.passatemposFocados;
         document.getElementById('cfg-pass-misto').value = regrasAtuais.passatemposMistos;
         document.getElementById('cfg-trava-ascendente').checked = regrasAtuais.travaAscendenteCarga !== false;
+
+        document.getElementById('cfg-estagio-vocacao').value = regrasAtuais.estagioMaturidadeVocacao || 3;
+        document.getElementById('cfg-estigmas-visiveis').checked = Boolean(regrasAtuais.estigmasVisiveisJogadores);
+        document.getElementById('cfg-estigmas-criacao').checked = Boolean(regrasAtuais.permitirEstigmaCriacao);
+        document.getElementById('cfg-estigmas-pt-separado').checked = Boolean(regrasAtuais.pontosEstigmaSeparados);
         formRegrasPreenchido = true;
       }
 
@@ -1002,7 +1062,11 @@
         slotsRaizExtraCriacao: Math.max(0, parseInt(document.getElementById('cfg-slots-extra').value) || 0),
         passatemposFocados: Math.max(0, parseInt(document.getElementById('cfg-pass-focado').value) || 0),
         passatemposMistos: Math.max(0, parseInt(document.getElementById('cfg-pass-misto').value) || 0),
-        travaAscendenteCarga: document.getElementById('cfg-trava-ascendente').checked
+        travaAscendenteCarga: document.getElementById('cfg-trava-ascendente').checked,
+        estagioMaturidadeVocacao: parseInt(document.getElementById('cfg-estagio-vocacao').value) || 3,
+        estigmasVisiveisJogadores: document.getElementById('cfg-estigmas-visiveis').checked,
+        permitirEstigmaCriacao: document.getElementById('cfg-estigmas-criacao').checked,
+        pontosEstigmaSeparados: document.getElementById('cfg-estigmas-pt-separado').checked
       };
       await updateDoc(doc(db, "mesas", mesaId), { regras: novasRegras });
       esconder(gavetaRegras);
@@ -1200,17 +1264,19 @@
         if (!listaImportada) return alert("JSON inválido: deve conter uma lista [ ... ] de itens.");
 
         const atuais = [...(mesaDados.catalogoItens || [])];
-        const idsExistentes = new Set(atuais.map(i => i.id));
-        let count = 0;
+        const mapaPorId = new Map(atuais.map((item, i) => [item.id, i]));
+        let novosCount = 0;
+        let substituidosCount = 0;
 
         listaImportada.forEach((raw, idx) => {
           if (!raw || !raw.nome) return;
           const cat = ['arma', 'escudo', 'armadura', 'cura', 'utilitario'].includes(raw.categoria) ? raw.categoria : 'utilitario';
           const peso = ['miudeza', 'leve', 'medio', 'pesado'].includes(raw.peso) ? raw.peso : 'leve';
           const pesoVal = PESO_BASE[peso] || 0;
+          const itemId = raw.id ? String(raw.id).trim() : `item_${Date.now()}_${idx}`;
 
           const itemLimpo = {
-            id: raw.id && !idsExistentes.has(raw.id) ? raw.id : `item_${Date.now()}_${idx}`,
+            id: itemId,
             nome: String(raw.nome).trim(),
             categoria: cat,
             peso,
@@ -1247,13 +1313,18 @@
             };
           }
 
-          atuais.push(itemLimpo);
-          idsExistentes.add(itemLimpo.id);
-          count++;
+          if (mapaPorId.has(itemId)) {
+            atuais[mapaPorId.get(itemId)] = itemLimpo;
+            substituidosCount++;
+          } else {
+            mapaPorId.set(itemId, atuais.length);
+            atuais.push(itemLimpo);
+            novosCount++;
+          }
         });
 
         await updateDoc(doc(db, "mesas", mesaId), { catalogoItens: atuais });
-        alert(`${count} item(ns) importado(s) do JSON!`);
+        alert(`Importação concluída: ${novosCount} novo(s) adicionado(s) e ${substituidosCount} existente(s) atualizado(s)!`);
       } catch (err) {
         alert("Erro ao ler o arquivo JSON: " + err.message);
       }
@@ -1376,11 +1447,29 @@
     }
 
     /* ========================================================= */
-    /* FICHAS DA MESA (SINCRONIZADO COM FICHA_4.HTML)            */
+    /* FICHAS DA MESA & PAINEL INTERATIVO DO MESTRE              */
     /* ========================================================= */
+    let fichasCache = [];
+    let fichaGerenciadaId = null;
+
+    function normalizarCondicaoFamiliar(tipoRaw) {
+      const mapa = {
+        singular: 'comum',
+        comum: 'comum',
+        dupla: 'legado',
+        legado: 'legado',
+        heranca: 'unico',
+        unico: 'unico',
+        auto: 'orfao',
+        orfao: 'orfao'
+      };
+      return mapa[tipoRaw] || 'comum';
+    }
+
     function calcularResumoRecursos(ficha) {
       const h = ficha.raizesHeranca || {};
-      const raizPrincipal = h.tipo === 'auto' ? 'Órfão' : (h.r1 || '');
+      const cond = normalizarCondicaoFamiliar(h.tipo);
+      const raizPrincipal = cond === 'orfao' ? 'Órfão' : (h.r1 || '');
       const bonusRaiz = (mesaDados?.raizesDisponiveis || RAIZES_PADRAO)[raizPrincipal] || [0, 0, 0, 0];
 
       const attr = { ...(ficha.atributosBase || {}) };
@@ -1401,21 +1490,18 @@
           const no = (arv.nos || []).find(n => n.id === noId);
           if (!no) return;
 
-          // Legado
           if (no.efeitoTipo === 'atributo' && no.efeitoAlvo) {
             attr[no.efeitoAlvo] = (attr[no.efeitoAlvo] || 0) + (parseInt(no.efeitoValor) || 1);
           }
 
-          // Dilemas de Atributo / Ambíguos
           if ((no.tipoRecompensa === 'atributo' || no.tipoRecompensa === 'ambiguo') && no.opcoesAmbiguas) {
-            const escId = escolhasAmbiguas[`${arvId}_${no.id}`];
-            const opc = no.opcoesAmbiguas.find(o => o.idOpcao === escId);
+            const escId = escolhasAmbiguas[no.id] || escolhasAmbiguas[`${arvId}_${no.id}`];
+            const opc = no.opcoesAmbiguas.find(o => o.idOpcao === escId) || no.opcoesAmbiguas[0];
             if (opc && (!opc.tipo || opc.tipo === 'atributo') && opc.attr) {
               attr[opc.attr] = (attr[opc.attr] || 0) + (parseInt(opc.val) || 1);
             }
           }
 
-          // Bônus de recursos máximos vindos dos nós da árvore
           if (no.tipoRecompensa === 'habilidade' && no.conteudo && no.conteudo.efTipo) {
             const k = no.conteudo.efTipo;
             const v = parseInt(no.conteudo.efVal) || 0;
@@ -1454,11 +1540,15 @@
         donoNome: usuarioAtual.displayName || usuarioAtual.email || 'Jogador',
         nome: nome.trim(),
         criacaoFinalizada: false,
+        adultoLiberado: false,
         estagioBiologico: regrasAtuais.estagioInicial || 1,
         tetoIndividualOverride: null,
         pontosEvolucao: regrasAtuais.pontosEvolucaoIniciais || 0,
-        raizesHeranca: { tipo: 'heranca', r1: primeiraRaiz, r2: '', secEscolhida: '', secEscolhida2: '' },
+        pontosEstigma: 0,
+        raizesHeranca: { tipo: 'comum', r1: primeiraRaiz, r2: '', secEscolhida: '', secEscolhida2: '' },
+        vocacaoPrincipal: '',
         raizesExtras: [],
+        estigmasLiberados: [],
         passatempos: { lista: [] },
         atributosBase: {
           potencia: 0, vigor: 0, destreza: 0,
@@ -1477,7 +1567,269 @@
       window.location.href = `ficha.html?mesaId=${mesaId}&fichaId=${docRef.id}`;
     };
 
+    const modalGF = document.getElementById('modal-gerenciar-ficha');
+    document.getElementById('btn-fechar-gf').onclick = () => {
+      fichaGerenciadaId = null;
+      esconder(modalGF);
+    };
+    modalGF.onclick = (e) => {
+      if (e.target.id === 'modal-gerenciar-ficha') {
+        fichaGerenciadaId = null;
+        esconder(modalGF);
+      }
+    };
+
+    function abrirModalGerenciarFicha(fId) {
+      fichaGerenciadaId = fId;
+      renderizarModalGerenciarFicha();
+      mostrar(modalGF, true);
+    }
+
+    function renderizarModalGerenciarFicha() {
+      if (!fichaGerenciadaId) return;
+      const f = fichasCache.find(x => x.id === fichaGerenciadaId);
+      if (!f) return esconder(modalGF);
+
+      document.getElementById('gf-titulo').textContent = `⚙️ Gerenciar: ${f.nome}`;
+      document.getElementById('gf-subtitulo').textContent = `Jogador: ${f.donoNome || '—'} · ${f.criacaoFinalizada ? 'Ficha Finalizada' : 'Em Criação'}`;
+
+      const estagio = f.estagioBiologico || 1;
+      const todasRaizes = Object.keys({ ...RAIZES_PADRAO, ...(mesaDados?.raizesDisponiveis || {}) }).filter(r => r !== 'Órfão');
+      const raizesExtrasAtuais = f.raizesExtras || [];
+      const raizesDisponiveisExtra = todasRaizes.filter(r => !raizesExtrasAtuais.includes(r));
+
+      const todasArvores = mesaDados?.arvores || [];
+      const estigmasMesa = todasArvores.filter(a => a.categoriaArvore === 'estigma' || a.isEstigma || String(a.raizAssociada || '').toLowerCase() === 'estigma');
+      const estigmasFicha = f.estigmasLiberados || [];
+
+      const getEstigmaItem = (id) => {
+        for (const item of estigmasFicha) {
+          if (typeof item === 'string' && item === id) return { id, maxDepth: 99 };
+          if (item && typeof item === 'object' && item.id === id) return item;
+        }
+        return null;
+      };
+
+      const estigmasDisponiveis = estigmasMesa.filter(e => !getEstigmaItem(e.id));
+
+      document.getElementById('gf-corpo').innerHTML = `
+        <!-- 1. Pontos de Evolução & Pontos de Estigma -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="bg-stone-950 p-3.5 rounded-lg border border-stone-800 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-cinzel font-bold text-emerald-400">✨ Pontos de Evolução (PT)</span>
+              <span class="font-mono text-base font-bold text-emerald-300" id="gf-pt-val">${f.pontosEvolucao || 0}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button data-gf-pt="-1" class="px-2.5 py-1 rounded bg-red-950 border border-red-800 text-red-300 font-mono font-bold">-1</button>
+              <button data-gf-pt="1" class="px-2.5 py-1 rounded bg-emerald-950 border border-emerald-700 text-emerald-300 font-mono font-bold">+1</button>
+              <button data-gf-pt="2" class="px-2.5 py-1 rounded bg-emerald-950 border border-emerald-700 text-emerald-300 font-mono font-bold">+2</button>
+              <button data-gf-pt="5" class="px-2.5 py-1 rounded bg-emerald-950 border border-emerald-700 text-emerald-300 font-mono font-bold">+5</button>
+            </div>
+          </div>
+
+          <div class="bg-stone-950 p-3.5 rounded-lg border border-purple-900/50 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-cinzel font-bold text-purple-300">🔮 Pontos de Estigma (PT-E)</span>
+              <span class="font-mono text-base font-bold text-purple-200">${f.pontosEstigma || 0}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button data-gf-pte="-1" class="px-2.5 py-1 rounded bg-red-950 border border-red-800 text-red-300 font-mono font-bold">-1</button>
+              <button data-gf-pte="1" class="px-2.5 py-1 rounded bg-purple-950 border border-purple-700 text-purple-300 font-mono font-bold">+1</button>
+              <button data-gf-pte="2" class="px-2.5 py-1 rounded bg-purple-950 border border-purple-700 text-purple-300 font-mono font-bold">+2</button>
+              <button data-gf-pte="3" class="px-2.5 py-1 rounded bg-purple-950 border border-purple-700 text-purple-300 font-mono font-bold">+3</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Estágio Biológico, Teto Individual & Maturidade -->
+        <div class="bg-stone-950 p-3.5 rounded-lg border border-stone-800 space-y-3">
+          <h4 class="font-cinzel font-bold text-amber-400 uppercase tracking-wider">Estágio Biológico, Teto & Fase Adulta</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="text-stone-400 text-[10px] block">Estágio Biológico</label>
+              <select id="gf-estagio" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1.5 text-amber-300 font-semibold">
+                <option value="1" ${estagio === 1 ? 'selected' : ''}>1. Criação (Infância)</option>
+                <option value="2" ${estagio === 2 ? 'selected' : ''}>2. Evolução da Raiz</option>
+                <option value="3" ${estagio === 3 ? 'selected' : ''}>3. Fase Adulta (Vocação)</option>
+                <option value="4" ${estagio === 4 ? 'selected' : ''}>4. Transgressão Mística</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-stone-400 text-[10px] block">Teto Individual (Opcional)</label>
+              <input type="number" id="gf-teto-override" min="1" max="15" placeholder="Padrão (${regrasAtuais.tetosPorEstagio[estagio] || 2})" value="${f.tetoIndividualOverride ?? ''}" class="w-full mt-1 bg-stone-900 border border-stone-700 rounded px-2 py-1.5 font-mono text-gold-300">
+            </div>
+            <div class="flex flex-col justify-end">
+              <button id="gf-salvar-estagio" class="w-full py-1.5 rounded bg-amber-600 hover:bg-amber-500 text-stone-950 font-cinzel font-bold">
+                Aplicar Estágio/Teto
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-stone-900">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="gf-adulto-liberado" ${f.adultoLiberado ? 'checked' : ''} class="w-4 h-4 accent-sky-500">
+              <span class="text-stone-200 font-semibold">Forçar liberação de Vocação Adulta (independente do estágio)</span>
+            </label>
+            <button id="gf-toggle-trava" class="px-3 py-1 rounded bg-stone-900 border border-stone-700 hover:border-gold-500 text-stone-200 font-cinzel">
+              ${f.criacaoFinalizada ? '🔓 Reabrir Edição da Ficha' : '🔒 Finalizar / Travar Criação'}
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Estigmas Concedidos ao Personagem -->
+        <div class="bg-stone-950 p-3.5 rounded-lg border border-purple-900/50 space-y-3">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <h4 class="font-cinzel font-bold text-purple-300 uppercase tracking-wider">🔮 Estigmas Despertados na Ficha</h4>
+            ${estigmasDisponiveis.length ? `
+              <div class="flex gap-1.5">
+                <select id="gf-sel-estigma" class="bg-stone-900 border border-purple-700/70 rounded px-2 py-1 text-purple-200">
+                  ${estigmasDisponiveis.map(e => `<option value="${e.id}">${e.nome}</option>`).join('')}
+                </select>
+                <button id="gf-add-estigma" class="px-3 py-1 rounded bg-purple-600 hover:bg-purple-500 text-white font-cinzel font-bold">
+                  + Conceder
+                </button>
+              </div>
+            ` : `<span class="text-[11px] text-stone-500 italic">${estigmasMesa.length ? 'Todos os estigmas já foram concedidos' : 'Crie árvores com categoria "Estigma" no Editor'}</span>`}
+          </div>
+
+          <div class="space-y-2">
+            ${estigmasFicha.length ? estigmasFicha.map(item => {
+              const eId = typeof item === 'string' ? item : item.id;
+              const maxD = typeof item === 'string' ? 99 : (item.maxDepth ?? 99);
+              const arv = estigmasMesa.find(a => a.id === eId) || todasArvores.find(a => a.id === eId);
+              const nomeArv = arv ? arv.nome : eId;
+              return `
+                <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded bg-stone-900 border border-purple-800/60">
+                  <div>
+                    <strong class="font-cinzel text-purple-200">🔮 ${nomeArv}</strong>
+                    <span class="text-[10px] text-stone-400 block">Profundidade máxima liberada (_depth)</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <select data-gf-depth="${eId}" class="bg-stone-950 border border-stone-700 rounded px-2 py-1 font-mono text-purple-300">
+                      <option value="0" ${maxD === 0 ? 'selected' : ''}>Nível 0 (Apenas Nó Inicial)</option>
+                      <option value="1" ${maxD === 1 ? 'selected' : ''}>Até Nível 1</option>
+                      <option value="2" ${maxD === 2 ? 'selected' : ''}>Até Nível 2</option>
+                      <option value="3" ${maxD === 3 ? 'selected' : ''}>Até Nível 3</option>
+                      <option value="4" ${maxD === 4 ? 'selected' : ''}>Até Nível 4</option>
+                      <option value="5" ${maxD === 5 ? 'selected' : ''}>Até Nível 5</option>
+                      <option value="6" ${maxD === 6 ? 'selected' : ''}>Até Nível 6</option>
+                      <option value="99" ${maxD >= 90 ? 'selected' : ''}>Completo (Sem Limite)</option>
+                    </select>
+                    <button data-gf-del-estigma="${eId}" class="px-2 py-1 rounded bg-red-950 border border-red-900 text-red-400 hover:border-red-500">✕</button>
+                  </div>
+                </div>
+              `;
+            }).join('') : '<p class="text-stone-500 italic">Nenhum estigma ativo neste personagem.</p>'}
+          </div>
+        </div>
+
+        <!-- 4. Raízes Extras Concedidas -->
+        <div class="bg-stone-950 p-3.5 rounded-lg border border-stone-800 space-y-2.5">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <h4 class="font-cinzel font-bold text-sky-400 uppercase tracking-wider">🌱 Raízes Extras Concedidas</h4>
+            ${raizesDisponiveisExtra.length ? `
+              <div class="flex gap-1.5">
+                <select id="gf-sel-raiz-extra" class="bg-stone-900 border border-sky-700/70 rounded px-2 py-1 text-sky-200">
+                  ${raizesDisponiveisExtra.map(r => `<option value="${r}">${r}</option>`).join('')}
+                </select>
+                <button id="gf-add-raiz-extra" class="px-3 py-1 rounded bg-sky-600 hover:bg-sky-500 text-stone-950 font-cinzel font-bold">
+                  + Conceder
+                </button>
+              </div>
+            ` : ''}
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            ${raizesExtrasAtuais.length ? raizesExtrasAtuais.map(r => `
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-stone-900 border border-sky-700/60 text-sky-300 font-cinzel">
+                ${r}
+                <button data-gf-del-raiz="${r}" class="text-stone-400 hover:text-red-400">✕</button>
+              </span>
+            `).join('') : '<span class="text-stone-500 italic">Nenhuma raiz extra concedida.</span>'}
+          </div>
+        </div>
+      `;
+
+      const fRef = doc(db, "fichas", f.id);
+
+      document.querySelectorAll('[data-gf-pt]').forEach(btn => {
+        btn.onclick = async () => {
+          const delta = parseInt(btn.dataset.gfPt);
+          await updateDoc(fRef, { pontosEvolucao: Math.max(0, (f.pontosEvolucao || 0) + delta) });
+        };
+      });
+
+      document.querySelectorAll('[data-gf-pte]').forEach(btn => {
+        btn.onclick = async () => {
+          const delta = parseInt(btn.dataset.gfPte);
+          await updateDoc(fRef, { pontosEstigma: Math.max(0, (f.pontosEstigma || 0) + delta) });
+        };
+      });
+
+      document.getElementById('gf-salvar-estagio').onclick = async () => {
+        const novoEst = parseInt(document.getElementById('gf-estagio').value) || 1;
+        const tetoVal = document.getElementById('gf-teto-override').value.trim();
+        const tetoParsed = tetoVal !== '' && !isNaN(parseInt(tetoVal)) ? parseInt(tetoVal) : null;
+        await updateDoc(fRef, { estagioBiologico: novoEst, tetoIndividualOverride: tetoParsed });
+      };
+
+      document.getElementById('gf-adulto-liberado').onchange = async (e) => {
+        await updateDoc(fRef, { adultoLiberado: e.target.checked });
+      };
+
+      document.getElementById('gf-toggle-trava').onclick = async () => {
+        await updateDoc(fRef, { criacaoFinalizada: !f.criacaoFinalizada });
+      };
+
+      const btnAddEstigma = document.getElementById('gf-add-estigma');
+      if (btnAddEstigma) {
+        btnAddEstigma.onclick = async () => {
+          const idEsc = document.getElementById('gf-sel-estigma').value;
+          if (!idEsc) return;
+          const novaLista = [...estigmasFicha, { id: idEsc, maxDepth: 99 }];
+          await updateDoc(fRef, { estigmasLiberados: novaLista });
+        };
+      }
+
+      document.querySelectorAll('[data-gf-depth]').forEach(sel => {
+        sel.onchange = async () => {
+          const alvoId = sel.dataset.gfDepth;
+          const novoDepth = parseInt(sel.value);
+          const novaLista = estigmasFicha.map(item => {
+            const curId = typeof item === 'string' ? item : item.id;
+            return curId === alvoId ? { id: curId, maxDepth: novoDepth } : item;
+          });
+          await updateDoc(fRef, { estigmasLiberados: novaLista });
+        };
+      });
+
+      document.querySelectorAll('[data-gf-del-estigma]').forEach(btn => {
+        btn.onclick = async () => {
+          const alvoId = btn.dataset.gfDelEstigma;
+          const novaLista = estigmasFicha.filter(item => (typeof item === 'string' ? item : item.id) !== alvoId);
+          await updateDoc(fRef, { estigmasLiberados: novaLista });
+        };
+      });
+
+      const btnAddRaizExtra = document.getElementById('gf-add-raiz-extra');
+      if (btnAddRaizExtra) {
+        btnAddRaizExtra.onclick = async () => {
+          const rEsc = document.getElementById('gf-sel-raiz-extra').value;
+          if (!rEsc || raizesExtrasAtuais.includes(rEsc)) return;
+          await updateDoc(fRef, { raizesExtras: [...raizesExtrasAtuais, rEsc] });
+        };
+      }
+
+      document.querySelectorAll('[data-gf-del-raiz]').forEach(btn => {
+        btn.onclick = async () => {
+          const alvoR = btn.dataset.gfDelRaiz;
+          await updateDoc(fRef, { raizesExtras: raizesExtrasAtuais.filter(r => r !== alvoR) });
+        };
+      });
+    }
+
     function renderizarListaFichas(fichas) {
+      fichasCache = fichas;
       const grid = document.getElementById('grid-fichas');
       const visiveis = souMestre ? fichas : fichas.filter(f => f.donoId === usuarioAtual.uid);
       document.getElementById('contador-fichas').textContent = `${visiveis.length} ficha(s)`;
@@ -1489,19 +1841,21 @@
 
       grid.innerHTML = visiveis.map(f => {
         const h = f.raizesHeranca || {};
-        const origemTxt = h.tipo === 'auto'
-          ? 'Autodidata (Órfão)'
-          : h.tipo === 'singular'
-            ? `Singular: ${h.r1 || '?'} + ${h.r2 || '?'}`
-            : h.tipo === 'dupla'
-              ? `Raiz Dupla: ${h.r1 || '?'}`
-              : `Herança: ${h.r1 || '?'}`;
+        const cond = normalizarCondicaoFamiliar(h.tipo);
+        const origemTxt = cond === 'orfao'
+          ? 'Órfão / Autodidata'
+          : cond === 'comum'
+            ? `Raiz Comum: ${h.r1 || '?'} + ${h.r2 || '?'}`
+            : cond === 'legado'
+              ? `Legado Familiar: ${h.r1 || '?'}`
+              : `Ensinamento Único: ${h.r1 || '?'}`;
 
         const estagio = f.estagioBiologico || 1;
         const tetoEfetivo = f.tetoIndividualOverride || regrasAtuais.tetosPorEstagio[estagio] || 2;
         const rec = calcularResumoRecursos(f);
         const pctHp = Math.max(0, Math.min(100, Math.round((rec.hp.cur / Math.max(1, rec.hp.max)) * 100)));
         const podeExcluir = souMestre || (!f.criacaoFinalizada && f.donoId === usuarioAtual.uid);
+        const qtdEstigmas = (f.estigmasLiberados || []).length;
 
         return `
           <div class="bg-stone-950/90 border border-stone-800 hover:border-gold-600/60 rounded-lg p-4 flex flex-col justify-between gap-3">
@@ -1533,9 +1887,13 @@
 
               <div class="text-[11px] text-stone-300 flex flex-wrap justify-between gap-1">
                 <span>${NOMES_ESTAGIOS[estagio]} (Teto: <strong class="text-gold-400">${tetoEfetivo}</strong>)</span>
-                <span class="text-emerald-400 font-mono font-bold">${f.pontosEvolucao || 0} PT</span>
+                <span class="text-emerald-400 font-mono font-bold">${f.pontosEvolucao || 0} PT${regrasAtuais.pontosEstigmaSeparados ? ` · ${f.pontosEstigma || 0} PT-E` : ''}</span>
               </div>
-              ${(f.raizesExtras || []).length ? `<div class="text-emerald-400 text-[11px]">+ Extras: ${f.raizesExtras.join(', ')}</div>` : ''}
+              <div class="flex flex-wrap gap-1.5 text-[10px]">
+                ${f.vocacaoPrincipal ? `<span class="px-2 py-0.5 rounded bg-sky-950/70 border border-sky-700/60 text-sky-300">⚔️ Vocação: ${f.vocacaoPrincipal}</span>` : ''}
+                ${qtdEstigmas > 0 ? `<span class="px-2 py-0.5 rounded bg-purple-950/70 border border-purple-700/60 text-purple-300">🔮 ${qtdEstigmas} Estigma(s)</span>` : ''}
+                ${(f.raizesExtras || []).length ? `<span class="px-2 py-0.5 rounded bg-emerald-950/70 border border-emerald-700/60 text-emerald-300">+ ${f.raizesExtras.join(', ')}</span>` : ''}
+              </div>
             </div>
 
             <!-- Ações -->
@@ -1545,11 +1903,8 @@
               </a>
 
               ${souMestre ? `
-                <button data-pts="${f.id}" data-cur="${f.pontosEvolucao || 0}" class="px-2 py-1.5 rounded bg-emerald-950 border border-emerald-700 text-emerald-300 text-xs font-mono" title="Dar Pontos de Evolução">+PT</button>
-                <button data-extra="${f.id}" class="px-2 py-1.5 rounded bg-sky-950 border border-sky-700 text-sky-300 text-xs" title="Conceder Raiz Extra">+Raiz</button>
-                <button data-estagio="${f.id}" data-cur-est="${estagio}" class="px-2 py-1.5 rounded bg-amber-950 border border-amber-700 text-amber-300 text-xs" title="Estágio Biológico / Teto Individual">Estágio</button>
-                <button data-trava="${f.id}" data-locked="${f.criacaoFinalizada ? '1' : '0'}" class="px-2 py-1.5 rounded bg-stone-900 border border-stone-700 text-stone-300 text-xs" title="Travar / Reabrir Criação">
-                  ${f.criacaoFinalizada ? '🔓' : '🔒'}
+                <button data-gerenciar-ficha="${f.id}" class="px-3 py-1.5 rounded bg-purple-950/80 border border-purple-600/70 hover:border-purple-400 text-purple-200 font-cinzel text-xs font-bold" title="Gerenciar PT, Estágio, Raízes Extras e Estigmas">
+                  ⚙️ Gerenciar
                 </button>
               ` : ''}
 
@@ -1569,58 +1924,13 @@
       });
 
       if (souMestre) {
-        grid.querySelectorAll('[data-pts]').forEach(b => {
-          b.onclick = async () => {
-            const qtd = parseInt(prompt("Quantos Pontos de Evolução adicionar? (Use negativo para remover)", "1"));
-            if (isNaN(qtd) || qtd === 0) return;
-            await updateDoc(doc(db, "fichas", b.dataset.pts), {
-              pontosEvolucao: Math.max(0, (parseInt(b.dataset.cur) || 0) + qtd)
-            });
-          };
+        grid.querySelectorAll('[data-gerenciar-ficha]').forEach(b => {
+          b.onclick = () => abrirModalGerenciarFicha(b.dataset.gerenciarFicha);
         });
+      }
 
-        grid.querySelectorAll('[data-extra]').forEach(b => {
-          b.onclick = async () => {
-            const disponiveis = Object.keys(mesaDados.raizesDisponiveis || {});
-            const escolhida = prompt(`Digite o nome da Raiz Extra:\nDisponíveis: ${disponiveis.join(', ')}`);
-            if (!escolhida || !escolhida.trim()) return;
-            const ficha = fichas.find(x => x.id === b.dataset.extra);
-            const atuais = ficha?.raizesExtras || [];
-            if (!atuais.includes(escolhida.trim())) {
-              await updateDoc(doc(db, "fichas", b.dataset.extra), { raizesExtras: [...atuais, escolhida.trim()] });
-            }
-          };
-        });
-
-        grid.querySelectorAll('[data-estagio]').forEach(b => {
-          b.onclick = async () => {
-            const ficha = fichas.find(x => x.id === b.dataset.estagio);
-            const resp = prompt(
-              "Escolha o Estágio Biológico (1 a 4):\n1 - Criação (Infância)\n2 - Evolução da Raiz\n3 - Fase Adulta (Vocação)\n4 - Transgressão Mística",
-              b.dataset.curEst
-            );
-            const novoEst = parseInt(resp);
-            if (![1, 2, 3, 4].includes(novoEst)) return;
-
-            const tetoCustom = prompt(
-              "Teto individual de atributo para esta ficha? (Deixe vazio para usar o padrão do estágio)",
-              ficha?.tetoIndividualOverride || ''
-            );
-            const tetoParsed = tetoCustom && !isNaN(parseInt(tetoCustom)) ? parseInt(tetoCustom) : null;
-
-            await updateDoc(doc(db, "fichas", b.dataset.estagio), {
-              estagioBiologico: novoEst,
-              tetoIndividualOverride: tetoParsed
-            });
-          };
-        });
-
-        grid.querySelectorAll('[data-trava]').forEach(b => {
-          b.onclick = async () => {
-            const estavaTravada = b.dataset.locked === '1';
-            await updateDoc(doc(db, "fichas", b.dataset.trava), { criacaoFinalizada: !estavaTravada });
-          };
-        });
+      if (fichaGerenciadaId) {
+        renderizarModalGerenciarFicha();
       }
     }
 
@@ -1926,28 +2236,50 @@
         updates.passatemposDisponiveis = atuais;
       }
 
+      let resumoMod = [];
       if (c.itens && c.itens.length > 0) {
         const atuais = [...(mesaDados.catalogoItens || [])];
-        const ids = new Set(atuais.map(i => i.id));
+        const mapaItens = new Map(atuais.map((item, idx) => [item.id, idx]));
+        let addI = 0, subI = 0;
         c.itens.forEach(i => {
-          atuais.push(ids.has(i.id) ? { ...i, id: `item_${Date.now()}_${Math.random().toString(36).slice(2, 6)}` } : i);
+          if (i.id && mapaItens.has(i.id)) {
+            atuais[mapaItens.get(i.id)] = { ...i };
+            subI++;
+          } else {
+            const novoItem = { ...i, id: i.id || `item_${Date.now()}_${Math.random().toString(36).slice(2, 6)}` };
+            mapaItens.set(novoItem.id, atuais.length);
+            atuais.push(novoItem);
+            addI++;
+          }
         });
         updates.catalogoItens = atuais;
+        resumoMod.push(`Itens: ${addI} novo(s), ${subI} atualizado(s)`);
       }
 
       if (c.arvores && c.arvores.length > 0) {
         const arvoresAtuais = [...(mesaDados.arvores || [])];
+        const mapaArv = new Map(arvoresAtuais.map((a, idx) => [a.id, idx]));
+        let addA = 0, subA = 0;
         c.arvores.forEach((arv, idx) => {
-          arvoresAtuais.push({ ...arv, id: `arv_mod_${Date.now()}_${idx}` });
+          if (arv.id && mapaArv.has(arv.id)) {
+            arvoresAtuais[mapaArv.get(arv.id)] = { ...arv };
+            subA++;
+          } else {
+            const novaArv = { ...arv, id: arv.id || `arv_mod_${Date.now()}_${idx}` };
+            mapaArv.set(novaArv.id, arvoresAtuais.length);
+            arvoresAtuais.push(novaArv);
+            addA++;
+          }
         });
         updates.arvores = arvoresAtuais;
+        resumoMod.push(`Árvores: ${addA} nova(s), ${subA} atualizada(s)`);
       }
 
       if (Object.keys(updates).length > 0) {
         await updateDoc(doc(db, 'mesas', mesaId), updates);
       }
 
-      alert(`Mod "${mod.titulo}" importado com sucesso!`);
+      alert(`Mod "${mod.titulo}" importado com sucesso!${resumoMod.length ? "\n" + resumoMod.join(" · ") : ""}`);
     }
 
     function atualizarContadoresPublicacao() {

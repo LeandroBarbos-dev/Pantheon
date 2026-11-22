@@ -4,12 +4,50 @@
 export const REGRAS_PADRAO = {
   pontosAtributoIniciais: 5,
   estagioInicial: 1,
+  estagioMaturidadeVocacao: 2,
   tetosPorEstagio: { 1: 2, 2: 3, 3: 4, 4: 5 },
   pontosEvolucaoIniciais: 0,
   slotsRaizExtraCriacao: 0,
   passatemposFocados: 1,
   passatemposMistos: 1,
-  travaAscendenteCarga: true
+  travaAscendenteCarga: true,
+  estigmasVisiveisJogadores: false,
+  permitirEstigmaCriacao: false,
+  pontosEstigmaSeparados: false
+};
+
+export const CONDICOES_FAMILIARES_PADRAO = {
+  comum: {
+    id: 'comum',
+    nome: 'Raiz Comum',
+    subtitulo: 'Pais com ofícios diferentes (2 Raízes)',
+    descricao: 'Origem mista tradicional: concede acesso às 2 Árvores de Raiz básicas dos pais, sem ramos secretos.'
+  },
+  legado: {
+    id: 'legado',
+    nome: 'Legado Familiar',
+    subtitulo: 'Negócio de família (1 Raiz + Ramo de Legado)',
+    descricao: 'Ambos os pais compartilham o mesmo ofício: libera 1 Árvore de Raiz e desbloqueia seu Ramo Exclusivo de Legado Familiar.'
+  },
+  unico: {
+    id: 'unico',
+    nome: 'Ensinamento Único',
+    subtitulo: 'Tutela isolada / Mestre (1 Raiz + Ramo Secreto)',
+    descricao: 'Criado por apenas um dos pais ou por um tutor isolado: libera 1 Árvore de Raiz e seu Ramo Exclusivo de Truques & Segredos.'
+  },
+  orfao: {
+    id: 'orfao',
+    nome: 'Órfão / Autodidata',
+    subtitulo: 'Sem ofício familiar (+2 Passatempos & Árvore Própria)',
+    descricao: 'Aprendeu a sobreviver na marra: concede +1 Ponto de Atributo inicial, +2 Passatempos livres e acesso à Árvore do Órfão.'
+  }
+};
+
+export const CATEGORIAS_ARVORE = {
+  padrao: 'Padrão (Sobrevivente)',
+  raiz: 'Raiz (Infância / Origem)',
+  vocacao: 'Vocação (Profissão Adulta)',
+  estigma: 'Estigma (Poder Único / Paranormal)'
 };
 
 export const PERICIAS_LIVRO = [
@@ -77,9 +115,7 @@ export const PASSATEMPOS_PADRAO = [
 ];
 
 export const ITENS_PADRAO = [
-  // =========================================================================
   // ARMAS BRANCAS LEVES (GA 1 / GD 1 · Alcance Curto)
-  // =========================================================================
   {
     id: 'livro_arma_soco_ingles', nome: 'Soco Inglês', categoria: 'arma', peso: 'miudeza',
     dano: '1d3', criticoMargem: 20, criticoMult: 2, criticoExtra: '', ga: 0, gd: 0, armaDefensiva: false, alcance: 'Curto',
@@ -116,9 +152,7 @@ export const ITENS_PADRAO = [
     descricao: 'Machadinha de mão leve e equilibrada para cortes rápidos.'
   },
 
-  // =========================================================================
   // ARMAS BRANCAS MÉDIAS (GA 2 / GD 2)
-  // =========================================================================
   {
     id: 'livro_arma_taco', nome: 'Taco', categoria: 'arma', peso: 'medio',
     dano: '1d6', criticoMargem: 20, criticoMult: 2, criticoExtra: '', ga: 2, gd: 2, armaDefensiva: false, alcance: 'Curto',
@@ -160,9 +194,7 @@ export const ITENS_PADRAO = [
     descricao: 'Haste longa com ponta perfurante; ataca a curta ou média distância.'
   },
 
-  // =========================================================================
   // ARMAS BRANCAS PESADAS (GA 3 / GD 3)
-  // =========================================================================
   {
     id: 'livro_arma_espada_longa', nome: 'Espada Longa', categoria: 'arma', peso: 'pesado',
     dano: '1d12', criticoMargem: 18, criticoMult: 2, criticoExtra: '', ga: 3, gd: 4, armaDefensiva: true, alcance: 'Curto',
@@ -199,9 +231,7 @@ export const ITENS_PADRAO = [
     descricao: 'Lâmina colossal de duas mãos. Requisito obrigatório: Potência 3 ou maior.'
   },
 
-  // =========================================================================
   // ARMAS À DISTÂNCIA & PÓLVORA PRIMITIVA
-  // =========================================================================
   {
     id: 'livro_arma_estilingue', nome: 'Estilingue', categoria: 'arma', peso: 'miudeza',
     dano: '1d4', criticoMargem: 20, criticoMult: 2, criticoExtra: '', ga: 0, gd: 0, armaDefensiva: false, alcance: 'Médio',
@@ -238,9 +268,7 @@ export const ITENS_PADRAO = [
     descricao: 'Cano longo de pólvora negra e pederneira com poder devastador. Exige 1 ação completa para recarregar.'
   },
 
-  // =========================================================================
   // ARMADURAS, ESCUDOS, CURA E UTILITÁRIOS DO LIVRO
-  // =========================================================================
   {
     id: 'livro_armadura_leve', nome: 'Armadura Leve', categoria: 'armadura', peso: 'leve',
     rd: 2, penalidadeDesl: 0,
@@ -300,77 +328,4 @@ export const ITENS_PADRAO = [
   }
 ];
 
-// Árvores oficiais do sistema (disponíveis na Biblioteca Padrão de qualquer mesa)
-export const ARVORES_PADRAO = [
-  {
-    id: 'arvore_padrao_geral',
-    nome: 'Caminho do Sobrevivente (Padrão)',
-    raizAssociada: 'Padrão',
-    isPadrao: true,
-    descricao: 'Árvore comum acessível a todos os personagens, focada em fundamentos físicos, mentais e sobrevivência.',
-    nos: [
-      {
-        id: 'padrao_no_1',
-        titulo: 'Fôlego de Campanha',
-        tipoRecompensa: 'habilidade',
-        tipoRamificacao: 'livre',
-        limiteNosSecundarios: 1,
-        custoPontos: 1,
-        requisitos: [],
-        conteudo: {
-          descricao: 'Treinamento básico de resistência aumenta o vigor corporal em +3 HP Máximo.',
-          cat: 'estatistico',
-          f: 0,
-          m: 0,
-          efTipo: 'hp',
-          efVal: 3,
-          critMod: 0
-        }
-      },
-      {
-        id: 'padrao_no_2',
-        titulo: 'Mente Inabalável',
-        tipoRecompensa: 'habilidade',
-        tipoRamificacao: 'livre',
-        limiteNosSecundarios: 1,
-        custoPontos: 1,
-        requisitos: [],
-        conteudo: {
-          descricao: 'Autocontrole em situações de pressão concede +3 SAN Máxima.',
-          cat: 'estatistico',
-          f: 0,
-          m: 0,
-          efTipo: 'san',
-          efVal: 3,
-          critMod: 0
-        }
-      },
-      {
-        id: 'padrao_no_3',
-        titulo: 'Versatilidade Prática',
-        tipoRecompensa: 'pericia',
-        tipoRamificacao: 'livre',
-        limiteNosSecundarios: 1,
-        custoPontos: 1,
-        requisitos: ['padrao_no_1'],
-        conteudo: {
-          descricao: 'Aprimora a capacidade de improvisação e resistência física.',
-          bonusPericia: { Tenacidade: 1, Improviso: 1 }
-        }
-      },
-      {
-        id: 'padrao_no_4',
-        titulo: 'Instinto Aguçado',
-        tipoRecompensa: 'pericia',
-        tipoRamificacao: 'livre',
-        limiteNosSecundarios: 1,
-        custoPontos: 1,
-        requisitos: ['padrao_no_2'],
-        conteudo: {
-          descricao: 'Atenção redobrada ao ambiente e às intenções alheias.',
-          bonusPericia: { Encontrar: 1, Intuição: 1 }
-        }
-      }
-    ]
-  }
-];
+export const ARVORES_PADRAO = [];
