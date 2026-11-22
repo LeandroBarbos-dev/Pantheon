@@ -551,6 +551,10 @@
     .branch-pill { position: absolute; transform: translate(-50%, -50%); font: 700 9px monospace; padding: 2px 6px; border-radius: 99px; pointer-events: none; white-space: nowrap; z-index: 2; }
     .bp-exclusiva { background: #2c1810; color: #ff8c5a; border: 1px solid #ff8c5a; }
     .bp-restritiva { background: #221430; color: #c78aff; border: 1px solid #c78aff; }
+    .tag-legado { background: #d99b2625; color: #f5b949; border: 1px solid #d99b2688; }
+    .tag-unico { background: #b480e625; color: #cfa6f7; border: 1px solid #b480e688; }
+    .tag-estigma { background: #e0555525; color: #f87171; border: 1px solid #e0555588; }
+    .tag-vocacao { background: #3da5d925; color: #5cc2f5; border: 1px solid #3da5d988; }
 
     .sw { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; }
     .sw.on { border-color: var(--txt); }
@@ -764,6 +768,8 @@
 
     import {
       REGRAS_PADRAO,
+      CONDICOES_FAMILIARES_PADRAO,
+      CATEGORIAS_ARVORE,
       PERICIAS_LIVRO,
       RAIZES_PADRAO,
       PROFISSOES_LIVRO,
@@ -867,11 +873,56 @@
 
     const obterSiglaAtributo = chave => ATRIBUTOS.find(a => a[0] === chave)?.[1] || chave.toUpperCase();
 
-    function ehArvorePadrao(arv) {
-      if (!arv) return false;
-      if (arv.isPadrao) return true;
+    function normalizarCondicaoFamiliar(tipoRaw) {
+      const mapa = {
+        singular: 'comum',
+        comum: 'comum',
+        dupla: 'legado',
+        legado: 'legado',
+        heranca: 'unico',
+        unico: 'unico',
+        auto: 'orfao',
+        orfao: 'orfao'
+      };
+      return mapa[tipoRaw] || 'comum';
+    }
+
+    function obterCategoriaArvore(arv) {
+      if (!arv) return 'vocacao';
+      if (arv.categoriaArvore) return arv.categoriaArvore;
+      if (arv.isPadrao) return 'padrao';
       const raizNorm = String(arv.raizAssociada || '').trim().toLowerCase();
-      return ['padrão', 'padrao', 'comum', 'geral'].includes(raizNorm);
+      if (['padrão', 'padrao', 'comum', 'geral'].includes(raizNorm)) return 'padrao';
+      if (raizNorm === 'estigma' || arv.isEstigma) return 'estigma';
+      return 'vocacao';
+    }
+
+    function ehArvorePadrao(arv) {
+      return obterCategoriaArvore(arv) === 'padrao';
+    }
+
+    function personagemEhAdulto() {
+      if (!fichaDoc) return false;
+      if (fichaDoc.adultoLiberado) return true;
+      const estagio = fichaDoc.estagioBiologico || 1;
+      const estagioMin = regras.estagioMaturidadeVocacao || 3;
+      return estagio >= estagioMin;
+    }
+
+    function obterRaizesDoPersonagem() {
+      const h = fichaDoc?.raizesHeranca || {};
+      const cond = normalizarCondicaoFamiliar(h.tipo);
+      const lista = [];
+      if (cond === 'orfao') {
+        lista.push('Órfão');
+      } else {
+        if (h.r1) lista.push(h.r1);
+        if (cond === 'comum' && h.r2 && h.r2 !== h.r1) lista.push(h.r2);
+      }
+      (fichaDoc?.raizesExtras || []).forEach(r => {
+        if (r && !lista.includes(r)) lista.push(r);
+      });
+      return lista;
     }
 
     /* ============================================================ */
@@ -1098,7 +1149,7 @@
     }
 
     function calcularLimitesPassatempos() {
-      const isOrfao = fichaDoc?.raizesHeranca?.tipo === 'auto';
+      const isOrfao = normalizarCondicaoFamiliar(fichaDoc?.raizesHeranca?.tipo) === 'orfao';
       const baseFoc = regras.passatemposFocados ?? 1;
       const baseMis = regras.passatemposMistos ?? 1;
       const coringas = isOrfao ? 2 : 0;
@@ -1126,7 +1177,8 @@
     /* ---------- Cálculo Consolidado da Ficha ---------- */
     function calcularEstadoFicha() {
       const f = fichaDoc;
-      const h = f.raizesHeranca || { tipo: 'heranca', r1: '', r2: '', secEscolhida: '', secEscolhida2: '' };
+      const h = f.raizesHeranca || { tipo: 'comum', r1: '', r2: '', secEscolhida: '', secEscolhida2: '' };
+      const cond = normalizarCondicaoFamiliar(h.tipo);
       const estagio = f.estagioBiologico || 1;
       const teto = f.tetoIndividualOverride || regras.tetosPorEstagio[estagio] || 2;
       const profissoes = obterProfissoesMescladas();
@@ -1154,7 +1206,7 @@
       };
 
       // 1. Perícias da Raiz / Condição Familiar
-      if (h.tipo === 'auto') {
+      if (cond === 'orfao') {
         addPericia('Sobrevivência', 2, 'Órfão');
         addPericia('Atletismo', 2, 'Órfão');
         addPericia('Reflexo', 2, 'Órfão');
@@ -1164,25 +1216,25 @@
           const prof1 = profissoes[h.r1];
           const sec1 = prof1.sec.includes(h.secEscolhida) ? h.secEscolhida : prof1.sec[0];
 
-          if (h.tipo === 'singular') {
+          if (cond === 'comum') {
             addPericia(prof1.main[0], 2, `Raiz 1 (${h.r1})`);
             addPericia(prof1.main[1], 2, `Raiz 1 (${h.r1})`);
             if (sec1) addPericia(sec1, 1, `Sec. Raiz 1 (${h.r1})`);
             addPericia(prof1.world, 1, `Mundo Raiz 1 (${h.r1})`);
-          } else if (h.tipo === 'heranca') {
-            addPericia(prof1.main[0], 3, `Herança (${h.r1})`);
-            addPericia(prof1.main[1], 2, `Herança (${h.r1})`);
+          } else if (cond === 'unico') {
+            addPericia(prof1.main[0], 3, `Ensinamento Único (${h.r1})`);
+            addPericia(prof1.main[1], 2, `Ensinamento Único (${h.r1})`);
             if (sec1) addPericia(sec1, 2, `Secundária (${h.r1})`);
             addPericia(prof1.world, 2, `Mundo (${h.r1})`);
-          } else if (h.tipo === 'dupla') {
-            addPericia(prof1.main[0], 2, `Raiz Dupla (${h.r1})`);
-            addPericia(prof1.main[1], 2, `Raiz Dupla (${h.r1})`);
+          } else if (cond === 'legado') {
+            addPericia(prof1.main[0], 2, `Legado Familiar (${h.r1})`);
+            addPericia(prof1.main[1], 2, `Legado Familiar (${h.r1})`);
             prof1.sec.forEach(s => addPericia(s, 1, `Secundária (${h.r1})`));
             addPericia(prof1.world, 1, `Mundo (${h.r1})`);
           }
         }
 
-        if (h.tipo === 'singular' && h.r2 && profissoes[h.r2]) {
+        if (cond === 'comum' && h.r2 && profissoes[h.r2]) {
           const prof2 = profissoes[h.r2];
           const sec2 = prof2.sec.includes(h.secEscolhida2) ? h.secEscolhida2 : prof2.sec[0];
           addPericia(prof2.main[0], 2, `Raiz 2 (${h.r2})`);
@@ -1216,35 +1268,21 @@
         }
       });
 
-      // Verifica se a árvore pertence à raiz única do personagem (Herança Singular ou Raiz Dupla)
-      // Árvore Padrão e árvores extras (raizesExtras) não recebem esse bônus
-      const ehArvoreDaRaizUnica = (arv) => {
-        if (!arv || ehArvorePadrao(arv)) return false;
-        const temRaizUnica = h.tipo === 'heranca' || h.tipo === 'dupla';
-        if (!temRaizUnica || !h.r1) return false;
-        return arv.raizAssociada === h.r1;
-      };
-
-      // 3. Árvores de Evolução (Base + Mesa)
-      const addHabilidadeDeObj = (id, titulo, c, singAtiva, herancaSing, origemRaiz = 'Geral', bonusRaizUnicaRec = 0) => {
-        const bonusSing = singAtiva ? (parseInt(herancaSing?.bonusExtra) || 0) : 0;
-        const redPeSing = singAtiva ? (parseInt(herancaSing?.reducaoPe) || 0) : 0;
-
+      // 3. Árvores de Evolução (Padrão, Raiz, Vocação e Estigmas)
+      const addHabilidadeDeObj = (id, titulo, c, origemTag = 'Geral') => {
         if (c.efTipo && ['hp', 'san', 'pef', 'pem'].includes(c.efTipo)) {
-          bonusRecArvore[c.efTipo] += (parseInt(c.efVal) || 0) + bonusSing + bonusRaizUnicaRec;
+          bonusRecArvore[c.efTipo] += (parseInt(c.efVal) || 0);
         }
         habilidades.push({
           id,
           nome: titulo,
-          raiz: origemRaiz,
+          raiz: origemTag,
           cat: c.cat || 'passivo',
-          f: Math.max(0, (parseInt(c.f) || 0) - redPeSing),
-          m: Math.max(0, (parseInt(c.m) || 0) - redPeSing),
-          ef: c.efTipo === 'teste' ? { k: 'teste', v: (parseInt(c.efVal) || 0) + bonusSing } : null,
+          f: Math.max(0, parseInt(c.f) || 0),
+          m: Math.max(0, parseInt(c.m) || 0),
+          ef: c.efTipo === 'teste' ? { k: 'teste', v: parseInt(c.efVal) || 0 } : null,
           critMod: parseInt(c.critMod) || 0,
-          desc: singAtiva && herancaSing?.descricao
-            ? `${c.descricao || ''} [★ Herança: ${herancaSing.descricao}]`
-            : (c.descricao || '')
+          desc: c.descricao || ''
         });
       };
 
@@ -1252,16 +1290,15 @@
       Object.entries(f.nosDesbloqueados || {}).forEach(([arvId, nosIds]) => {
         const arv = arvoresDisponiveis.find(a => a.id === arvId);
         if (!arv) return;
-        const temSingular = h.tipo === 'heranca' && h.r1 === arv.raizAssociada;
-        const bonusRaizUnicaRec = ehArvoreDaRaizUnica(arv) ? 2 : 0;
-        const origemRaiz = ehArvorePadrao(arv) ? 'Padrão' : (arv.raizAssociada || arv.nome || 'Árvore');
+        const catArv = obterCategoriaArvore(arv);
+        const origemTag = catArv === 'padrao' ? 'Padrão'
+          : catArv === 'estigma' ? `Estigma · ${arv.nome}`
+          : catArv === 'raiz' ? `Raiz · ${arv.raizAssociada || arv.nome}`
+          : `Vocação · ${arv.raizAssociada || arv.nome}`;
 
         (nosIds || []).forEach(noId => {
           const no = (arv.nos || []).find(n => n.id === noId);
           if (!no) return;
-
-          const singAtiva = temSingular && Boolean(no.herancaSingular);
-          const bonusSing = singAtiva ? (parseInt(no.herancaSingular?.bonusExtra) || 0) : 0;
 
           if (no.tipoRecompensa === 'atributo' || no.tipoRecompensa === 'ambiguo') {
             const esc = (f.escolhasAmbiguas || {})[no.id] || 'a';
@@ -1269,23 +1306,23 @@
             if (opt) {
               const tipoOpt = opt.tipo || (opt.attr ? 'atributo' : (opt.periciaNome ? 'pericia' : (opt.habilidade ? 'habilidade' : 'narrativo')));
               if (tipoOpt === 'atributo' && opt.attr && attrArvore[opt.attr] !== undefined) {
-                attrArvore[opt.attr] += (parseInt(opt.val) || 1) + bonusSing;
+                attrArvore[opt.attr] += (parseInt(opt.val) || 1);
               } else if (tipoOpt === 'pericia' && opt.periciaNome) {
-                addPericia(opt.periciaNome, (parseInt(opt.periciaVal) || 1) + bonusSing, no.titulo);
+                addPericia(opt.periciaNome, (parseInt(opt.periciaVal) || 1), no.titulo);
               } else if (tipoOpt === 'habilidade' && opt.habilidade) {
-                addHabilidadeDeObj(`${no.id}_${esc}`, opt.habilidade.nome || no.titulo, opt.habilidade, singAtiva, no.herancaSingular, origemRaiz, bonusRaizUnicaRec);
+                addHabilidadeDeObj(`${no.id}_${esc}`, opt.habilidade.nome || no.titulo, opt.habilidade, origemTag);
               }
             }
           }
 
           if (no.conteudo?.bonusPericia) {
             Object.entries(no.conteudo.bonusPericia).forEach(([pNome, pVal]) => {
-              addPericia(pNome, (parseInt(pVal) || 0) + bonusSing, no.titulo);
+              addPericia(pNome, (parseInt(pVal) || 0), no.titulo);
             });
           }
 
           if (no.tipoRecompensa === 'habilidade') {
-            addHabilidadeDeObj(no.id, no.titulo, no.conteudo || {}, singAtiva, no.herancaSingular, origemRaiz, bonusRaizUnicaRec);
+            addHabilidadeDeObj(no.id, no.titulo, no.conteudo || {}, origemTag);
           }
         });
       });
@@ -1303,7 +1340,7 @@
         attr[k] = (attrBase[k] || 0) + (attrArvore[k] || 0) + (attrMaestria[k] || 0);
       });
 
-      const b = h.tipo === 'auto' ? BONUS_ORFAO : (RAIZES[h.r1] || [0, 0, 0, 0]);
+      const b = cond === 'orfao' ? BONUS_ORFAO : (RAIZES[h.r1] || [0, 0, 0, 0]);
       const maxRec = {
         hp: 10 + attr.vigor * 3 + (b[0] || 0) + bonusRecArvore.hp,
         san: 10 + attr.impeto * 3 + (b[1] || 0) + bonusRecArvore.san,
@@ -1349,38 +1386,45 @@
     }
 
     /* ============================================================ */
-    /* CABEÇALHO LIMPO: RAÍZES + CHIPS DE PASSATEMPOS               */
+    /* CABEÇALHO LIMPO: RAÍZES + VOCAÇÃO ADULTA + PASSATEMPOS       */
     /* ============================================================ */
     function construirCabecalho() {
       const f = fichaDoc;
       const travado = Boolean(f.criacaoFinalizada);
-      const h = f.raizesHeranca || { tipo: 'heranca', r1: '', r2: '', secEscolhida: '', secEscolhida2: '' };
+      const h = f.raizesHeranca || { tipo: 'comum', r1: '', r2: '', secEscolhida: '', secEscolhida2: '' };
+      const cond = normalizarCondicaoFamiliar(h.tipo);
       const profissoes = obterProfissoesMescladas();
+      const ehAdulto = personagemEhAdulto();
 
       getEl('#nome').value = f.nome || '';
-      getEl('#pt-badge').textContent = f.pontosEvolucao || 0;
+      const ptExtraEstigma = regras.pontosEstigmaSeparados ? ` | ${f.pontosEstigma || 0} PT-E` : '';
+      getEl('#pt-badge').textContent = `${f.pontosEvolucao || 0}${ptExtraEstigma}`;
 
       const badge = getEl('#badge-etapa');
-      badge.textContent = travado ? '🔒 Ficha Ativa' : '✏ Em Criação';
+      badge.textContent = travado
+        ? (ehAdulto ? '⚔️ Adulto · Ativa' : '🌱 Jovem · Ativa')
+        : '✏ Em Criação';
       getEl('#btn-finalizar').hidden = travado;
 
-      const bonus = h.tipo === 'auto' ? BONUS_ORFAO : (RAIZES[h.r1] || [0, 0, 0, 0]);
+      const bonus = cond === 'orfao' ? BONUS_ORFAO : (RAIZES[h.r1] || [0, 0, 0, 0]);
       const nomesStatus = ['HP', 'SAN', 'PE-F', 'PE-M'];
-      const txtBonusStatus = (h.tipo === 'auto' ? 'Órfão: ' : 'Recursos: ') +
+      const txtBonusStatus = (cond === 'orfao' ? 'Órfão: ' : 'Recursos: ') +
         nomesStatus.map((nome, i) => `${nome} ${bonus[i] >= 0 ? '+' : ''}${bonus[i]}`).join(' · ');
 
       let chipsRaizHtml = '';
-      if (h.tipo === 'auto') {
-        chipsRaizHtml = `<span class="chip acc">Autodidata / Órfão</span>`;
+      if (cond === 'orfao') {
+        chipsRaizHtml = `<span class="chip acc">Órfão / Autodidata (Árvore Própria)</span>`;
       } else {
         const prof1 = profissoes[h.r1];
         const sec1 = prof1?.sec?.includes(h.secEscolhida) ? h.secEscolhida : (prof1?.sec?.[0] || '');
-        const ptsSec1 = h.tipo === 'heranca' ? '+2' : '+1';
+        const ptsSec1 = cond === 'unico' ? '+2' : '+1';
 
         chipsRaizHtml += `
           <span class="chip acc">
-            ${h.tipo === 'singular' ? '1ª' : 'Raiz'}: <b>${h.r1 || 'Nenhuma'}</b>
-            ${prof1 && h.tipo !== 'dupla' ? `
+            ${cond === 'comum' ? '1ª' : 'Raiz'}: <b>${h.r1 || 'Nenhuma'}</b>
+            ${cond === 'legado' ? '<span class="tag tag-legado">★ Legado</span>' : ''}
+            ${cond === 'unico' ? '<span class="tag tag-unico">✦ Único</span>' : ''}
+            ${prof1 && cond !== 'legado' ? `
               · Sec:
               <select id="sel-sec-r1" ${travado ? 'disabled' : ''} style="padding:1px 5px; font-size:11px">
                 ${prof1.sec.map(s => `<option value="${s}" ${s === sec1 ? 'selected' : ''}>${s} (${ptsSec1})</option>`).join('')}
@@ -1389,7 +1433,7 @@
           </span>
         `;
 
-        if (h.tipo === 'singular') {
+        if (cond === 'comum') {
           const prof2 = profissoes[h.r2];
           const sec2 = prof2?.sec?.includes(h.secEscolhida2) ? h.secEscolhida2 : (prof2?.sec?.[0] || '');
           chipsRaizHtml += `
@@ -1406,17 +1450,34 @@
         }
       }
 
+      // Chip / Botão de Vocação Adulta
+      let chipVocacaoHtml = '';
+      if (travado) {
+        if (ehAdulto) {
+          const vocAtual = f.vocacaoPrincipal || '';
+          const raizesPers = obterRaizesDoPersonagem();
+          const temAfinidade = vocAtual && raizesPers.includes(vocAtual);
+          chipVocacaoHtml = vocAtual
+            ? `<span class="chip" style="border-color:#3da5d9">⚔️ Vocação: <b>${vocAtual}</b> <span class="tag ${temAfinidade ? 'tag-vocacao' : ''}">${temAfinidade ? 'Afinidade' : 'Nova Carreira'}</span> <button class="btn" style="padding:1px 6px; font-size:10px" onclick="abrirModalSeletorVocacao()">Trocar</button></span>`
+            : `<button class="btn pri" onclick="abrirModalSeletorVocacao()">⚔️ Escolher Vocação Adulta</button>`;
+        } else {
+          chipVocacaoHtml = `<span class="chip" title="Vocações adultas liberam no Estágio ${regras.estagioMaturidadeVocacao || 3} ou pelo Mestre">🌱 Infância/Juventude (Vocação no Estágio ${regras.estagioMaturidadeVocacao || 3})</span>`;
+        }
+      }
+
       getEl('#linha-raizes').innerHTML = `
         <label for="tipo">Condição</label>
         <select id="tipo" ${travado ? 'disabled' : ''}>
-          <option value="singular" ${h.tipo === 'singular' ? 'selected' : ''}>Raiz Singular (Misto · 2 Raízes)</option>
-          <option value="heranca" ${h.tipo === 'heranca' ? 'selected' : ''}>Herança Singular (Foco · +3/+2)</option>
-          <option value="dupla" ${h.tipo === 'dupla' ? 'selected' : ''}>Raiz Dupla (Tradição · Ambas Sec.)</option>
-          <option value="auto" ${h.tipo === 'auto' ? 'selected' : ''}>Autodidata / Órfão (+2 Passatempos)</option>
+          <option value="comum" ${cond === 'comum' ? 'selected' : ''}>Raiz Comum (2 Raízes Básicas)</option>
+          <option value="legado" ${cond === 'legado' ? 'selected' : ''}>Legado Familiar (1 Raiz + Ramo Legado)</option>
+          <option value="unico" ${cond === 'unico' ? 'selected' : ''}>Ensinamento Único (1 Raiz + Ramo Secreto)</option>
+          <option value="orfao" ${cond === 'orfao' ? 'selected' : ''}>Órfão / Autodidata (+2 Passatempos)</option>
         </select>
         ${chipsRaizHtml}
-        ${!travado && h.tipo !== 'auto' ? `<button class="btn on" onclick="abrirModalSeletorRaizes()">🧭 Escolher Raízes & Ver Árvores</button>` : ''}
-        ${!travado && h.tipo === 'auto' ? `<button class="btn" onclick="abrirModalArvores('explorar')">👁 Estudar Árvores</button>` : ''}
+        ${chipVocacaoHtml}
+        ${!travado && cond !== 'orfao' ? `<button class="btn on" onclick="abrirModalSeletorRaizes()">🧭 Escolher Raízes & Ver Árvores</button>` : ''}
+        ${!travado && cond === 'orfao' ? `<button class="btn" onclick="abrirModalArvores('explorar')">👁 Estudar Árvores</button>` : ''}
+        ${!travado && regras.permitirEstigmaCriacao ? `<button class="btn" style="border-color:#b480e6; color:#cfa6f7" onclick="abrirModalEstigmasCriacao()">🔮 Estigma (${(f.estigmasLiberados || []).length})</button>` : ''}
         <span class="chip">${txtBonusStatus}</span>
         <span class="chip">RD: ${computado.rd} · DESL: ${computado.desl}m · Teto: ${computado.teto}</span>
       `;
@@ -1425,7 +1486,7 @@
         getEl('#tipo').onchange = async e => {
           const novoTipo = e.target.value;
           const upd = { "raizesHeranca.tipo": novoTipo };
-          if (novoTipo !== 'singular') {
+          if (novoTipo !== 'comum') {
             upd["raizesHeranca.r2"] = '';
             upd["raizesHeranca.secEscolhida2"] = '';
           }
@@ -1510,16 +1571,18 @@
     window.finalizarCriacaoFicha = async () => {
       if (!confirm("Finalizar a criação da ficha? Atributos iniciais, raízes, perícias secundárias e passatempos ficarão travados permanentemente.")) return;
       const h = fichaDoc.raizesHeranca || {};
+      const cond = normalizarCondicaoFamiliar(h.tipo);
       const profissoes = obterProfissoesMescladas();
       const sec1 = profissoes[h.r1]?.sec?.includes(h.secEscolhida)
         ? h.secEscolhida
         : (profissoes[h.r1]?.sec?.[0] || '');
-      const sec2 = h.tipo === 'singular' && profissoes[h.r2]
+      const sec2 = cond === 'comum' && profissoes[h.r2]
         ? (profissoes[h.r2].sec.includes(h.secEscolhida2) ? h.secEscolhida2 : profissoes[h.r2].sec[0])
         : '';
 
       await updateDoc(doc(db, "fichas", fichaId), {
         criacaoFinalizada: true,
+        "raizesHeranca.tipo": cond,
         "raizesHeranca.secEscolhida": sec1,
         "raizesHeranca.secEscolhida2": sec2,
         "passatempos.lista": obterListaPassatemposSelecionados(),
@@ -1528,12 +1591,112 @@
     };
 
     /* ============================================================ */
+    /* MODAL DE SELEÇÃO DE VOCAÇÃO ADULTA                           */
+    /* ============================================================ */
+    window.abrirModalSeletorVocacao = () => {
+      if (!personagemEhAdulto()) {
+        return mostrarToast(`Vocações adultas são liberadas a partir do Estágio ${regras.estagioMaturidadeVocacao || 3} ou pelo Mestre.`);
+      }
+      const arvores = obterArvoresMescladas();
+      const vocacoesDisponiveis = arvores.filter(a => obterCategoriaArvore(a) === 'vocacao');
+      const raizesPers = obterRaizesDoPersonagem();
+      const vocAtual = fichaDoc.vocacaoPrincipal || '';
+
+      if (!vocacoesDisponiveis.length) {
+        return abrirModal('⚔️ Escolher Vocação Adulta', '<p class="mut">Nenhuma árvore de Vocação cadastrada na mesa ainda.</p>');
+      }
+
+      const cardsHtml = vocacoesDisponiveis.map(arv => {
+        const nomeVoc = arv.raizAssociada || arv.nome;
+        const temAfinidade = raizesPers.includes(nomeVoc);
+        const selecionada = vocAtual === nomeVoc;
+        const nomeEsc = nomeVoc.replace(/'/g, "\\'");
+        return `
+          <div class="raiz-card ${selecionada ? 'r-pri' : ''}">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px">
+              <b class="cz" style="color:var(--acc); font-size:13px">${arv.nome}</b>
+              <span class="tag ${temAfinidade ? 'tag-vocacao' : ''}">
+                ${temAfinidade ? '✓ Continuação da Raiz (Normal)' : '⚠ Nova Carreira (Restritivas→Exclusivas)'}
+              </span>
+            </div>
+            <p style="margin:3px 0; font-size:12px; color:var(--mut)">${arv.descricao || 'Especialização profissional adulta.'}</p>
+            <div style="display:flex; gap:6px; margin-top:auto; padding-top:4px">
+              <button class="btn ${selecionada ? 'pri' : 'on'}" onclick="definirVocacaoPrincipal('${nomeEsc}')">
+                ${selecionada ? '✓ Vocação Principal Atual' : 'Escolher como Principal'}
+              </button>
+              <button class="btn" style="margin-left:auto" onclick="verArvoreDaRaiz('${arv.id}')">👁 Ver Árvore</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      abrirModal(
+        `⚔️ Escolher Vocação Principal (Adulto)`,
+        `<p class="mut" style="font-style:normal; margin:0 0 8px">Vocações que continuam sua Raiz de infância funcionam normalmente (incluindo ramos de Legado/Único). Mudar de profissão converte ramificações Restritivas em Exclusivas. Raízes não seguidas podem ser exploradas parcialmente em 1 único caminho.</p>
+         <div class="raiz-grid">${cardsHtml}</div>`,
+        false,
+        'vocacoes'
+      );
+    };
+
+    window.definirVocacaoPrincipal = async (nomeVoc) => {
+      await updateDoc(doc(db, "fichas", fichaId), { vocacaoPrincipal: nomeVoc });
+      mostrarToast(`Vocação "${nomeVoc}" definida!`);
+    };
+
+    /* ============================================================ */
+    /* MODAL DE ESTIGMA NA CRIAÇÃO (QUANDO LIBERADO PELA MESA)      */
+    /* ============================================================ */
+    window.abrirModalEstigmasCriacao = () => {
+      if (fichaDoc.criacaoFinalizada || !regras.permitirEstigmaCriacao) return;
+      const estigmas = obterArvoresMescladas().filter(a => obterCategoriaArvore(a) === 'estigma');
+      const atuais = fichaDoc.estigmasLiberados || [];
+      const idsAtuais = new Set(atuais.map(item => typeof item === 'string' ? item : item.id));
+
+      if (!estigmas.length) {
+        return abrirModal('🔮 Estigmas Disponíveis', '<p class="mut">Nenhum Estigma cadastrado na mesa ainda.</p>');
+      }
+
+      const cardsHtml = estigmas.map(arv => {
+        const ativo = idsAtuais.has(arv.id);
+        return `
+          <div class="raiz-card ${ativo ? 'r-pri' : ''}">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px">
+              <b class="cz" style="color:#cfa6f7; font-size:13px">🔮 ${arv.nome}</b>
+              ${ativo ? '<span class="tag tag-estigma">Selecionado</span>' : ''}
+            </div>
+            <p style="margin:3px 0; font-size:12px; color:var(--mut)">${arv.descricao || 'Poder único / paranormal.'}</p>
+            <div style="display:flex; gap:6px; margin-top:auto; padding-top:4px">
+              <button class="btn ${ativo ? 'pri' : 'on'}" onclick="alternarEstigmaCriacao('${arv.id}')">
+                ${ativo ? '✓ Remover' : '+ Escolher Estigma'}
+              </button>
+              <button class="btn" style="margin-left:auto" onclick="verArvoreDaRaiz('${arv.id}')">👁 Ver Árvore</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      abrirModal('🔮 Escolher Estigma na Criação', `<div class="raiz-grid">${cardsHtml}</div>`, false, 'estigmas_criacao');
+    };
+
+    window.alternarEstigmaCriacao = async (arvId) => {
+      if (fichaDoc.criacaoFinalizada || !regras.permitirEstigmaCriacao) return;
+      const atuais = fichaDoc.estigmasLiberados || [];
+      const existe = atuais.some(item => (typeof item === 'string' ? item : item.id) === arvId);
+      const novaLista = existe
+        ? atuais.filter(item => (typeof item === 'string' ? item : item.id) !== arvId)
+        : [...atuais, { id: arvId, maxDepth: 99 }];
+      await updateDoc(doc(db, "fichas", fichaId), { estigmasLiberados: novaLista });
+    };
+
+    /* ============================================================ */
     /* MODAL DE SELEÇÃO DE RAÍZES (COM RECURSOS, PERÍCIAS E ÁRVORE) */
     /* ============================================================ */
     window.abrirModalSeletorRaizes = () => {
-      const h = fichaDoc.raizesHeranca || { tipo: 'heranca', r1: '', r2: '' };
+      const h = fichaDoc.raizesHeranca || { tipo: 'comum', r1: '', r2: '' };
+      const cond = normalizarCondicaoFamiliar(h.tipo);
       const listaRaizes = Object.keys(RAIZES).filter(r => r !== 'Órfão');
-      const ehSingular = h.tipo === 'singular';
+      const ehComum = cond === 'comum';
       const profissoes = obterProfissoesMescladas();
       const arvores = obterArvoresMescladas();
 
@@ -1541,7 +1704,7 @@
         const bonusRec = RAIZES[nomeRaiz] || [0, 0, 0, 0];
         const prof = profissoes[nomeRaiz];
         const isPri = h.r1 === nomeRaiz;
-        const isSec = ehSingular && h.r2 === nomeRaiz;
+        const isSec = ehComum && h.r2 === nomeRaiz;
 
         const fmtRec = (lbl, v) => `${lbl} <b style="color:${v > 0 ? '#4cc36f' : v < 0 ? '#e05555' : 'var(--mut)'}">${v >= 0 ? '+' + v : v}</b>`;
         const recLinha = `${fmtRec('HP', bonusRec[0])} · ${fmtRec('SAN', bonusRec[1])} · ${fmtRec('PE-F', bonusRec[2])} · ${fmtRec('PE-M', bonusRec[3])}`;
@@ -1567,9 +1730,9 @@
             <div style="font-size:12px; color:var(--mut)">${perLinha}</div>
             <div style="display:flex; gap:5px; flex-wrap:wrap; margin-top:auto; padding-top:4px">
               <button class="btn ${isPri ? 'pri' : ''}" onclick="definirRaizPersonagem(1, '${nomeRaiz}')">
-                ${ehSingular ? 'Definir 1ª (Recursos)' : 'Escolher Raiz'}
+                ${ehComum ? 'Definir 1ª (Recursos)' : 'Escolher Raiz'}
               </button>
-              ${ehSingular ? `
+              ${ehComum ? `
                 <button class="btn ${isSec ? 'on' : ''}" onclick="definirRaizPersonagem(2, '${nomeRaiz}')" ${isPri ? 'disabled' : ''}>
                   Definir 2ª (Perícias)
                 </button>
@@ -1581,7 +1744,7 @@
       }).join('');
 
       abrirModal(
-        `Escolher Raízes · <span class="tag">${ehSingular ? '1ª define Recursos + Perícias · 2ª define Perícias' : 'Define Recursos e Perícias'}</span>`,
+        `Escolher Raízes · <span class="tag">${ehComum ? '1ª define Recursos + Perícias · 2ª define Perícias' : 'Define Recursos e Perícias'}</span>`,
         `<div class="raiz-grid">${cardsHtml}</div>`,
         false,
         'raizes'
@@ -1745,7 +1908,7 @@
       });
 
       const travado = Boolean(fichaDoc.criacaoFinalizada);
-      const isOrfao = fichaDoc.raizesHeranca?.tipo === 'auto';
+      const isOrfao = normalizarCondicaoFamiliar(fichaDoc.raizesHeranca?.tipo) === 'orfao';
       const ptsMax = (regras.pontosAtributoIniciais || 5) + (isOrfao ? 1 : 0);
       const ptsGastos = Object.values(computado.attrBase).reduce((a, b) => a + (b || 0), 0);
 
@@ -2626,20 +2789,92 @@
     };
 
     /* ---------- Visualizador de Árvores ---------- */
+    function obterInfoEstigmaFicha(arvId) {
+      const lista = fichaDoc?.estigmasLiberados || [];
+      for (const item of lista) {
+        if (typeof item === 'string' && item === arvId) return { liberado: true, maxDepth: 99 };
+        if (item && typeof item === 'object' && item.id === arvId) {
+          return { liberado: true, maxDepth: item.maxDepth ?? 99 };
+        }
+      }
+      return { liberado: false, maxDepth: -1 };
+    }
+
+    function obterModificadorArvoreParaPersonagem(arvore) {
+      const cat = obterCategoriaArvore(arvore);
+      const raizesPers = obterRaizesDoPersonagem();
+      const vocPrincipal = fichaDoc?.vocacaoPrincipal || '';
+      const ehAdulto = personagemEhAdulto();
+
+      if (cat === 'padrao') {
+        return { modo: 'normal', label: 'Padrão (Comum)', permitido: true };
+      }
+
+      if (cat === 'estigma') {
+        const infoEst = obterInfoEstigmaFicha(arvore.id);
+        const visivelMesa = Boolean(regras.estigmasVisiveisJogadores) || Boolean(regras.permitirEstigmaCriacao);
+        const permitido = infoEst.liberado;
+        return {
+          modo: 'estigma',
+          label: infoEst.liberado
+            ? (infoEst.maxDepth < 90 ? `Estigma (Liberado até Nível ${infoEst.maxDepth})` : 'Estigma Despertado')
+            : 'Estigma (Apenas Visualização)',
+          permitido,
+          visivel: infoEst.liberado || visivelMesa,
+          maxDepth: infoEst.maxDepth
+        };
+      }
+
+      if (cat === 'raiz') {
+        const pertenceRaiz = raizesPers.includes(arvore.raizAssociada);
+        return {
+          modo: 'normal',
+          label: pertenceRaiz ? 'Árvore de Raiz (Infância)' : 'Árvore de Raiz (Outra Origem)',
+          permitido: pertenceRaiz
+        };
+      }
+
+      // Categoria 'vocacao'
+      const nomeVoc = arvore.raizAssociada || arvore.nome;
+      if (!ehAdulto) {
+        return { modo: 'bloqueado_jovem', label: 'Vocação Adulta (Bloqueada na Infância)', permitido: false };
+      }
+      if (vocPrincipal === nomeVoc) {
+        const temAfinidade = raizesPers.includes(nomeVoc);
+        return {
+          modo: temAfinidade ? 'normal' : 'vocacao_sem_raiz',
+          label: temAfinidade ? 'Vocação Principal (Afinidade Total)' : 'Vocação Principal (Nova Carreira · Restritivas→Exclusivas)',
+          permitido: true
+        };
+      }
+      if (raizesPers.includes(nomeVoc)) {
+        return {
+          modo: 'vocacao_secundaria_raiz',
+          label: 'Vocação de Raiz Secundária (Apenas 1 Caminho)',
+          permitido: true
+        };
+      }
+      return { modo: 'nao_escolhida', label: 'Vocação Não Escolhida', permitido: false };
+    }
+
     function obterArvoresParaModal(modo) {
       const todas = obterArvoresMescladas();
+      const visiveis = todas.filter(a => {
+        const cat = obterCategoriaArvore(a);
+        if (cat === 'estigma') {
+          return obterModificadorArvoreParaPersonagem(a).visivel;
+        }
+        return true;
+      });
+
       if (!fichaDoc?.criacaoFinalizada || modo === 'explorar') {
-        return todas;
+        return visiveis;
       }
-      const h = fichaDoc?.raizesHeranca || {};
-      const permitidas = new Set();
-      if (h.tipo === 'auto') permitidas.add('Órfão');
-      else {
-        if (h.r1) permitidas.add(h.r1);
-        if (h.tipo === 'singular' && h.r2) permitidas.add(h.r2);
-      }
-      (fichaDoc?.raizesExtras || []).forEach(r => permitidas.add(r));
-      return todas.filter(a => ehArvorePadrao(a) || permitidas.has(a.raizAssociada));
+
+      return visiveis.filter(a => {
+        const info = obterModificadorArvoreParaPersonagem(a);
+        return info.permitido;
+      });
     }
 
     window.abrirModalArvorePadrao = () => {
@@ -2648,7 +2883,7 @@
         return abrirModal('🧭 Árvore de Evolução Padrão', `
           <div style="padding:14px; text-align:center">
             <p class="cz" style="color:var(--acc); font-size:14px; margin:0 0 6px">Árvore Comum em Construção</p>
-            <p class="mut" style="font-style:normal">Assim que o Mestre salvar uma árvore com raiz <b>"Padrão"</b>, ela aparecerá aqui para todos os jogadores.</p>
+            <p class="mut" style="font-style:normal">Assim que o Mestre salvar uma árvore com categoria <b>"Padrão"</b>, ela aparecerá aqui para todos os jogadores.</p>
           </div>
         `);
       }
@@ -2658,7 +2893,7 @@
 
     window.abrirModalArvores = (modo = 'raiz') => {
       const acessiveis = obterArvoresParaModal(modo);
-      if (!acessiveis.length) return mostrarToast('Nenhuma árvore cadastrada na mesa.');
+      if (!acessiveis.length) return mostrarToast('Nenhuma árvore disponível no momento.');
 
       const emCriacao = !fichaDoc?.criacaoFinalizada;
       const h = fichaDoc?.raizesHeranca || {};
@@ -2666,9 +2901,9 @@
         const daRaizAtual = acessiveis.find(a => a.raizAssociada === h.r1);
         if (daRaizAtual) arvoreAtivaId = daRaizAtual.id;
       } else if (modo === 'raiz') {
-        const deRaiz = acessiveis.filter(a => !ehArvorePadrao(a));
+        const deClasse = acessiveis.filter(a => !ehArvorePadrao(a));
         if (!arvoreAtivaId || !acessiveis.some(a => a.id === arvoreAtivaId)) {
-          arvoreAtivaId = (deRaiz[0] || acessiveis[0]).id;
+          arvoreAtivaId = (deClasse[0] || acessiveis[0]).id;
         }
       } else if (!arvoreAtivaId || !acessiveis.some(a => a.id === arvoreAtivaId)) {
         arvoreAtivaId = acessiveis[0].id;
@@ -2677,13 +2912,21 @@
       tZoom = 1; tPanX = 0; tPanY = 0;
       noInspecionadoId = null;
 
+      const prefixoCat = (a) => {
+        const c = obterCategoriaArvore(a);
+        if (c === 'padrao') return '🧭 [Padrão] ';
+        if (c === 'raiz') return '🌱 [Raiz] ';
+        if (c === 'estigma') return '🔮 [Estigma] ';
+        return '⚔️ [Vocação] ';
+      };
+
       const selHtml = `<select id="sel-arv-modal" onchange="trocarArvoreModal(this.value)">${acessiveis.map(a =>
-        `<option value="${a.id}" ${a.id === arvoreAtivaId ? 'selected' : ''}>${ehArvorePadrao(a) ? '🧭 [Padrão] ' : '🌳 '}${a.nome}${a.raizAssociada ? ` — ${a.raizAssociada}` : ''}</option>`
+        `<option value="${a.id}" ${a.id === arvoreAtivaId ? 'selected' : ''}>${prefixoCat(a)}${a.nome}${a.raizAssociada && obterCategoriaArvore(a) !== 'estigma' ? ` — ${a.raizAssociada}` : ''}</option>`
       ).join('')}</select>`;
 
       const avisoCriacao = emCriacao
         ? `<span class="chip" style="border-color:var(--acc); color:var(--acc)">👁 Modo Estudo (Finalize a criação para comprar nós)</span>`
-        : `<span class="chip" id="mod-pt">PT: ${fichaDoc.pontosEvolucao || 0}</span>`;
+        : `<span class="chip" id="mod-pt">PT: ${fichaDoc.pontosEvolucao || 0}${regras.pontosEstigmaSeparados ? ` | PT-Estigma: ${fichaDoc.pontosEstigma || 0}` : ''}</span>`;
 
       abrirModal(`Árvore · ${selHtml} ${avisoCriacao}`, `
         <div class="tree-legend">
@@ -2787,15 +3030,47 @@
       return true;
     }
 
+    function tipoRamificacaoEfetivo(anc, modInfo) {
+      const base = anc.tipoRamificacao || 'livre';
+      if (modInfo.modo === 'vocacao_secundaria_raiz') {
+        return 'exclusiva';
+      }
+      if (modInfo.modo === 'vocacao_sem_raiz' && base === 'restritiva') {
+        return 'exclusiva';
+      }
+      return base;
+    }
+
     function statusNoArvore(arvore, node) {
       if (!fichaDoc?.criacaoFinalizada) {
         return { st: 'lock', msg: 'Finalize a criação da ficha para evoluir' };
       }
 
+      const modInfo = obterModificadorArvoreParaPersonagem(arvore);
+      if (!modInfo.permitido) {
+        return { st: 'block', msg: modInfo.label };
+      }
+
       const desb = new Set((fichaDoc.nosDesbloqueados || {})[arvore.id] || []);
       if (desb.has(node.id)) return { st: 'done', msg: 'Desbloqueado' };
 
-      const ehDupla = fichaDoc.raizesHeranca?.tipo === 'dupla';
+      // Limite de profundidade liberada pelo Mestre em Estigmas
+      if (modInfo.modo === 'estigma' && typeof modInfo.maxDepth === 'number' && (node._depth || 0) > modInfo.maxDepth) {
+        return { st: 'lock', msg: `Bloqueado pelo Mestre (liberado até nível ${modInfo.maxDepth}).` };
+      }
+
+      // Verifica trava de Condição Familiar (Ramo de Legado Familiar ou Ensinamento Único)
+      const condReq = node.condicaoRequerida || 'todas';
+      if (condReq !== 'todas') {
+        const condAtual = normalizarCondicaoFamiliar(fichaDoc.raizesHeranca?.tipo);
+        const mesmaRaizPrincipal = fichaDoc.raizesHeranca?.r1 === arvore.raizAssociada;
+        const temAfinidade = modInfo.modo === 'normal' && mesmaRaizPrincipal;
+        if (!temAfinidade || condAtual !== condReq) {
+          const nomeCond = condReq === 'legado' ? 'Legado Familiar' : 'Ensinamento Único';
+          return { st: 'block', msg: `Exclusivo de ${nomeCond} nesta raiz.` };
+        }
+      }
+
       const ancestrais = obterAncestraisNo(arvore, node.id);
 
       // Verifica bloqueios exclusivos e restritivos em toda a cadeia ancestral
@@ -2805,15 +3080,16 @@
 
         const meusCaminhos = caminhos.filter(c => noPertenceSubarvore(arvore, c.id, node.id));
         const outrosCaminhos = caminhos.filter(c => !meusCaminhos.some(mc => mc.id === c.id));
+        const ramEfetiva = tipoRamificacaoEfetivo(anc, modInfo);
 
-        if (anc.tipoRamificacao === 'exclusiva') {
+        if (ramEfetiva === 'exclusiva') {
           const outroEscolhido = outrosCaminhos.some(oc => contarSubarvore(arvore, oc.id, desb) > 0);
           if (outroEscolhido) {
             return { st: 'block', msg: 'Bloqueado por Escolha Exclusiva.' };
           }
         }
 
-        if (anc.tipoRamificacao === 'restritiva' && !ehDupla) {
+        if (ramEfetiva === 'restritiva') {
           const lim = parseInt(anc.limiteNosSecundarios) || 1;
           const outroPassouLimite = outrosCaminhos.some(oc => contarSubarvore(arvore, oc.id, desb) > lim);
           if (outroPassouLimite) {
@@ -2836,27 +3112,23 @@
       }
 
       const custo = parseInt(node.custoPontos) || 1;
-      if ((fichaDoc.pontosEvolucao || 0) < custo) return { st: 'lock', msg: `Requer ${custo} PT.` };
-      return { st: 'avail', msg: `Comprar por ${custo} PT` };
+      const usaPtEstigma = obterCategoriaArvore(arvore) === 'estigma' && Boolean(regras.pontosEstigmaSeparados);
+      const saldoPt = usaPtEstigma ? (fichaDoc.pontosEstigma || 0) : (fichaDoc.pontosEvolucao || 0);
+      const labelPt = usaPtEstigma ? 'PT-Estigma' : 'PT';
+
+      if (saldoPt < custo) return { st: 'lock', msg: `Requer ${custo} ${labelPt}.` };
+      return { st: 'avail', msg: `Comprar por ${custo} ${labelPt}` };
     }
 
-    function arvoreConcedeBonusRaizUnica(arvore) {
-      if (!arvore || ehArvorePadrao(arvore)) return false;
-      const h = fichaDoc?.raizesHeranca || {};
-      return (h.tipo === 'heranca' || h.tipo === 'dupla') && Boolean(h.r1) && arvore.raizAssociada === h.r1;
-    }
-
-    function formatarResumoStatsHabilidade(c, herancaSing = null, singAtiva = false, bonusRaizUnicaRec = 0) {
+    function formatarResumoStatsHabilidade(c, condicaoRequerida = 'todas') {
       if (!c) return [];
       const pills = [];
-      const redPe = singAtiva ? (parseInt(herancaSing?.reducaoPe) || 0) : 0;
-      const bonusSing = singAtiva ? (parseInt(herancaSing?.bonusExtra) || 0) : 0;
 
       const catMap = { ativo: 'Ativo', reativo: 'Reativo', passivo: 'Passivo', estatistico: 'Estatístico' };
       if (c.cat) pills.push({ cls: '', txt: `Tipo: ${catMap[c.cat] || c.cat}` });
 
-      const fVal = Math.max(0, (parseInt(c.f) || 0) - redPe);
-      const mVal = Math.max(0, (parseInt(c.m) || 0) - redPe);
+      const fVal = Math.max(0, parseInt(c.f) || 0);
+      const mVal = Math.max(0, parseInt(c.m) || 0);
       if (fVal > 0) pills.push({ cls: 'pef', txt: `Custo: ${fVal} PE-F` });
       if (mVal > 0) pills.push({ cls: 'pem', txt: `Custo: ${mVal} PE-M` });
       if (fVal === 0 && mVal === 0 && (c.cat === 'ativo' || c.cat === 'reativo')) {
@@ -2864,15 +3136,12 @@
       }
 
       if (c.efTipo && c.efTipo !== 'nenhum') {
-        const ehRecurso = ['hp', 'san', 'pef', 'pem'].includes(c.efTipo);
-        const extraUnica = ehRecurso ? bonusRaizUnicaRec : 0;
-        const vTotal = (parseInt(c.efVal) || 0) + bonusSing + extraUnica;
-        const sufixoUnica = extraUnica > 0 ? ' (inclui +2 Raiz Única)' : '';
+        const vTotal = parseInt(c.efVal) || 0;
         const mapaEf = {
-          hp: `+${vTotal} HP Máx${sufixoUnica}`,
-          san: `+${vTotal} SAN Máx${sufixoUnica}`,
-          pef: `+${vTotal} PE-F Máx${sufixoUnica}`,
-          pem: `+${vTotal} PE-M Máx${sufixoUnica}`,
+          hp: `+${vTotal} HP Máx`,
+          san: `+${vTotal} SAN Máx`,
+          pef: `+${vTotal} PE-F Máx`,
+          pem: `+${vTotal} PE-M Máx`,
           teste: `+${vTotal} no Teste`
         };
         pills.push({ cls: 'bonus', txt: `Efeito: ${mapaEf[c.efTipo] || `${c.efTipo} +${vTotal}`}` });
@@ -2880,7 +3149,7 @@
 
       if (c.bonusPericia) {
         Object.entries(c.bonusPericia).forEach(([k, v]) => {
-          pills.push({ cls: 'bonus', txt: `Perícia: +${(parseInt(v) || 0) + bonusSing} ${k}` });
+          pills.push({ cls: 'bonus', txt: `Perícia: +${parseInt(v) || 0} ${k}` });
         });
       }
 
@@ -2889,14 +3158,10 @@
         pills.push({ cls: 'crit', txt: `Margem Crít.: ${crit > 0 ? '+' + crit : crit}` });
       }
 
-      if (herancaSing && (herancaSing.descricao || herancaSing.reducaoPe || herancaSing.bonusExtra)) {
-        const extras = [];
-        if (herancaSing.reducaoPe) extras.push(`-${herancaSing.reducaoPe} PE`);
-        if (herancaSing.bonusExtra) extras.push(`+${herancaSing.bonusExtra} Bônus`);
-        pills.push({
-          cls: 'sing',
-          txt: `★ Herança${singAtiva ? ' (Ativa)' : ''}${extras.length ? ': ' + extras.join(', ') : ''}`
-        });
+      if (condicaoRequerida === 'legado') {
+        pills.push({ cls: 'sing', txt: '★ Ramo Exclusivo: Legado Familiar' });
+      } else if (condicaoRequerida === 'unico') {
+        pills.push({ cls: 'sing', txt: '✦ Ramo Exclusivo: Ensinamento Único' });
       }
 
       return pills;
@@ -2934,7 +3199,10 @@
       if (!arvore || !grid || !stage) return;
 
       const elPt = getEl('#mod-pt');
-      if (elPt) elPt.textContent = `PT: ${fichaDoc.pontosEvolucao || 0}`;
+      if (elPt) {
+        elPt.textContent = `PT: ${fichaDoc.pontosEvolucao || 0}${regras.pontosEstigmaSeparados ? ` | PT-Estigma: ${fichaDoc.pontosEstigma || 0}` : ''}`;
+      }
+      const modInfo = obterModificadorArvoreParaPersonagem(arvore);
       grid.innerHTML = '';
 
       const nodeMap = new Map((arvore.nos || []).map(n => [n.id, n]));
@@ -2988,7 +3256,11 @@
           el.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; gap:4px; margin-bottom:3px">
               <span class="tbadge ${visTipo.cls}">${visTipo.badge}</span>
-              <span class="tag">${st.st === 'done' ? '✓ Obtido' : `${n.custoPontos || 1} PT`}</span>
+              <span style="display:flex; gap:3px; align-items:center">
+                ${n.condicaoRequerida === 'legado' ? '<span class="tag tag-legado" title="Exclusivo Legado Familiar">★</span>' : ''}
+                ${n.condicaoRequerida === 'unico' ? '<span class="tag tag-unico" title="Exclusivo Ensinamento Único">✦</span>' : ''}
+                <span class="tag">${st.st === 'done' ? '✓ Obtido' : `${n.custoPontos || 1} PT`}</span>
+              </span>
             </div>
             <div class="cz" style="font-weight:700; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${n.titulo}</div>
             <div class="mut" style="font-style:normal; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${visTipo.resumo}</div>
@@ -3016,14 +3288,15 @@
           if (!tEl) return;
 
           const filhos = (arvore.nos || []).filter(f => (f.requisitos || []).includes(n.id));
-          if (filhos.length > 1 && (n.tipoRamificacao === 'exclusiva' || n.tipoRamificacao === 'restritiva')) {
+          const ramN = tipoRamificacaoEfetivo(n, modInfo);
+          if (filhos.length > 1 && (ramN === 'exclusiva' || ramN === 'restritiva')) {
             const px = grid.offsetLeft + tEl.offsetLeft;
             const py = grid.offsetTop + tEl.parentElement.offsetTop + tEl.offsetTop - 12;
             const pill = document.createElement('div');
-            pill.className = `branch-pill bp-${n.tipoRamificacao}`;
+            pill.className = `branch-pill bp-${ramN}`;
             pill.style.left = `${px}px`;
             pill.style.top = `${py}px`;
-            pill.textContent = n.tipoRamificacao === 'exclusiva'
+            pill.textContent = ramN === 'exclusiva'
               ? '⚡ EXCLUSIVA (Escolha 1)'
               : `🔒 RESTRITIVA (Máx ${n.limiteNosSecundarios || 1} nó)`;
             badgesLayer.appendChild(pill);
@@ -3046,14 +3319,15 @@
               : `M ${x1} ${y1} C ${x1} ${y1 - deltaY}, ${x2} ${y2 + deltaY}, ${x2} ${y2}`);
 
             const comprado = desb.has(n.id) && desb.has(rId);
+            const ramPai = paiObj ? tipoRamificacaoEfetivo(paiObj, modInfo) : 'livre';
             const corLinha = comprado ? '#4cc36f'
-              : paiObj?.tipoRamificacao === 'exclusiva' ? '#ff8c5a'
-              : paiObj?.tipoRamificacao === 'restritiva' ? '#c78aff'
+              : ramPai === 'exclusiva' ? '#ff8c5a'
+              : ramPai === 'restritiva' ? '#c78aff'
               : '#776';
 
             p.setAttribute('stroke', corLinha);
             p.setAttribute('stroke-width', comprado ? '2.5' : '2');
-            if (!comprado && paiObj?.tipoRamificacao === 'exclusiva') p.setAttribute('stroke-dasharray', '6 4');
+            if (!comprado && ramPai === 'exclusiva') p.setAttribute('stroke-dasharray', '6 4');
             p.setAttribute('fill', 'none');
             svg.appendChild(p);
           });
@@ -3086,10 +3360,10 @@
         }
       }
 
-      const h = fichaDoc?.raizesHeranca || {};
-      const singAtiva = h.tipo === 'heranca' && h.r1 === arvore.raizAssociada && Boolean(node.herancaSingular);
-      const bonusRaizUnicaRec = arvoreConcedeBonusRaizUnica(arvore) ? 2 : 0;
-      const pills = formatarResumoStatsHabilidade(node.conteudo || {}, node.herancaSingular, singAtiva, bonusRaizUnicaRec);
+      const modInfo = obterModificadorArvoreParaPersonagem(arvore);
+      const usaPtEstigma = obterCategoriaArvore(arvore) === 'estigma' && Boolean(regras.pontosEstigmaSeparados);
+      const labelPt = usaPtEstigma ? 'PT-Estigma' : 'PT';
+      const pills = formatarResumoStatsHabilidade(node.conteudo || {}, node.condicaoRequerida || 'todas');
       const pillsHtml = pills.length
         ? `<div class="hab-stats-row">${pills.map(p => `<span class="stat-pill ${p.cls}">${p.txt}</span>`).join('')}</div>`
         : '';
@@ -3098,7 +3372,7 @@
         ? `<div style="margin-top:5px; font-size:12px; display:grid; gap:3px">${node.opcoesAmbiguas.map((op, i) => {
             const letra = op.idOpcao ? op.idOpcao.toUpperCase() : String.fromCharCode(65 + i);
             const descOp = op.habilidade?.descricao ? ` — <span class="mut" style="font-style:normal">${op.habilidade.descricao}</span>` : '';
-            const pillsOp = op.habilidade ? formatarResumoStatsHabilidade(op.habilidade, null, false, bonusRaizUnicaRec).map(p => `<span class="stat-pill ${p.cls}">${p.txt}</span>`).join(' ') : '';
+            const pillsOp = op.habilidade ? formatarResumoStatsHabilidade(op.habilidade).map(p => `<span class="stat-pill ${p.cls}">${p.txt}</span>`).join(' ') : '';
             return `<div><b>Opção ${letra}:</b> ${op.efeito}${descOp} ${pillsOp}</div>`;
           }).join('')}</div>`
         : '';
@@ -3113,13 +3387,13 @@
             <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap">
               <span class="tbadge ${visTipo.cls}">${visTipo.badge}</span>
               <b class="cz" style="color:var(--acc); font-size:14px">${node.titulo}</b>
-              <span class="tag">Custo: ${node.custoPontos || 1} PT</span>
+              <span class="tag">Custo: ${node.custoPontos || 1} ${labelPt}</span>
               ${reqNomes.length ? `<span class="tag">Req.: ${reqNomes.join(', ')}</span>` : '<span class="tag">Nó Inicial</span>'}
+              <span class="tag" style="color:var(--acc)">${modInfo.label}</span>
             </div>
             ${pillsHtml}
             <p style="margin:6px 0 3px; font-size:12.5px; line-height:1.45">${node.conteudo?.descricao || visTipo.resumo}</p>
             ${infoOpcoesTexto}
-            ${node.herancaSingular?.descricao ? `<p style="margin:4px 0 0; font-size:11.5px; color:var(--acc)">★ <b>Herança Singular${singAtiva ? ' (Ativa no seu personagem)' : ''}:</b> ${node.herancaSingular.descricao}</p>` : ''}
           </div>
           <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:2px">
             ${seletorHtml}
@@ -3138,9 +3412,13 @@
         getEl('#btn-exec-compra').onclick = async () => {
           const custo = parseInt(node.custoPontos) || 1;
           const upd = {
-            pontosEvolucao: (fichaDoc.pontosEvolucao || 0) - custo,
             [`nosDesbloqueados.${arvore.id}`]: [...((fichaDoc.nosDesbloqueados || {})[arvore.id] || []), node.id]
           };
+          if (usaPtEstigma) {
+            upd.pontosEstigma = (fichaDoc.pontosEstigma || 0) - custo;
+          } else {
+            upd.pontosEvolucao = (fichaDoc.pontosEvolucao || 0) - custo;
+          }
           if (temOpcoes) {
             const esc = getEl('#sel-opt-amb').value;
             const opt = node.opcoesAmbiguas.find(o => o.idOpcao === esc);
@@ -3202,6 +3480,8 @@
         if (modalContextoAtual === 'arvore') renderizarArvoreNoModal();
         else if (modalContextoAtual === 'passatempos') abrirModalPassatempos();
         else if (modalContextoAtual === 'raizes') abrirModalSeletorRaizes();
+        else if (modalContextoAtual === 'vocacoes') abrirModalSeletorVocacao();
+        else if (modalContextoAtual === 'estigmas_criacao') abrirModalEstigmasCriacao();
       }
     }
 
