@@ -215,8 +215,19 @@
       </div>
 
       <div class="space-y-1.5">
+        <label class="block font-cinzel text-xs text-gold-400 font-bold uppercase tracking-wider">Categoria da Árvore</label>
+        <select id="tree-category-select" class="w-full bg-stone-950 border border-gold-600/50 rounded px-2.5 py-1.5 text-xs text-gold-300 font-semibold focus:outline-none focus:border-gold-500">
+          <option value="raiz">🌱 Raiz (Infância / Origem)</option>
+          <option value="vocacao">⚔️ Vocação (Profissão Adulta)</option>
+          <option value="estigma">🔮 Estigma (Poder Único / Paranormal)</option>
+          <option value="padrao">🧭 Padrão (Caminho do Sobrevivente)</option>
+        </select>
+        <p id="tree-category-hint" class="text-[10px] text-stone-400 leading-tight"></p>
+      </div>
+
+      <div id="box-tree-root" class="space-y-1.5">
         <label class="block font-cinzel text-xs text-gold-400 font-bold uppercase tracking-wider">Raiz Associada</label>
-        <input type="text" id="tree-root-input" placeholder="Ex: Mercador, Ferreiro, Padrão..." class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-gold-500">
+        <input type="text" id="tree-root-input" placeholder="Ex: Mercador, Ferreiro, Órfão..." class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-gold-500">
         <select id="tree-root-select" class="hidden w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-xs text-gold-300 focus:outline-none focus:border-gold-500"></select>
       </div>
 
@@ -234,8 +245,9 @@
       <div class="bg-stone-950/80 p-3 rounded border border-stone-800 space-y-2 text-[11px] text-stone-400">
         <span class="font-cinzel text-xs text-gold-400 block font-bold">Regras de Ramificação</span>
         <p class="leading-tight">&bull; <strong class="text-stone-200">Livre:</strong> Todos os caminhos filhos podem ser comprados.</p>
-        <p class="leading-tight">&bull; <strong class="text-amber-300">Restritiva:</strong> Avança parcialmente nos ramos secundários. <em>Herança Dupla ignora esta trava.</em></p>
-        <p class="leading-tight">&bull; <strong class="text-red-300">Exclusiva:</strong> Escolhe apenas 1 caminho e bloqueia os demais, <em>mesmo com Herança Dupla</em>.</p>
+        <p class="leading-tight">&bull; <strong class="text-amber-300">Restritiva:</strong> Se 1 caminho passar do limite (ex: nó 4), os demais travam no limite (nó 3). <em>Em Vocação sem afinidade de raiz, vira Exclusiva.</em></p>
+        <p class="leading-tight">&bull; <strong class="text-red-300">Exclusiva:</strong> Escolhe apenas 1 caminho e bloqueia os demais.</p>
+        <p class="leading-tight">&bull; <strong class="text-gold-300">Ramo Secreto:</strong> Use a trava de condição no nó para criar caminhos exclusivos de <em>Legado Familiar</em> ou <em>Ensinamento Único</em>.</p>
         <p class="leading-tight pt-1 border-t border-stone-900">&bull; <strong>Arraste um nó sobre outro</strong> para definir quem é o nó pai (pré-requisito).</p>
       </div>
     </aside>
@@ -434,8 +446,8 @@
           <label class="block font-cinzel text-gold-400 font-bold">Ramificação de Saída</label>
           <select id="inspector-branch-type" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-gold-300 text-xs">
             <option value="livre">Livre (Avanço simultâneo)</option>
-            <option value="restritiva">Restritiva (Avanço parcial; Herança Dupla ignora)</option>
-            <option value="exclusiva">Exclusiva (Bloqueia irmãos para todos)</option>
+            <option value="restritiva">Restritiva (Trava caminhos secundários no limite)</option>
+            <option value="exclusiva">Exclusiva (Apenas 1 caminho permitido)</option>
           </select>
           <div id="inspector-branch-limit-box" class="hidden pt-1">
             <label class="block text-[10px] text-amber-300 mb-1">Máx. nós permitidos em caminhos secundários:</label>
@@ -449,22 +461,15 @@
           <textarea id="inspector-desc" rows="3" class="w-full bg-stone-950 border border-stone-800 rounded px-2.5 py-1.5 text-stone-300 focus:outline-none focus:border-gold-500 resize-none"></textarea>
         </div>
 
-        <!-- Aprimoramento de Herança Singular -->
+        <!-- Trava de Ramo Secreto (Condição Familiar) -->
         <div class="bg-gold-950/20 p-2.5 rounded border border-gold-600/40 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="font-cinzel text-gold-300 font-bold text-[11px]">★ Aprimoramento Herança Singular</span>
-          </div>
-          <textarea id="inspector-singular-desc" rows="2" placeholder="Opcional: Efeito extra ou aprimorado para quem possui Herança Singular nesta raiz..." class="w-full bg-stone-950 border border-stone-800 rounded px-2 py-1 text-[11px] text-gold-200 focus:outline-none focus:border-gold-500 resize-none"></textarea>
-          <div class="grid grid-cols-2 gap-1.5">
-            <div>
-              <label class="text-[10px] text-stone-400 block">Redução Custo PE:</label>
-              <input type="number" id="inspector-singular-red-pe" min="0" max="10" value="0" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 font-mono text-gold-300 text-center">
-            </div>
-            <div>
-              <label class="text-[10px] text-stone-400 block">Bônus Extra (+X):</label>
-              <input type="number" id="inspector-singular-bonus" min="0" max="10" value="0" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1 font-mono text-gold-300 text-center">
-            </div>
-          </div>
+          <label class="block font-cinzel text-gold-300 font-bold text-[11px]">★ Restrição de Ramo (Condição Familiar)</label>
+          <select id="inspector-condicao-req" class="w-full bg-stone-950 border border-stone-700 rounded px-2 py-1.5 text-gold-200 text-xs">
+            <option value="todas">Livre para todos (Padrão)</option>
+            <option value="legado">★ Exclusivo: Legado Familiar (Negócio de Família)</option>
+            <option value="unico">✦ Exclusivo: Ensinamento Único (Truques & Segredos)</option>
+          </select>
+          <p class="text-[10px] text-stone-400 leading-tight">Use nos nós iniciais (ou em toda a linha) de um ramo secreto para restringi-lo a personagens com essa origem na raiz.</p>
         </div>
       </div>
 
@@ -524,9 +529,27 @@
 
     let usuarioAtual = null;
     let mesaDados = null;
+    function inferirCategoriaArvore(arv) {
+      if (!arv) return 'raiz';
+      if (arv.categoriaArvore) return arv.categoriaArvore;
+      if (arv.isPadrao) return 'padrao';
+      const rNorm = String(arv.raizAssociada || '').trim().toLowerCase();
+      if (['padrão', 'padrao', 'comum', 'geral'].includes(rNorm)) return 'padrao';
+      if (arv.isEstigma || rNorm === 'estigma') return 'estigma';
+      return 'vocacao';
+    }
+
+    function prefixoCategoria(cat) {
+      if (cat === 'padrao') return '🧭 [Padrão] ';
+      if (cat === 'raiz') return '🌱 [Raiz] ';
+      if (cat === 'estigma') return '🔮 [Estigma] ';
+      return '⚔️ [Vocação] ';
+    }
+
     let treeData = {
       id: `arvore_${Date.now()}`,
       nome: "Nova Árvore de Evolução",
+      categoriaArvore: "raiz",
       raizAssociada: "",
       descricao: "",
       nos: [
@@ -537,6 +560,7 @@
           tipoRamificacao: "livre",
           limiteNosSecundarios: 1,
           custoPontos: 1,
+          condicaoRequerida: "todas",
           requisitos: [],
           conteudo: { descricao: "Benefício inicial da raiz.", cat: "passivo", f: 0, m: 0, efTipo: "nenhum", efVal: 0, critMod: 0 }
         }
@@ -588,10 +612,10 @@
       if (raizes.length > 0) {
         rootInput.classList.add('hidden');
         rootSelect.classList.remove('hidden');
+        const raizesUnicas = raizes.includes('Órfão') ? raizes : ['Órfão', ...raizes];
         rootSelect.innerHTML =
           `<option value="">-- Selecione a Raiz --</option>` +
-          `<option value="Padrão">🧭 Padrão (Compartilhada por Todos)</option>` +
-          raizes.map(r => `<option value="${r}">${r}</option>`).join('');
+          raizesUnicas.map(r => `<option value="${r}">${r}</option>`).join('');
       }
 
       const selArvore = document.getElementById('select-arvore-mesa');
@@ -608,7 +632,11 @@
       const selArvore = document.getElementById('select-arvore-mesa');
       const lista = mesaDados?.arvores || [];
       selArvore.innerHTML = `<option value="__nova__">+ Criar Nova Árvore na Mesa</option>` +
-        lista.map(a => `<option value="${a.id}">${a.nome} (${a.raizAssociada || 'Sem raiz'})</option>`).join('');
+        lista.map(a => {
+          const cat = inferirCategoriaArvore(a);
+          const sufixo = (cat === 'estigma' || cat === 'padrao') ? '' : ` (${a.raizAssociada || 'Sem raiz'})`;
+          return `<option value="${a.id}">${prefixoCategoria(cat)}${a.nome}${sufixo}</option>`;
+        }).join('');
     }
 
     document.getElementById('select-arvore-mesa').onchange = (e) => {
@@ -696,14 +724,52 @@
       alert("Árvore removida da mesa.");
     };
 
-    function loadTreeIntoInputs() {
-      document.getElementById('tree-name-input').value = treeData.nome || '';
+    const HINTS_CATEGORIA = {
+      raiz: 'Árvore básica da infância (15–20 nós), vinculada à raiz familiar ou Órfão.',
+      vocacao: 'Profissão adulta avançada. Sofre restrição se o personagem não tiver a raiz correspondente.',
+      estigma: 'Poder único/paranormal concedido pelo Mestre. Sem vínculo com raízes e sem debuff.',
+      padrao: 'Árvore comum acessível a todos os personagens da mesa.'
+    };
+
+    function atualizarVisibilidadeRaizPorCategoria() {
+      const cat = treeData.categoriaArvore || 'raiz';
+      const boxRoot = document.getElementById('box-tree-root');
+      const hintEl = document.getElementById('tree-category-hint');
+      hintEl.textContent = HINTS_CATEGORIA[cat] || '';
+
+      if (cat === 'estigma') {
+        boxRoot.classList.add('hidden');
+        treeData.raizAssociada = '';
+        treeData.isEstigma = true;
+        treeData.isPadrao = false;
+      } else if (cat === 'padrao') {
+        boxRoot.classList.add('hidden');
+        treeData.raizAssociada = 'Padrão';
+        treeData.isPadrao = true;
+        treeData.isEstigma = false;
+      } else {
+        boxRoot.classList.remove('hidden');
+        treeData.isPadrao = false;
+        treeData.isEstigma = false;
+        if (treeData.raizAssociada === 'Padrão') treeData.raizAssociada = '';
+      }
       document.getElementById('tree-root-input').value = treeData.raizAssociada || '';
       document.getElementById('tree-root-select').value = treeData.raizAssociada || '';
+    }
+
+    function loadTreeIntoInputs() {
+      treeData.categoriaArvore = inferirCategoriaArvore(treeData);
+      document.getElementById('tree-name-input').value = treeData.nome || '';
+      document.getElementById('tree-category-select').value = treeData.categoriaArvore;
       document.getElementById('tree-desc-input').value = treeData.descricao || '';
+      atualizarVisibilidadeRaizPorCategoria();
     }
 
     document.getElementById('tree-name-input').oninput = e => treeData.nome = e.target.value;
+    document.getElementById('tree-category-select').onchange = e => {
+      treeData.categoriaArvore = e.target.value;
+      atualizarVisibilidadeRaizPorCategoria();
+    };
     document.getElementById('tree-root-input').oninput = e => treeData.raizAssociada = e.target.value;
     document.getElementById('tree-root-select').onchange = e => treeData.raizAssociada = e.target.value;
     document.getElementById('tree-desc-input').oninput = e => treeData.descricao = e.target.value;
@@ -897,9 +963,12 @@
           card.onclick = () => selectNode(node.id);
 
           const costBadge = `<span class="absolute -top-2 -right-2 bg-stone-900 text-gold-400 border border-gold-600/60 font-mono text-[10px] font-bold px-1.5 rounded-full shadow">${node.custoPontos || 1} PT</span>`;
-          const singularBadge = node.herancaSingular?.descricao || node.herancaSingular?.bonusExtra || node.herancaSingular?.reducaoPe
-            ? `<span class="absolute -top-2 left-2 bg-gold-950 text-gold-300 border border-gold-500 font-mono text-[9px] px-1 rounded shadow" title="Possui Aprimoramento de Herança Singular">★</span>`
-            : '';
+          const condReq = node.condicaoRequerida || 'todas';
+          const singularBadge = condReq === 'legado'
+            ? `<span class="absolute -top-2 left-2 bg-amber-950 text-gold-300 border border-gold-500 font-mono text-[9px] px-1.5 rounded shadow" title="Exclusivo: Legado Familiar">★ LEGADO</span>`
+            : condReq === 'unico'
+              ? `<span class="absolute -top-2 left-2 bg-purple-950 text-purple-300 border border-purple-500 font-mono text-[9px] px-1.5 rounded shadow" title="Exclusivo: Ensinamento Único">✦ ÚNICO</span>`
+              : '';
 
           let branchIndicator = "";
           if (node.tipoRamificacao === 'exclusiva') {
@@ -1175,10 +1244,8 @@
       renderizarCamposOpcaoDilema('dil-opta', optA);
       renderizarCamposOpcaoDilema('dil-optb', optB);
 
-      // Herança Singular
-      document.getElementById('inspector-singular-desc').value = node.herancaSingular?.descricao || '';
-      document.getElementById('inspector-singular-red-pe').value = node.herancaSingular?.reducaoPe || 0;
-      document.getElementById('inspector-singular-bonus').value = node.herancaSingular?.bonusExtra || 0;
+      // Condição Familiar (Ramo Secreto)
+      document.getElementById('inspector-condicao-req').value = node.condicaoRequerida || 'todas';
 
       atualizarSecoesInspetor();
       renderTreeVisual();
@@ -1267,16 +1334,9 @@
         ];
       }
 
-      // Herança Singular
-      const singDesc = document.getElementById('inspector-singular-desc').value.trim();
-      const singRedPe = parseInt(document.getElementById('inspector-singular-red-pe').value) || 0;
-      const singBonus = parseInt(document.getElementById('inspector-singular-bonus').value) || 0;
-
-      if (singDesc || singRedPe > 0 || singBonus > 0) {
-        node.herancaSingular = { descricao: singDesc, reducaoPe: singRedPe, bonusExtra: singBonus };
-      } else {
-        delete node.herancaSingular;
-      }
+      // Condição Familiar (Ramo Secreto)
+      node.condicaoRequerida = document.getElementById('inspector-condicao-req').value || 'todas';
+      delete node.herancaSingular;
 
       renderTreeVisual();
     }
@@ -1286,12 +1346,11 @@
       'inspector-hab-pef', 'inspector-hab-pem', 'inspector-hab-ef-val',
       'attr-opta-val', 'attr-optb-per-nome', 'attr-optb-per-val',
       'attr-optb-hab-nome', 'attr-optb-hab-pef', 'attr-optb-hab-pem', 'attr-optb-hab-desc',
-      'inspector-branch-limit',
-      'inspector-singular-desc', 'inspector-singular-red-pe', 'inspector-singular-bonus'
+      'inspector-branch-limit'
     ].forEach(id => document.getElementById(id).oninput = saveInspectorChanges);
 
     [
-      'inspector-type', 'inspector-branch-type',
+      'inspector-type', 'inspector-branch-type', 'inspector-condicao-req',
       'inspector-hab-cat', 'inspector-hab-ef-tipo', 'inspector-hab-crit-mod',
       'attr-opta-key', 'attr-optb-tipo', 'attr-optb-hab-cat'
     ].forEach(id => document.getElementById(id).onchange = () => {
@@ -1323,6 +1382,7 @@
         tipoRamificacao: "livre",
         limiteNosSecundarios: 1,
         custoPontos: 1,
+        condicaoRequerida: "todas",
         requisitos: parentId ? [parentId] : [],
         conteudo: { descricao: "Descrição do benefício.", cat: "passivo", f: 0, m: 0, efTipo: "nenhum", efVal: 0, critMod: 0 }
       });
@@ -1344,6 +1404,7 @@
       treeData = {
         id: `arvore_${Date.now()}`,
         nome: "Nova Árvore de Evolução",
+        categoriaArvore: "raiz",
         raizAssociada: "",
         descricao: "",
         nos: [{
@@ -1353,6 +1414,7 @@
           tipoRamificacao: "livre",
           limiteNosSecundarios: 1,
           custoPontos: 1,
+          condicaoRequerida: "todas",
           requisitos: [],
           conteudo: { descricao: "Efeito inicial da raiz.", cat: "passivo", f: 0, m: 0, efTipo: "nenhum", efVal: 0, critMod: 0 }
         }]
